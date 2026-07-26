@@ -7,6 +7,7 @@ fail() { printf 'FAIL: %s\n' "$1" >&2; exit 1; }
 for file in \
   "$root/.claude/agents/project-manager.md" \
   "$root/.claude/agents/commercial-proposal-quotation-specialist.md" \
+  "$root/.claude/agents/presentation-manager.md" \
   "$root/.claude/commands/client-quote.md" \
   "$root/contracts/PM-TO-QUOTE-DATA-PACK.md" \
   "$root/templates/quote-data-pack.yaml"; do
@@ -24,5 +25,6 @@ grep -q 'inferred' "$root/contracts/PM-TO-QUOTE-DATA-PACK.md" || fail '缺少 in
 grep -q '/client-quote' "$root/.claude/commands/client-quote.md" || fail '缺少總入口'
 grep -q 'grill-with-docs' "$root/.claude/agents/project-manager.md" || fail 'PM Agent 未接 grill'
 grep -q 'engagement-quote' "$root/.claude/agents/commercial-proposal-quotation-specialist.md" || fail '報價 Agent 未接 engagement-quote'
+grep -q 'kimi-slide' "$root/.claude/agents/presentation-manager.md" || fail '簡報管理師未接 kimi-slide'
 
 printf 'PASS: Agent 身份、總入口、資料契約與全域 Skill 依賴\n'
