@@ -1,0 +1,32 @@
+project_name: ""
+status: draft
+client_profile:
+  company: ""
+  contact: ""
+  email: ""
+business_goal: ""
+users: []
+success_criteria: []
+non_goals: []
+required_scope: []
+optional_scope: []
+unknown_scope: []
+third_party_integrations: []
+responsibility:
+  hosting: {value: "", status: pending}
+  domain: {value: "", status: pending}
+  email: {value: "", status: pending}
+  payment: {value: "", status: pending}
+  video: {value: "", status: pending}
+  deployment: {value: "", status: pending}
+  security: {value: "", status: pending}
+  data: {value: "", status: pending}
+commercial:
+  model: {value: "", status: pending}
+  timeline: {value: "", status: pending}
+  acceptance: {value: "", status: pending}
+  payment_preferences: {value: "", status: pending}
+  warranty: {value: "", status: pending}
+confirmed_decisions: []
+open_questions: []
+evidence_sources: []
