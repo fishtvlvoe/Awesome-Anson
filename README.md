@@ -29,7 +29,12 @@ Presentation Manager
 /presentation-manager <文案、報價單、PRD 或課程資料>
 ```
 
-簡報管理師使用全域 `kimi-slide` Skill，產出簡報中繼 Markdown 與可貼給 Kimi PPT 的提詞。現階段不自動呼叫 Kimi，也不宣稱已產出 HTML／PDF 檔案。
+簡報管理師產出已確認的簡報中繼 Markdown 後，支援雙輸出路徑，由使用者明確選擇：
+
+- **Kimi 路徑**：使用全域 `kimi-slide` Skill，產出可貼給 Kimi PPT 的提詞。不自動呼叫 Kimi API、不自動貼上，也不宣稱已產出 HTML／PDF 檔案。
+- **本機 ppt-master 路徑**：產出 `PRESENTATION-HANDOFF-PACK.md` 定義的交接包（中繼 Markdown + metadata + 製作指引），交給本機 ppt-master repo（`/Users/fishtv/Development/ppt-master`）執行製作。簡報管理師**不執行** ppt-master、不產出 `.pptx`，`.pptx` 的產出與驗證由 ppt-master 執行環境負責。
+
+兩條路徑皆以使用者確認過的中繼 Markdown 為唯一內容來源，不得從原始輸入另起爐灶。
 
 ## 依賴 Skills
 
@@ -42,5 +47,9 @@ Presentation Manager
 - `engagement-quote`
 - `pdf`
 - `speak-human-tw`
+- `kimi-slide`
 
-依賴與交接規格見 [PM-TO-QUOTE-DATA-PACK.md](contracts/PM-TO-QUOTE-DATA-PACK.md)。
+依賴與交接規格：
+
+- [PM-TO-QUOTE-DATA-PACK.md](contracts/PM-TO-QUOTE-DATA-PACK.md)：PM Agent → 商務提案與報價 Agent
+- [PRESENTATION-HANDOFF-PACK.md](contracts/PRESENTATION-HANDOFF-PACK.md)：簡報管理師 → ppt-master 交接包
