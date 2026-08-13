@@ -1,6 +1,6 @@
-# Agent Operating System
+# PM專案師
 
-這是 Fish 的 Agent 代理工作區，集中管理可重複使用的 Agent 身份、Skills 依賴、案件資料契約與流程入口。
+這是 Fish 的接案代理工作區，集中管理可重複使用的 Agent 身份、Skills 依賴、案件資料契約與流程入口。與 `agentOS`（案子狀態追蹤 CLI）為不同專案，兩者不互相依賴。
 
 ## 三個核心 Agent
 

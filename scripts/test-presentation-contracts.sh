@@ -93,19 +93,19 @@ fi
 mkdir -p "$mock_sync_home/.claude/agents" "$mock_sync_home/.claude/commands" "$mock_sync_home/.codex/agents"
 printf '%s\n' \
   '# global presentation manager entry' \
-  '正式規格唯一來源：/Users/fishtv/Development/Agent/.claude/agents/presentation-manager.md' \
+  '正式規格唯一來源：/Users/fishtv/Development/PM專案師/.claude/agents/presentation-manager.md' \
   '輸出路徑：Kimi 或本機 ppt-master 交接包' \
   'ppt-master' > "$mock_sync_home/.claude/agents/presentation-manager.md"
 printf '%s\n' \
   '# /presentation-manager' \
-  '正式規格唯一來源：/Users/fishtv/Development/Agent/.claude/agents/presentation-manager.md' \
+  '正式規格唯一來源：/Users/fishtv/Development/PM專案師/.claude/agents/presentation-manager.md' \
   '使用者確認後選擇輸出路徑：Kimi 或本機 ppt-master 交接包' \
   'ppt-master' > "$mock_sync_home/.claude/commands/presentation-manager.md"
 printf '%s\n' \
   'name = "presentation-manager"' \
   'description = "簡報管理師：交付 Kimi 提詞或原生簡報製作交接包"' \
   'developer_instructions = """' \
-  '正式規格唯一來源：/Users/fishtv/Development/Agent/.claude/agents/presentation-manager.md' \
+  '正式規格唯一來源：/Users/fishtv/Development/PM專案師/.claude/agents/presentation-manager.md' \
   '輸出路徑：Kimi 或本機 ppt-master 交接包' \
   '本機 ppt-master 交接包' \
   '中繼 Markdown' \
