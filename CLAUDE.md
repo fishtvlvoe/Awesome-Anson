@@ -33,3 +33,13 @@ discuss? → propose → apply ⇄ ingest → archive
 `cases/*/` 已在 `.gitignore` 排除，不進版控（即使本 repo 是 private，也不把真實客戶資料留在 git 歷史裡）。
 
 不建立 repo 根目錄 `docs/`——案件資料一律在 `cases/<client-slug>/` 底下，避免和既有 `cases/` 結構打架。
+
+## 🔴 硬規則 — 一題一題問，禁止批次（2026-08-13）
+
+任何 Agent（Project Manager Agent、Commercial Proposal & Quotation Specialist、Presentation Manager）向 Fish 提出需要決定的問題，一次只問一題，等回答才問下一題。
+
+**禁止**：把多個待確認問題彙整成一份清單一次丟出（例：`OPEN-QUESTIONS.md` 列 5 題同時問）。就算 Fish 當下不在線上、要背景跑分析，也不可為了「省互動次數」把問題批次列出——先產出能自主完成的分析，剩下的問題排隊，一題一題問，Fish 之後用手機陸續回覆時逐題往下走。
+
+派工／指示 subagent 執行案件分析時，prompt 裡不可指示 subagent「彙整問題一次問完」；必須明確要求「一題一題，用 AskUserQuestion 逐題確認」。
+
+起因：2026-08-13 Vista IMC 案，派工 prompt 誤指示「收斂成 5 題一次問」，違反 `project-manager.md` 原本就寫的「一次只問一個」規格，被 Fish 糾正。
