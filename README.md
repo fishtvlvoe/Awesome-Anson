@@ -38,18 +38,18 @@
 
 ## 三個核心 Agent（接力賽，不是同一個東西）
 
-```text
-Project Manager Agent（project-manager）
-專案管理與需求分析師：讀逐字稿/資料 → 拆需求 → 分類 confirmed/pending/inferred
-  ↓ PM-to-Quote Data Pack（contracts/PM-TO-QUOTE-DATA-PACK.md）
-Commercial Proposal & Quotation Specialist
-商務提案與報價顧問：算價格、寫條款 → HTML/PDF 報價
-  ↓ 已確認的提案內容或簡報需求
-Presentation Manager（簡報師）
-簡報管理師：整理成逐頁結構 → Kimi 提詞 或 ppt-master 交接包
-```
+白話講：「Agent」就是一個有固定角色、固定做事規則的 AI 助理，你點名它，它才會用那個角色的方式做事。三個助理各做各的，互不知道對方在忙什麼，只認「上一棒交過來、你已經點頭確認過」的東西。
 
-每個 Agent 各自獨立，沒有互相知道對方狀態；上一棒的「已確認」產出，是下一棒唯一的輸入來源。
+```text
+助理1：project-manager（專案管理與需求分析師）
+讀逐字稿/資料 → 拆需求 → 每一項標「已確認 / 待確認 / 我猜的」
+  ↓ 交出一份「PM 資料包」（contracts/PM-TO-QUOTE-DATA-PACK.md 定義了長相）
+助理2：commercial-proposal-quotation-specialist（商務提案與報價顧問）
+算價格、寫條款 → 產出報價文件（先做網頁版給你看，你點頭才轉成 PDF）
+  ↓ 交出已確認的提案內容，或轉去做簡報
+助理3：簡報師（Presentation Manager）
+整理成逐頁簡報大綱 → 交給 Kimi（一個 AI 簡報生成工具）或本機的簡報製作程式
+```
 
 ## 怎麼叫（兩種方式，看情境）
 
@@ -59,36 +59,36 @@ Presentation Manager（簡報師）
 /client-quote <案件資料夾或逐字稿路徑>
 ```
 
-這個指令會依序帶你走 project-manager → commercial-proposal-quotation-specialist：先需求分析（複雜案件先跑 `grill-with-docs`），FRD 確認後才進報價，報價與 HTML 初稿確認後才出 PDF。中間每一步都停下來等你確認，不會自己往下衝。
+打這行，它會照順序帶你走完助理1 → 助理2：先幫你理需求（案子複雜就先多問幾輪，這步驟叫 `grill-with-docs`），你確認需求整理對了才進報價，報價表你點頭、網頁版你也看過了才轉成正式 PDF。每一步都停下來等你說「對」才往下走，不會自己偷跑。
 
-**只要用某一個 Agent（不透過 /client-quote）：**
+**只想單獨叫某一位助理（不走整條流程）：**
 
-沒有對應 slash command，直接用 Agent 工具點名呼叫：
+沒有現成的斜線指令，要用「Agent 工具」直接點名：
 
 ```text
-Agent(subagent_type="project-manager", ...)
-Agent(subagent_type="commercial-proposal-quotation-specialist", ...)
-Agent(subagent_type="簡報師", ...)
+Agent(subagent_type="project-manager", ...)                              → 叫助理1
+Agent(subagent_type="commercial-proposal-quotation-specialist", ...)     → 叫助理2
+Agent(subagent_type="簡報師", ...)                                        → 叫助理3
 ```
 
-例如只想重新做一份簡報、不想重跑整個 PM 流程，就直接叫 `簡報師`，把已確認的文案/報價單/PRD 丟給它。
+白話講，這行語法的意思就是「請用 XXX 這個角色來處理」，不是要你寫程式，是跟 AI 講「這次麻煩用簡報師的身分幫我」。例如只想重做一份簡報、不想重跑整個需求分析，就直接點名「簡報師」，把已經確認過的文案/報價單丟給它。
 
-> 舊版曾經有 `/presentation-manager` 這個 slash command，內容跟「簡報師」Agent 定義重複又會不同步，已移除。簡報功能現在只有一個入口：Agent 呼叫「簡報師」。
+> 舊版曾經有 `/presentation-manager` 這個獨立指令，內容跟「簡報師」這個角色的說明重複又會兜不起來，已經刪掉。簡報功能現在只有一個入口：點名叫「簡報師」。
 
-簡報管理師產出已確認的簡報中繼 Markdown 後，支援雙輸出路徑，由使用者明確選擇：
+簡報師做完大綱後，會問你要走哪條路，兩條都可以，只能選一條：
 
-- **Kimi 路徑**：使用本 repo 內建的 `kimi-slide` Skill，產出可貼給 Kimi PPT 的提詞。不自動呼叫 Kimi API、不自動貼上，也不宣稱已產出 HTML／PDF 檔案。
-- **本機 ppt-master 路徑**：產出 `PRESENTATION-HANDOFF-PACK.md` 定義的交接包（中繼 Markdown + metadata + 製作指引），交給本機 ppt-master repo（`/Users/fishtv/Development/ppt-master`）執行製作。簡報管理師**不執行** ppt-master、不產出 `.pptx`，`.pptx` 的產出與驗證由 ppt-master 執行環境負責。
+- **Kimi 路徑**：用本 repo 內建的 `kimi-slide` 這份技能，生出一段文字（提詞），你自己複製貼去 Kimi 網站生成簡報。它不會自動幫你送出去，也不會假裝已經做出簡報檔案。
+- **本機製作路徑**：產出一份交接包（內容規則見 `PRESENTATION-HANDOFF-PACK.md`），給你電腦上另一套專門做簡報檔的程式（ppt-master，如果你有裝的話）接手做出正式的 .pptx 檔。簡報師本身**不會**去執行那套程式，也不會生出 .pptx 檔案——只負責把料準備好交接。
 
-兩條路徑皆以使用者確認過的中繼 Markdown 為唯一內容來源，不得從原始輸入另起爐灶。
+兩條路都只能用你已經確認過的那份大綱內容，不能自己回頭亂加東西。
 
 ## 依賴 Skills
 
-全部實體檔案都在本 repo 的 `.claude/skills/` 底下，clone 下來就有，不需要另外去全域環境裝：
+白話講：「Skill」是一包寫好的做事技巧／模板，教 Agent 該怎麼問問題、怎麼算報價、怎麼寫提詞。全部技巧的實體檔案都在本 repo 的 `.claude/skills/` 底下，clone 下來就有，不需要另外去別的地方裝：
 
-- `pm-discovery-upgrade`、`engagement-quote`、`kimi-slide` — 自己寫的
-- `grill-with-docs`、`grilling`、`domain-modeling` — 原樣搬自 [mattpocock/skills](https://github.com/mattpocock/skills)（MIT）
-- `im-human` — 原樣搬自 [chang416/im-human](https://github.com/chang416/im-human)（MIT，取代舊引用的 `speak-human-tw`）
+- `pm-discovery-upgrade`（前期需求訪談技巧）、`engagement-quote`（報價計算與文件模板）、`kimi-slide`（簡報提詞生成模板） — 自己寫的
+- `grill-with-docs`（帶著既有文件深挖需求）、`grilling`（一題一題逼問的訪談法）、`domain-modeling`（業務領域拆解技巧） — 原樣搬自 [mattpocock/skills](https://github.com/mattpocock/skills)（MIT 授權，可自由使用改作）
+- `im-human`（把 AI 味的文字改成人話） — 原樣搬自 [chang416/im-human](https://github.com/chang416/im-human)（MIT 授權，取代舊版寫死引用但從沒真的存在過的 `speak-human-tw`）
 
 授權與出處明細見 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)。
 
