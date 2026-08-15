@@ -10,7 +10,7 @@
 
 1. 把這個 repo clone 下來：
    ```
-   git clone https://github.com/fishtvlvoe/agent.git 案神
+   git clone https://github.com/fishtvlvoe/CaseGenie.git 案神
    ```
 2. 打開你在用的 AI 工具（Claude Code、Cursor、Codex CLI、Windsurf、或任何能讀檔案、能連續對話執行多步驟的 AI 都可以），把它指到剛剛 clone 下來的資料夾
 3. 跟 AI 說：**「幫我安裝這個」**（或更明確一點：「讀這個資料夾的 README.md，還有 `.claude/agents/` 底下三個角色的說明，之後我提到報價、簡報、需求分析，就照這些角色的規則做」）
