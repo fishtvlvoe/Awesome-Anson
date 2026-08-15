@@ -80,7 +80,7 @@ Agent(subagent_type="簡報師", ...)                                        →
 簡報師做完大綱後，會問你要走哪條路，兩條都可以，只能選一條：
 
 - **Kimi 路徑**：用本 repo 內建的 `kimi-slide` 這份技能，生出一段文字（提詞），你自己複製貼去 Kimi 網站生成簡報。它不會自動幫你送出去，也不會假裝已經做出簡報檔案。
-- **本機製作路徑**：產出一份交接包（內容規則見 `PRESENTATION-HANDOFF-PACK.md`），給你電腦上另一套專門做簡報檔的程式（ppt-master，如果你有裝的話）接手做出正式的 .pptx 檔。簡報師本身**不會**去執行那套程式，也不會生出 .pptx 檔案——只負責把料準備好交接。
+- **本機製作路徑**：產出一份交接包（內容規則見 `PRESENTATION-HANDOFF-PACK.md`），給本 repo 內建的 `ppt-master` 這套專門做簡報檔的工具接手，做出正式的 .pptx 檔。簡報師本身**不會**去執行 ppt-master，也不會生出 .pptx 檔案——只負責把料準備好交接，實際製作要你另外叫 ppt-master 這個 Skill 來做。`ppt-master` 是 Python 寫的，第一次用之前要先跑一次 `pip install -r .claude/skills/ppt-master/requirements.txt`；純文字轉 PPTX 不用額外設定，要用 AI 配圖或語音旁白才需要在 `.env` 填自己的 API Key。
 
 兩條路都只能用你已經確認過的那份大綱內容，不能自己回頭亂加東西。
 
@@ -91,6 +91,7 @@ Agent(subagent_type="簡報師", ...)                                        →
 - `pm-discovery-upgrade`（前期需求訪談技巧）、`engagement-quote`（報價計算與文件模板）、`kimi-slide`（簡報提詞生成模板） — 自己寫的
 - `grill-with-docs`（帶著既有文件深挖需求）、`grilling`（一題一題逼問的訪談法）、`domain-modeling`（業務領域拆解技巧） — 原樣搬自 [mattpocock/skills](https://github.com/mattpocock/skills)（MIT 授權，可自由使用改作）
 - `im-human`（把 AI 味的文字改成人話） — 原樣搬自 [chang416/im-human](https://github.com/chang416/im-human)（MIT 授權，取代舊版寫死引用但從沒真的存在過的 `speak-human-tw`）
+- `ppt-master`（把交接包做成正式 .pptx 檔的工具） — 搬自 [hugohe3/ppt-master](https://github.com/hugohe3/ppt-master) 的 Claude Code Skill 部分（MIT 授權）。這個是 Python 工具，第一次用要先 `pip install -r .claude/skills/ppt-master/requirements.txt`
 
 授權與出處明細見 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)。
 
