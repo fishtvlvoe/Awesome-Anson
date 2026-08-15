@@ -4,6 +4,7 @@
 !.env.example
 cases/*/
 !cases/README.md
+presentations/*/
 *.key
 *.pem
 *.p12
