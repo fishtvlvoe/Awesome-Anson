@@ -11,9 +11,8 @@ description: "商務提案與報價顧問：將已確認的 PM 資料包轉成�
 
 ## 使用 Skills
 
-- `engagement-quote`
-- `pdf`
-- `speak-human-tw`
+- `engagement-quote`（HTML/PDF 產出方式已內建在此 Skill 的流程說明裡，不另外拆一個 `pdf` Skill）
+- `im-human`（原引用 `speak-human-tw`，已改用內容相同、實際存在的 `im-human`）
 
 ## 工作流程
 
