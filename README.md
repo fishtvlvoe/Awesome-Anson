@@ -17,6 +17,11 @@
 2. 打開你在用的 AI 工具（Claude Code、Cursor、Codex CLI、Windsurf、或任何能讀檔案、能連續對話執行多步驟的 AI 都可以），把它指到剛剛 clone 下來的資料夾
 3. 跟 AI 說：**「幫我安裝這個」**（或更明確一點：「讀這個資料夾的 README.md，還有 `.claude/agents/` 底下三個角色的說明，之後我提到報價、簡報、需求分析，就照這些角色的規則做」）
 4. AI 自己讀完就會知道怎麼扮演這三個角色，不用你手動搬檔案或設定
+5. 如果要用「本機做出正式 .pptx 檔」這個功能（不是只要 Kimi 提詞），還要多跑一次：
+   ```
+   pip install -r .claude/skills/ppt-master/requirements.txt
+   ```
+   這步驟需要電腦上已經有 Python；只用 Kimi 路徑（複製提詞貼去 Kimi 網站）的話可以跳過，不用裝 Python 環境。
 
 **差異**：Claude Code 認得 `.claude/agents/*.md` 和 `.claude/commands/*.md` 這套格式，會自動抓到，`/client-quote` 這種指令也是原生支援，裝好立刻能打；其他 AI 工具沒有這種「自動認格式」的機制，需要你明確叫它先讀過 README 跟 Agent 說明檔，之後用口語描述（「用 PM 助理幫我分析這份逐字稿」）達到一樣效果，不能打 `/client-quote` 這種斜線指令。
 
