@@ -1,4 +1,4 @@
-# 案神 CaseGenie（原 PM專案師）
+# 案神 Awesome-Anson（原 PM專案師）
 
 **這不是常駐系統，不是 Agent OS。** 沒有背景排程、沒有狀態機一直在跑——你打指令或呼叫 Agent 它才動，不叫它就完全靜止，像精靈一樣呼之即來、揮之即去。它是一組「丟案件資料進去、吐結構化產出出來」的接案分析架構：集中管理可重複使用的 Agent 身份、Skills 依賴、案件資料契約與流程入口。
 
@@ -12,7 +12,7 @@
 
 1. 把這個 repo clone 下來：
    ```
-   git clone https://github.com/fishtvlvoe/CaseGenie.git 案神
+   git clone https://github.com/fishtvlvoe/Awesome-Anson.git Awesome-Anson
    ```
 2. 打開你在用的 AI 工具（Claude Code、Cursor、Codex CLI、Windsurf、或任何能讀檔案、能連續對話執行多步驟的 AI 都可以），把它指到剛剛 clone 下來的資料夾
 3. 跟 AI 說：**「幫我安裝這個」**（或更明確一點：「讀這個資料夾的 README.md，還有 `.claude/agents/` 底下三個角色的說明，之後我提到報價、簡報、需求分析，就照這些角色的規則做」）
