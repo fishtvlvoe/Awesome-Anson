@@ -8,18 +8,47 @@
 
 另外還搭了一個第四個 Agent「開課師」，跟接案報價流程無關，是拿主題、素材整理成課程大綱、簡報與學員講義用的，算附贈，不影響上面三個的流程。
 
+
 ---
 
-## 👑 「神」系列家族成員與完整協同鏈
+<!-- GODS-FAMILY:START -->
+## 👑 「神」系列家族：彼此怎麼接力合作？
 
-* 📋 **[案神 Awesome-Anson](https://github.com/fishtvlvoe/Awesome-Anson)**（本倉庫）：接案分析、商務報價、合約拆解與提案簡報
-* 🏗️ **[蓋神 Awesome-Gason](https://github.com/fishtvlvoe/Awesome-Gason)**：Spectra SDD 全自動開發總管（接手案神需求 ➔ 規格 ➔ 多 Agent 實作與驗收）
-* 🗣️ **[譯神 Awesome-Eason](https://github.com/fishtvlvoe/Awesome-Eason)**：小白模式技術降維、台灣繁中去 AI 味與翻譯急救
+「神」系列不是各自為政的工具，而是一條從**商務接案、工程開發到成果交付**的完整流水線：
+
+```text
+┌─────────────────────────────────────────────────────────────────────────┐
+│                       👑 「神」系列家族完整協同接力鏈                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+【第一棒：接案與商務需求】
+  📋 案神 (Awesome-Anson) ➔ 丟進客戶會議逐字稿與資料，自動拆解需求、產出報價單與簡報。
+         │
+         ▼ (客戶成交，需求確認，交棒給工程總管)
+【第二棒：自動化工程開發】
+  🏗️ 蓋神 (Awesome-Gason) ➔ 把需求轉成 Spectra 規格，指揮多 Agent 在隔離房間寫碼與驗收。
+         │
+         ├─► 🗣️ 譯神 (Awesome-Eason) ➔ 過程中遇到看不懂的技術名詞？對外文案太假？
+         │                               隨時叫「譯神」出來翻譯成白話、去 AI 味。
+         │
+         ├─► ⌨️ Key神 (Awesome-Keyson) ➔ 專案需註冊第三方平台、申請 API Key、填寫繁瑣企業表單？
+         │                               貼上網址交給「Key神」安全自動填表，不用手打。
+         │
+         ▼ (系統開發完成，功能已驗收上線)
+【第三棒：產品交付與行銷宣傳】
+  🎬 剪神 (Awesome-Janson) ➔ 錄好的系統操作教學、發表會影片，一鍵自動精修成長片與爆款短影音。
+```
+
+### 家族成員倉庫速查
+
+* 📋 **[案神 Awesome-Anson](https://github.com/fishtvlvoe/Awesome-Anson)**（本倉庫）：接案分析、商務報價、合約拆解與提案簡報架構
+* 🏗️ **[蓋神 Awesome-Gason](https://github.com/fishtvlvoe/Awesome-Gason)**：Spectra SDD 全自動開發總管（規格→TDD→多代理派工→CR→驗收）
+* 🗣️ **[譯神 Awesome-Eason](https://github.com/fishtvlvoe/Awesome-Eason)**：小白技術降維、台灣繁中去 AI 味與翻譯急救
 * ⌨️ **[Key神 Awesome-Keyson](https://github.com/fishtvlvoe/Awesome-Keyson)**：自動 Key 單、智慧語意對齊與跨平台表單自動填寫
 * 🎬 **[剪神 Awesome-Janson](https://github.com/fishtvlvoe/Awesome-Janson)**：全能 AI 影片剪輯 Agent（長片精修、爆款短影音與動效）
+<!-- GODS-FAMILY:END -->
 
 ---
-
 ## 安裝方式（任何 AI 工具都能裝，不限 Claude Code）
 
 1. 把這個 repo clone 下來：
