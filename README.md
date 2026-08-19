@@ -8,6 +8,18 @@
 
 另外還搭了一個第四個 Agent「開課師」，跟接案報價流程無關，是拿主題、素材整理成課程大綱、簡報與學員講義用的，算附贈，不影響上面三個的流程。
 
+---
+
+## 👑 「神」系列家族成員與完整協同鏈
+
+* 📋 **[案神 Awesome-Anson](https://github.com/fishtvlvoe/Awesome-Anson)**（本倉庫）：接案分析、商務報價、合約拆解與提案簡報
+* 🏗️ **[蓋神 Awesome-Gason](https://github.com/fishtvlvoe/Awesome-Gason)**：Spectra SDD 全自動開發總管（接手案神需求 ➔ 規格 ➔ 多 Agent 實作與驗收）
+* 🗣️ **[譯神 Awesome-Eason](https://github.com/fishtvlvoe/Awesome-Eason)**：小白模式技術降維、台灣繁中去 AI 味與翻譯急救
+* ⌨️ **[Key神 Awesome-Keyson](https://github.com/fishtvlvoe/Awesome-Keyson)**：自動 Key 單、智慧語意對齊與跨平台表單自動填寫
+* 🎬 **[剪神 Awesome-Janson](https://github.com/fishtvlvoe/Awesome-Janson)**：全能 AI 影片剪輯 Agent（長片精修、爆款短影音與動效）
+
+---
+
 ## 安裝方式（任何 AI 工具都能裝，不限 Claude Code）
 
 1. 把這個 repo clone 下來：
