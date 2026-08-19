@@ -9,3 +9,5 @@ presentations/*/
 *.pem
 *.p12
 *credentials*
+.spectra/
+openspec/.vector-search.db*
