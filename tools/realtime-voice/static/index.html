@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>即時語音接案神</title>
+<style>
+  body{font-family:-apple-system,BlinkMacSystemFont,"PingFang TC",sans-serif;max-width:640px;margin:40px auto;padding:0 20px;background:#faf7f2;color:#211c17;}
+  h1{font-size:20px;}
+  #toggle{font-size:18px;padding:14px 28px;border-radius:10px;border:none;background:#d97a2b;color:#fff;cursor:pointer;}
+  #toggle.recording{background:#b23b3b;}
+  #status{margin:16px 0;color:#5b5148;font-size:14px;}
+  #permission-notice{display:none;background:#f7e2df;color:#b23b3b;padding:12px 16px;border-radius:8px;margin:16px 0;font-size:14px;}
+  #transcript{margin-top:24px;border:1px solid #e4dccd;border-radius:10px;padding:16px;background:#fff;min-height:120px;}
+  #transcript p{margin:6px 0;line-height:1.6;}
+  #transcript p.low-confidence{color:#b23b3b;}
+</style>
+</head>
+<body>
+  <h1>即時語音接案神</h1>
+  <button id="toggle">開始收音</button>
+  <div id="status">尚未開始</div>
+  <div id="permission-notice">需要允許麥克風權限才能開始收音</div>
+  <div id="transcript"></div>
+
+<script>
+(() => {
+  const toggleBtn = document.getElementById('toggle');
+  const statusEl = document.getElementById('status');
+  const permNotice = document.getElementById('permission-notice');
+  const transcriptEl = document.getElementById('transcript');
+
+  const SILENCE_RMS_THRESHOLD = 0.02;
+  const SILENCE_MS_TO_FLUSH = 700;
+
+  let ws = null;
+  let audioContext = null;
+  let analyser = null;
+  let sourceNode = null;
+  let mediaStream = null;
+  let recorder = null;
+  let chunks = [];
+  let recording = false;
+  let hasSpeechInSegment = false;
+  let silenceStartedAt = null;
+  let vadTimer = null;
+
+  function appendTranscript(text) {
+    const p = document.createElement('p');
+    p.textContent = text;
+    if (text.startsWith('[聽不清楚]')) p.className = 'low-confidence';
+    transcriptEl.appendChild(p);
+    transcriptEl.scrollTop = transcriptEl.scrollHeight;
+  }
+
+  function connectSocket() {
+    const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+    ws = new WebSocket(`${proto}://${location.host}/stream`);
+    ws.binaryType = 'arraybuffer';
+    ws.onmessage = (evt) => {
+      const data = JSON.parse(evt.data);
+      appendTranscript(data.text);
+    };
+  }
+
+  function startSegmentRecorder() {
+    recorder = new MediaRecorder(mediaStream, { mimeType: 'audio/webm;codecs=opus' });
+    chunks = [];
+    recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
+    recorder.onstop = () => {
+      const blob = new Blob(chunks, { type: 'audio/webm' });
+      blob.arrayBuffer().then((buf) => {
+        if (ws && ws.readyState === WebSocket.OPEN) ws.send(buf);
+      });
+    };
+    recorder.start();
+    hasSpeechInSegment = false;
+    silenceStartedAt = null;
+  }
+
+  function flushSegmentIfAny() {
+    if (recorder && recorder.state === 'recording' && hasSpeechInSegment) {
+      recorder.stop();
+    } else if (recorder && recorder.state === 'recording') {
+      recorder.stop();
+    }
+    if (recording) startSegmentRecorder();
+  }
+
+  function rms(data) {
+    let sum = 0;
+    for (let i = 0; i < data.length; i++) {
+      const v = (data[i] - 128) / 128;
+      sum += v * v;
+    }
+    return Math.sqrt(sum / data.length);
+  }
+
+  function vadLoop() {
+    const data = new Uint8Array(analyser.fftSize);
+    analyser.getByteTimeDomainData(data);
+    const level = rms(data);
+    const now = performance.now();
+
+    if (level > SILENCE_RMS_THRESHOLD) {
+      hasSpeechInSegment = true;
+      silenceStartedAt = null;
+    } else if (hasSpeechInSegment) {
+      if (silenceStartedAt === null) silenceStartedAt = now;
+      if (now - silenceStartedAt > SILENCE_MS_TO_FLUSH) {
+        flushSegmentIfAny();
+      }
+    }
+    vadTimer = requestAnimationFrame(vadLoop);
+  }
+
+  async function start() {
+    try {
+      mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch (err) {
+      permNotice.style.display = 'block';
+      statusEl.textContent = '麥克風權限被拒絕';
+      return;
+    }
+    permNotice.style.display = 'none';
+
+    audioContext = new AudioContext();
+    sourceNode = audioContext.createMediaStreamSource(mediaStream);
+    analyser = audioContext.createAnalyser();
+    analyser.fftSize = 2048;
+    sourceNode.connect(analyser);
+
+    connectSocket();
+    recording = true;
+    startSegmentRecorder();
+    vadLoop();
+
+    toggleBtn.textContent = '停止收音';
+    toggleBtn.classList.add('recording');
+    statusEl.textContent = '收音中，講話同時會即時顯示文字';
+  }
+
+  function stop() {
+    recording = false;
+    if (vadTimer) cancelAnimationFrame(vadTimer);
+    if (recorder && recorder.state === 'recording') recorder.stop();
+    if (mediaStream) mediaStream.getTracks().forEach((t) => t.stop());
+    if (ws) ws.close();
+    if (audioContext) audioContext.close();
+
+    toggleBtn.textContent = '開始收音';
+    toggleBtn.classList.remove('recording');
+    statusEl.textContent = '已停止';
+  }
+
+  toggleBtn.addEventListener('click', () => {
+    if (recording) stop(); else start();
+  });
+})();
+</script>
+</body>
+</html>

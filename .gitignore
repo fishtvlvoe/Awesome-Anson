@@ -12,3 +12,6 @@ presentations/*/
 .spectra/
 openspec/.vector-search.db*
 .wrangler/
+tools/realtime-voice/venv/
+tools/realtime-voice/output/
+__pycache__/
