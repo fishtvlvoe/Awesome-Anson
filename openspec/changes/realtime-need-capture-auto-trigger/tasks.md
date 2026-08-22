@@ -24,7 +24,7 @@
 
 ## 5. 監看操作說明與生命週期
 
-- [ ] 5.1 在 `tools/realtime-voice/README.md` 補充說明：業務員開始收音後，若要啟用即時分析，需要另外請 agent session 執行監看指令（記錄 1.1/1.2 腳本的實際呼叫方式），並說明「Automatic monitoring stops when recording stops」規格——監看跟著收音 session 結束，不留背景 process；驗證：README 內容包含實際可複製貼上的監看啟動指令，且指令能對照 tasks 1.1 的腳本路徑
+- [x] 5.1 在 `tools/realtime-voice/README.md` 補充說明：業務員開始收音後，若要啟用即時分析，需要另外請 agent session 執行監看指令（記錄 1.1/1.2 腳本的實際呼叫方式），並說明「Automatic monitoring stops when recording stops」規格——監看跟著收音 session 結束，不留背景 process；驗證：README 內容包含實際可複製貼上的監看啟動指令，且指令能對照 tasks 1.1 的腳本路徑
 
 ## 6. Automatic trigger during live conversation, driven by an active agent session（整合驗收）
 

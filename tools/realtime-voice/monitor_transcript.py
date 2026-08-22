@@ -229,6 +229,16 @@ def write_analysis_result(
     return output_path
 
 
+def process_is_alive(pid: int) -> bool:
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    return True
+
+
 def report_trigger(
     transcript_path: Path,
     pending_entries: list[TranscriptEntry],
@@ -290,6 +300,7 @@ def monitor(
     agent_command: str,
     project_root: Path,
     agent_timeout: float,
+    server_pid: int | None,
 ) -> None:
     """Poll the transcript until a pause follows newly appended content."""
     cursor = len(read_entries(transcript_path))
@@ -302,6 +313,9 @@ def monitor(
 
     try:
         while True:
+            if server_pid is not None and not process_is_alive(server_pid):
+                print(f"[monitor] server pid {server_pid} exited; stopping", flush=True)
+                return
             entries = read_entries(transcript_path)
             if len(entries) < cursor:
                 # The recording session was reset/truncated.  Start at its new
@@ -376,6 +390,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="maximum documented continuous-content window (default: 60)",
     )
     parser.add_argument(
+        "--server-pid",
+        type=int,
+        help="stop monitoring automatically when this recording server process exits",
+    )
+    parser.add_argument(
         "--agent-command",
         default="claude",
         help="external agent command; it receives the prompt on stdin (default: claude)",
@@ -414,6 +433,9 @@ def main() -> int:
     if args.agent_timeout <= 0:
         print("--agent-timeout must be greater than 0", file=sys.stderr)
         return 2
+    if args.server_pid is not None and args.server_pid <= 0:
+        print("--server-pid must be greater than 0", file=sys.stderr)
+        return 2
     project_root = Path(__file__).resolve().parents[2]
     if args.once:
         entries = read_entries(args.transcript)
@@ -438,6 +460,7 @@ def main() -> int:
         args.agent_command,
         project_root,
         args.agent_timeout,
+        args.server_pid,
     )
     return 0
 
