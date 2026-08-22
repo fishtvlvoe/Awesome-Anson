@@ -10,10 +10,12 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import os
 import re
 import shlex
 import sys
 import subprocess
+import tempfile
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -195,6 +197,38 @@ def load_skill_text(project_root: Path) -> str:
         return ""
 
 
+def analysis_output_path(transcript_path: Path) -> Path:
+    return transcript_path.with_suffix(".analysis.json")
+
+
+def write_analysis_result(
+    transcript_path: Path,
+    result: dict,
+    analyzed_through_ts: str,
+) -> Path:
+    """Write a complete analysis atomically so polling never sees partial JSON."""
+    output_path = analysis_output_path(transcript_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        **result,
+        "analyzed_through_ts": analyzed_through_ts,
+        "generated_at": now_utc().isoformat(timespec="seconds"),
+    }
+    with tempfile.NamedTemporaryFile(
+        mode="w",
+        encoding="utf-8",
+        dir=output_path.parent,
+        prefix=f".{output_path.name}.",
+        suffix=".tmp",
+        delete=False,
+    ) as temporary:
+        temporary.write(json.dumps(payload, ensure_ascii=False, indent=2))
+        temporary.write("\n")
+        temporary_path = Path(temporary.name)
+    os.replace(temporary_path, output_path)
+    return output_path
+
+
 def report_trigger(
     transcript_path: Path,
     pending_entries: list[TranscriptEntry],
@@ -228,6 +262,11 @@ def run_trigger_analysis(
     prompt = build_analysis_prompt(pending_entries, load_skill_text(project_root))
     try:
         result = invoke_agent(prompt, agent_command, project_root, agent_timeout)
+        output_path = write_analysis_result(
+            transcript_path,
+            result,
+            pending_entries[-1].timestamp.isoformat(),
+        )
     except (OSError, RuntimeError, ValueError, subprocess.TimeoutExpired) as exc:
         print(f"[analysis_error] transcript={transcript_path} error={exc}", flush=True)
         return None
@@ -235,6 +274,7 @@ def run_trigger_analysis(
         "[analysis] agent=haiku "
         f"client_response_items={len(result['client_response'])} "
         f"decomposition_fields={len(result['decomposition'])} "
+        f"output={output_path} "
         f"transcript={transcript_path}",
         flush=True,
     )
