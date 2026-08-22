@@ -14,6 +14,14 @@ description: "商務提案與報價顧問：將已確認的 PM 資料包轉成�
 - `engagement-quote`（HTML/PDF 產出方式已內建在此 Skill 的流程說明裡，不另外拆一個 `pdf` Skill）
 - `im-human`（原引用 `speak-human-tw`，已改用內容相同、實際存在的 `im-human`）
 
+## 商業判斷資源（庫神知識庫）
+
+評估客戶風險、判斷要不要接、要不要加條款時，可查庫神管理的知識庫（`~/Development/Awesome-Kuson/`）裡 Fish 自己的接案判斷工具（事前驗屍法、客戶分析表）：
+
+```bash
+cd ~/Development/Awesome-Kuson && graphify explain "顧問事前驗屍法"
+```
+
 ## 工作流程
 
 1. 讀取 PM-to-Quote Data Pack、FRD、既有報價單與案件規則。Data Pack 若帶有 `capture_mode`（`realtime`/`post-hoc`）、`decomposition`（`realtime-need-capture` 產出的即時拆解）這兩個擴充欄位，視為附加資訊直接讀取即可，既有報價計算邏輯不因這兩個欄位存在或缺席而改變。
