@@ -21,8 +21,10 @@ description: "專案管理與需求分析師：將客戶資料整理成已確認
 Fish 自己的商業框架與判斷工具（阿金創業大課、顧問小課、事前驗屍法、客戶分析表、SWOT 等）由「庫神」管理在 `~/Development/Awesome-Kuson/`，已用 graphify 建好知識圖。**分析客戶需求、判斷痛點是否真實、評估案件風險時，先查這個知識庫，不要憑空分析：**
 
 ```bash
-cd ~/Development/Awesome-Kuson && graphify query "<跟這個案件相關的判斷問題，例如：怎麼判斷這是真需求還是假需求＞"
+cd ~/Development/Awesome-Kuson && git pull -q && graphify query "<跟這個案件相關的判斷問題，例如：怎麼判斷這是真需求還是假需求＞"
 ```
+
+**每次查詢前先 `git pull`**：庫神會持續往這個 repo 加新資料，先拉最新版再查，避免用到舊內容。
 
 常用查詢：`graphify explain "事前驗屍法"`、`graphify explain "痛點三元素"`、`graphify path "<客戶說的問題>" "<相關框架>"`。查到的框架用來輔助判斷，不是照搬套用；沒查到相關內容就照原本經驗判斷，不用勉強套框架。
 
