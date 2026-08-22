@@ -690,14 +690,24 @@
 
   var sections = document.querySelectorAll('section[id]');
   var links = document.querySelectorAll('.sidebar-nav a');
+  var mainEl = document.querySelector('main');
   function onScroll(){
-    var y = window.scrollY + 90;
+    // main 是實際會捲動的容器（桌面版內部捲動、手機版跟著頁面捲），
+    // getBoundingClientRect().top 本來就是「相對視窗頂端」，不用再扣掉任何東西。
     var current = sections[0] && sections[0].id;
-    sections.forEach(function(sec){ if(sec.offsetTop <= y) current = sec.id; });
+    sections.forEach(function(sec){
+      if (sec.getBoundingClientRect().top <= 90) current = sec.id;
+    });
+    // 已經捲到底：最後一個 section 常常沒有足夠內容把自己頂到 90px 門檻內，
+    // 這裡強制認定「捲到底 = 最後一個章節」，跟版本紀錄的錨點連結才能對得上。
+    if (mainEl.scrollTop + mainEl.clientHeight >= mainEl.scrollHeight - 2) {
+      current = sections[sections.length - 1].id;
+    }
     links.forEach(function(a){
       a.classList.toggle('active', a.getAttribute('href') === '#' + current);
     });
   }
+  mainEl.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 })();
