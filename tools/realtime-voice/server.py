@@ -9,7 +9,6 @@ import datetime
 import json
 import re
 import socket
-import ssl
 import subprocess
 import sys
 import tempfile
@@ -20,7 +19,6 @@ from aiohttp import web
 PORT = 8420
 STATIC_DIR = Path(__file__).parent / "static"
 OUTPUT_DIR = Path(__file__).parent / "output"
-CERT_DIR = Path(__file__).parent / "certs"
 LOW_CONFIDENCE_MARK = "[聽不清楚]"
 SESSION_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]*$")
 
@@ -161,28 +159,6 @@ async def handle_stream(request: web.Request) -> web.WebSocketResponse:
     return ws
 
 
-def get_ssl_context() -> ssl.SSLContext:
-    """手機瀏覽器對非 localhost 的 http 來源會擋麥克風權限，必須用 https。
-    自簽憑證只在本機/區網用，不需要真的憑證機構簽發，第一次啟動自動產生一次，之後重複使用。"""
-    cert_path = CERT_DIR / "cert.pem"
-    key_path = CERT_DIR / "key.pem"
-    if not cert_path.exists() or not key_path.exists():
-        CERT_DIR.mkdir(parents=True, exist_ok=True)
-        subprocess.run(
-            [
-                "openssl", "req", "-x509", "-newkey", "rsa:2048",
-                "-keyout", str(key_path), "-out", str(cert_path),
-                "-days", "365", "-nodes",
-                "-subj", "/CN=realtime-voice-local",
-            ],
-            capture_output=True,
-            check=True,
-        )
-    context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-    context.load_cert_chain(str(cert_path), str(key_path))
-    return context
-
-
 def build_app(model, converter, session_id: str) -> web.Application:
     app = web.Application()
     app["model"] = model
@@ -203,16 +179,15 @@ def main() -> None:
     session_id = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     lan_ip = get_lan_ip()
 
-    ssl_context = get_ssl_context()
-
     print("即時語音接案神啟動完成")
-    print(f"  電腦本機：https://localhost:{PORT}")
-    print(f"  手機（同 Wi-Fi）：https://{lan_ip}:{PORT}（第一次連線瀏覽器會警告憑證不受信任，選「繼續前往」即可，這是自簽憑證，不影響本機/區網使用）")
+    print(f"  電腦本機：http://localhost:{PORT}")
+    print(f"  區網位址（僅供參考，手機瀏覽器不支援）：http://{lan_ip}:{PORT}")
+    print("  手機瀏覽器對非 localhost 的 http 來源會擋麥克風權限，這個服務目前只支援電腦本機收音")
     print(f"  逐字稿輸出：{session_output_path(session_id)}")
     print("  按 Ctrl+C 關閉服務（不會背景常駐）")
 
     app = build_app(model, converter, session_id)
-    web.run_app(app, host="0.0.0.0", port=PORT, ssl_context=ssl_context, print=None)
+    web.run_app(app, host="0.0.0.0", port=PORT, print=None)
 
 
 if __name__ == "__main__":
