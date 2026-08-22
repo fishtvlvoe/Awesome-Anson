@@ -1,0 +1,32 @@
+{
+  "model": "@cf/openai/whisper-large-v3-turbo",
+  "clip_length_sec": 13,
+  "samples": [
+    {
+      "sample": 0,
+      "elapsed_sec": 3.79,
+      "text_preview": "但会议当然更明确 然后吃饭的时候 随着你吃饭的多跟少 快跟慢 分菜或不是分菜 单"
+    },
+    {
+      "sample": 1,
+      "elapsed_sec": 3.1,
+      "text_preview": "各种吃法 也会决定你的互动节奏 怎么互动 举例 比如说你家吃分菜式的 前面一大盘"
+    },
+    {
+      "sample": 2,
+      "elapsed_sec": 3.18,
+      "text_preview": "給誰或後給誰 是不是就會影響你跟別人的關係 會影響你的互動節奏 會暴露出你跟誰的"
+    },
+    {
+      "sample": 3,
+      "elapsed_sec": 1.67,
+      "text_preview": "這個問題 然後成功指標 在會議上面每個開會都會有 那基本上 飯局也有 只是飯局後"
+    },
+    {
+      "sample": 4,
+      "elapsed_sec": 2.31,
+      "text_preview": "關系狀態 就是我們剛剛 這個上面講過了 好的 來 這個 就是不要 千萬不要把飯局"
+    }
+  ],
+  "avg_elapsed_sec": 2.81
+}

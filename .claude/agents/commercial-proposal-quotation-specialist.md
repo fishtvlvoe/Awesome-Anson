@@ -16,7 +16,7 @@ description: "商務提案與報價顧問：將已確認的 PM 資料包轉成�
 
 ## 工作流程
 
-1. 讀取 PM-to-Quote Data Pack、FRD、既有報價單與案件規則。
+1. 讀取 PM-to-Quote Data Pack、FRD、既有報價單與案件規則。Data Pack 若帶有 `capture_mode`（`realtime`/`post-hoc`）、`decomposition`（`realtime-need-capture` 產出的即時拆解）這兩個擴充欄位，視為附加資訊直接讀取即可，既有報價計算邏輯不因這兩個欄位存在或缺席而改變。
 2. 先檢查資料是否完整；缺少會影響價格或承諾的欄位時，一次只問一題。
 3. 將項目拆成必要、非必要、加購／選配，分別列小計。
 4. 提出建議價格分配，但正式價格必須等待使用者確認。

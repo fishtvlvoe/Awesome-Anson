@@ -1,20 +1,25 @@
 schema: spec-driven
 
-# Project context (optional)
-# This is shown to AI when creating artifacts.
-# Add your tech stack, conventions, style guides, domain knowledge, etc.
-# Example:
-#   context: |
-#     Tech stack: TypeScript, React, Node.js
-#     We use conventional commits
-#     Domain: e-commerce platform
+context: |
+  「案神」（Awesome-Anson）：接案分析工具包，不是常駐系統，不部署背景排程。
+  三個核心 Agent 接力：project-manager（需求分析，客戶資料→FRD+PM-to-Quote Data Pack）
+  → commercial-proposal-quotation-specialist（報價，資料包→價格/條款/HTML/PDF報價）
+  → 簡報師（簡報，文案→逐頁結構→Kimi提詞或pptx）。附贈第四個 Agent「開課師」跟接案報價無關。
+  Skill：case-page（已確認提案轉自包含 HTML，明文規定「不部署上網」）、engagement-quote（報價計算引擎）、
+  domain-modeling/grilling/grill-with-docs（訪談思考工具）、pm-discovery-upgrade（前期調查）、
+  kimi-slide/ppt-master（簡報產出兩條路）、im-human（語態控制/去AI味，通用工具非接案專屬）。
+  技術棧：自包含靜態 HTML（CSS inline、無外部 CDN 依賴）、Cloudflare Pages/Workers/D1（新功能才需要後端時）。
+  屬於「神系列」家族第一棒，往下接蓋神（Spectra 開發）、報價師（動態定價，獨立專案，案神下指令才動）。
+  溝通規則：任何要 Fish 決定的問題一次只問一題；案件資料要讀原始檔案全文，不能只信對話摘要。
+  新增能力（realtime-demo-generation）：realtime-need-capture（對談中即時語音轉文字＋即時拆解需求，
+  五分類或服務型 4x4=12格，每項標三態已確認/待確認/我猜的）、demo-generation-deploy（把已確認需求生成
+  Demo 並部署到 Cloudflare Pages+D1，含第三方服務即時示意、缺素材自動補位，跟 case-page 職責切開，
+  case-page 仍不部署上網）。案神到報價師的交接格式定義在 contracts/ANSON-TO-QUOTEMASTER-COMMAND.md。
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always include a "Non-goals" section
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+rules:
+  proposal:
+    - 用繁體中文撰寫（spec.md 本身仍用英文 SHALL/MUST 正規語言，這是 spectra 工具的硬性要求）
+    - 新增部署/常駐類功能時，明確標出跟案神現有「不是常駐系統」「case-page 不部署上網」這兩條既有原則的關係：是否衝突、如何切開職責
+    - Impact 段落列出的檔案路徑要用相對於 repo 根目錄的路徑
+  tasks:
+    - 每個任務要有可驗證的完成標準（實際指令、預期輸出），不能只寫「處理好 X」
