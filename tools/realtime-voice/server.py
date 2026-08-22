@@ -109,7 +109,13 @@ def append_transcript_line(session_id: str, text: str) -> None:
 
 
 async def handle_index(request: web.Request) -> web.Response:
-    return web.FileResponse(STATIC_DIR / "index.html")
+    html = (STATIC_DIR / "index.html").read_text(encoding="utf-8")
+    html = html.replace("__REALTIME_SESSION_ID__", request.app["session_id"])
+    return web.Response(
+        text=html,
+        content_type="text/html",
+        headers={"Cache-Control": "no-store"},
+    )
 
 
 def analysis_output_path(session_id: str) -> Path | None:

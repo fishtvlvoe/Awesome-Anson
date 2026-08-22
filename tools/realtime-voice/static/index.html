@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="realtime-session-id" content="__REALTIME_SESSION_ID__">
 <title>即時語音接案神</title>
 <style>
   body{font-family:-apple-system,BlinkMacSystemFont,"PingFang TC",sans-serif;max-width:640px;margin:40px auto;padding:0 20px;background:#faf7f2;color:#211c17;}
@@ -14,6 +15,22 @@
   #transcript{margin-top:24px;border:1px solid #e4dccd;border-radius:10px;padding:16px;background:#fff;min-height:120px;}
   #transcript p{margin:6px 0;line-height:1.6;}
   #transcript p.low-confidence{color:#b23b3b;}
+  #analysis-panel{margin-top:24px;border:1px solid #d8c8b4;border-radius:10px;padding:16px;background:#fffaf3;}
+  #analysis-panel h2{font-size:18px;margin:0 0 8px;}
+  #analysis-status{margin:0 0 12px;color:#6b5c4d;font-size:14px;}
+  #analysis-panel section{border-top:1px solid #eadfce;padding:12px 0 0;margin-top:12px;}
+  #analysis-panel h3{font-size:15px;margin:0 0 8px;}
+  #analysis-client-response{margin:0;padding-left:20px;}
+  #analysis-client-response li{margin:4px 0;line-height:1.5;}
+  #analysis-decomposition{display:grid;gap:8px;}
+  .decomposition-row{display:grid;grid-template-columns:90px 1fr auto;gap:8px;align-items:start;font-size:14px;}
+  .decomposition-label{color:#6b5c4d;}
+  .decomposition-value{line-height:1.5;}
+  .state-tag{border-radius:999px;padding:2px 8px;font-size:12px;white-space:nowrap;}
+  .state-confirmed{background:#dcefdc;color:#27632a;}
+  .state-pending{background:#fff0c2;color:#795900;}
+  .state-guessed{background:#e7ddf5;color:#5b3a88;}
+  #analysis-suggestion{margin:0;line-height:1.6;}
 </style>
 </head>
 <body>
@@ -23,12 +40,53 @@
   <div id="permission-notice">需要允許麥克風權限才能開始收音</div>
   <div id="transcript"></div>
 
+  <div id="analysis-panel" aria-live="polite">
+    <h2>即時分析</h2>
+    <p id="analysis-status">目前沒有即時分析（可能沒有 agent session 在監看）</p>
+    <section id="analysis-client-section" hidden>
+      <h3>客戶反應了什麼</h3>
+      <ul id="analysis-client-response"></ul>
+    </section>
+    <section id="analysis-decomposition-section" hidden>
+      <h3>目前拆解狀態</h3>
+      <div id="analysis-decomposition"></div>
+    </section>
+    <section id="analysis-suggestion-section" hidden>
+      <h3>給業務員的下一步建議</h3>
+      <p id="analysis-suggestion"></p>
+    </section>
+  </div>
+
 <script>
 (() => {
   const toggleBtn = document.getElementById('toggle');
   const statusEl = document.getElementById('status');
   const permNotice = document.getElementById('permission-notice');
   const transcriptEl = document.getElementById('transcript');
+  const sessionId = document.querySelector('meta[name="realtime-session-id"]')?.content || '';
+  const analysisStatusEl = document.getElementById('analysis-status');
+  const analysisClientSection = document.getElementById('analysis-client-section');
+  const analysisDecompositionSection = document.getElementById('analysis-decomposition-section');
+  const analysisSuggestionSection = document.getElementById('analysis-suggestion-section');
+  const analysisClientResponseEl = document.getElementById('analysis-client-response');
+  const analysisDecompositionEl = document.getElementById('analysis-decomposition');
+  const analysisSuggestionEl = document.getElementById('analysis-suggestion');
+
+  const ANALYSIS_POLL_INTERVAL_MS = 4000;
+  const DECOMPOSITION_LABELS = {
+    audience: '人群',
+    scenario: '場景',
+    pain_point: '痛點',
+    need: '需求',
+    solution: '解決方案',
+  };
+  const STATE_LABELS = {
+    confirmed: '已確認',
+    pending: '待確認',
+    guessed: '我猜的',
+    'pending-confirmation': '待確認',
+    'assumed-guess': '我猜的',
+  };
 
   const SILENCE_RMS_THRESHOLD = 0.02;
   const SILENCE_MS_TO_FLUSH = 700;
@@ -46,6 +104,85 @@
   let vadTimer = null;
   let stopRequested = false;
   let cleanupTimer = null;
+
+  function showAnalysisStatus(message) {
+    analysisStatusEl.textContent = message;
+    analysisClientSection.hidden = true;
+    analysisDecompositionSection.hidden = true;
+    analysisSuggestionSection.hidden = true;
+  }
+
+  function stateClass(state) {
+    if (state === 'confirmed') return 'state-confirmed';
+    if (state === 'guessed' || state === 'assumed-guess') return 'state-guessed';
+    return 'state-pending';
+  }
+
+  function renderAnalysis(data) {
+    if (!data || data.status === 'not_yet_analyzed') {
+      showAnalysisStatus('目前沒有即時分析（可能沒有 agent session 在監看）');
+      return;
+    }
+    if (data.status === 'analysis_error') {
+      showAnalysisStatus('這次分析結果讀取失敗');
+      return;
+    }
+
+    analysisStatusEl.textContent = data.generated_at
+      ? `分析更新於 ${data.generated_at}`
+      : '分析已更新';
+    analysisClientSection.hidden = false;
+    analysisDecompositionSection.hidden = false;
+    analysisSuggestionSection.hidden = false;
+
+    analysisClientResponseEl.replaceChildren();
+    const clientResponse = Array.isArray(data.client_response) && data.client_response.length
+      ? data.client_response
+      : ['客戶還沒回應，這段都是你自己在講'];
+    clientResponse.forEach((response) => {
+      const item = document.createElement('li');
+      item.textContent = response;
+      analysisClientResponseEl.appendChild(item);
+    });
+
+    analysisDecompositionEl.replaceChildren();
+    Object.entries(data.decomposition || {}).forEach(([field, detail]) => {
+      const row = document.createElement('div');
+      row.className = 'decomposition-row';
+      const label = document.createElement('span');
+      label.className = 'decomposition-label';
+      label.textContent = DECOMPOSITION_LABELS[field] || field;
+      const value = document.createElement('span');
+      value.className = 'decomposition-value';
+      value.textContent = detail?.value || '待確認';
+      const state = document.createElement('span');
+      const stateValue = detail?.state || 'pending';
+      state.className = `state-tag ${stateClass(stateValue)}`;
+      state.textContent = STATE_LABELS[stateValue] || '待確認';
+      row.append(label, value, state);
+      analysisDecompositionEl.appendChild(row);
+    });
+
+    analysisSuggestionEl.textContent = data.suggestion || '目前沒有下一步建議';
+  }
+
+  async function pollAnalysis() {
+    if (!sessionId || sessionId === '__REALTIME_' + 'SESSION_ID__') {
+      showAnalysisStatus('目前沒有即時分析（可能沒有 agent session 在監看）');
+      return;
+    }
+    try {
+      const response = await fetch(`/analysis/${encodeURIComponent(sessionId)}`, {
+        cache: 'no-store',
+      });
+      renderAnalysis(await response.json());
+    } catch (error) {
+      showAnalysisStatus('目前沒有即時分析（可能沒有 agent session 在監看）');
+    }
+  }
+
+  pollAnalysis();
+  setInterval(pollAnalysis, ANALYSIS_POLL_INTERVAL_MS);
 
   function appendTranscript(text) {
     const p = document.createElement('p');
