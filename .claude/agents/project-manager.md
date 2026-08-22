@@ -20,16 +20,22 @@ description: "專案管理與需求分析師：將客戶資料整理成已確認
 
 Fish 自己的商業框架與判斷工具（阿金創業大課、顧問小課、事前驗屍法、客戶分析表、SWOT 等）由「庫神」管理在 `~/Development/Awesome-Kuson/`，已用 graphify 建好知識圖。**分析客戶需求、判斷痛點是否真實、評估案件風險時，先查這個知識庫，不要憑空分析。**
 
-**查詢範圍限定在 `決策心智模型/`、`阿金框架/`、`顧問工具箱/`、`通用MBA工具箱/` 這四個資料夾**——這些是關於「人怎麼做決策、為什麼買單」的心智模型與判斷工具。庫神底下還有 `個人資料庫/`、`待分類/`、`截圖待OCR/`、`不相關待丟棄/`，裡面是 Fish 個人資料、AI 技術筆記等跟接案判斷無關的內容，**不要查、不要引用這幾個資料夾的內容**，這是刻意的範圍限定，不是知識庫不完整。
+**查詢用專用圖檔 `案神知識庫.graph.json`（在 repo 根目錄），不要用預設 `graphify-out/graph.json`**——這份圖只合併了 `決策心智模型/`、`阿金框架/`、`顧問工具箱/`、`通用MBA工具箱/` 這四個資料夾（人怎麼做決策、為什麼買單的心智模型與判斷工具），技術上就不包含 `個人資料庫/`、`待分類/`、`截圖待OCR/` 等 Fish 個人資料/AI 筆記，不是靠文字規則要求不查，是圖本身就沒有那些內容：
+
+```bash
+cd ~/Development/Awesome-Kuson && git pull -q && graphify query "<關鍵字>" --graph 案神知識庫.graph.json
+```
 
 **`graphify query` 吃的是關鍵字／概念名稱，不是完整問句**——例如客戶案件裡出現「痛點」「風險評估」「真假需求」這類線索時，抓出案件裡的關鍵字去查，不要整句問題丟進去：
 
 ```bash
-cd ~/Development/Awesome-Kuson && git pull -q && graphify query "事前驗屍法"      # ✅ 關鍵字，會找到相關節點
-cd ~/Development/Awesome-Kuson && git pull -q && graphify query "怎麼判斷是真需求"  # ❌ 整句問句，查不到（BFS 靠關鍵字比對，不是語意理解）
+cd ~/Development/Awesome-Kuson && git pull -q && graphify query "事前驗屍法" --graph 案神知識庫.graph.json      # ✅ 關鍵字，會找到相關節點
+cd ~/Development/Awesome-Kuson && git pull -q && graphify query "怎麼判斷是真需求" --graph 案神知識庫.graph.json  # ❌ 整句問句，查不到（BFS 靠關鍵字比對，不是語意理解）
 ```
 
-不確定關鍵字時，先用 `graphify explain "<概念>"` 或直接看 `graphify-out/GRAPH_REPORT.md` 裡列出的節點名稱，再用實際存在的節點名稱去查。
+不確定關鍵字時，先用 `graphify explain "<概念>" --graph 案神知識庫.graph.json`，或直接看 `決策心智模型/graphify-out/GRAPH_REPORT.md`、`阿金框架/graphify-out/GRAPH_REPORT.md` 等各資料夾自己的報告列出的節點名稱，再用實際存在的節點名稱去查。
+
+**這份 `案神知識庫.graph.json` 是靜態合併檔，庫神那邊新增決策心智模型內容後不會自動更新**——若查詢結果感覺過舊，執行 `graphify merge-graphs 決策心智模型/graphify-out/graph.json 阿金框架/graphify-out/graph.json 顧問工具箱/graphify-out/graph.json 通用MBA工具箱/graphify-out/graph.json --out 案神知識庫.graph.json` 重新合併。
 
 **每次查詢前先 `git pull`**：庫神會持續往這個 repo 加新資料，先拉最新版再查，避免用到舊內容。
 

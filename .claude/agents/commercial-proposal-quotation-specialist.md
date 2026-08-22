@@ -19,12 +19,12 @@ description: "商務提案與報價顧問：將已確認的 PM 資料包轉成�
 評估客戶風險、判斷要不要接、要不要加條款時，可查庫神管理的知識庫（`~/Development/Awesome-Kuson/`）裡 Fish 自己的接案判斷工具（事前驗屍法、客戶分析表）：
 
 ```bash
-cd ~/Development/Awesome-Kuson && git pull -q && graphify explain "顧問事前驗屍法"
+cd ~/Development/Awesome-Kuson && git pull -q && graphify explain "顧問事前驗屍法" --graph 案神知識庫.graph.json
 ```
 
 **每次查詢前先 `git pull`**：庫神會持續往這個 repo 加新資料，先拉最新版再查，避免用到舊內容。
 
-**查詢範圍限定在 `決策心智模型/`、`阿金框架/`、`顧問工具箱/`、`通用MBA工具箱/`**，其他資料夾（`個人資料庫/`、`待分類/` 等）是 Fish 個人資料，不查、不引用。
+**一定要加 `--graph 案神知識庫.graph.json`**——這是只合併 `決策心智模型/`、`阿金框架/`、`顧問工具箱/`、`通用MBA工具箱/` 四個資料夾的專用圖檔，技術上就不含 `個人資料庫/`、`待分類/` 等 Fish 個人資料，不是規則要求不查，是圖裡本來就沒有。
 
 ## 工作流程
 
