@@ -8,7 +8,7 @@
 
 - [x] 2.1 定義觸發後的分析呼叫格式：監看腳本觸發時，把「上次分析後新增的逐字稿內容」整理成給子代理的輸入，套用 `.claude/skills/realtime-need-capture/SKILL.md` 既有「即時回應」規格（客戶反應／拆解／建議），實作「Analysis performed by a lightweight agent, not a dedicated local model」規格；驗證：用今天實測的逐字稿內容（`tools/realtime-voice/output/20260822-185501.md`）跑一次，人工核對子代理回覆內容符合三段式規格，且過程沒有安裝任何額外模型或推論元件
 - [x] 2.2 把子代理輸出寫成 `tools/realtime-voice/output/<session-id>.analysis.json`，格式對應 design.md 定義的欄位（`client_response`／`decomposition`／`suggestion`／`analyzed_through_ts`／`generated_at`）；驗證：檢查產出的 JSON 檔案可以被 `json.load` 正確解析，欄位齊全
-- [ ] 2.3 實作「No active agent session monitoring」情境：沒有監看腳本在跑時，不產生任何分析檔案，逐字稿寫入與收音功能不受影響；驗證：不啟動監看腳本、正常收音一段時間，確認 `output/` 底下沒有出現對應的 `.analysis.json` 檔案，且 `.md` 逐字稿檔案正常寫入
+- [x] 2.3 實作「No active agent session monitoring」情境：沒有監看腳本在跑時，不產生任何分析檔案，逐字稿寫入與收音功能不受影響；驗證：不啟動監看腳本、正常收音一段時間，確認 `output/` 底下沒有出現對應的 `.analysis.json` 檔案，且 `.md` 逐字稿檔案正常寫入
 
 ## 3. 分析結果傳遞：HTTP 輪詢端點，不用 WebSocket 新訊息類型
 
