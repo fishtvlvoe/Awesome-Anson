@@ -19,7 +19,7 @@
 ## 4. 前端顯示
 
 - [x] 4.1 在 `tools/realtime-voice/static/index.html` 新增即時分析顯示區塊，固定間隔（3-5 秒）輪詢 3.1 的端點，實作「Analysis panel shows three fixed sections in order」規格：依序顯示客戶反應／拆解狀態（含三態標記樣式）／下一步建議；驗證：手動開頁面，用瀏覽器開發工具模擬端點回傳測試資料，確認三個區塊依序渲染且內容對應正確
-- [ ] 4.2 實作「Client has not spoken yet」與「Graceful degradation when no monitoring is active」兩種情境的文案顯示：分別對應「客戶還沒回應」與「目前沒有即時分析（可能沒有 agent session 在監看）」；驗證：手動模擬對應端點回傳值，確認畫面顯示對應文案而非空白或報錯畫面
+- [x] 4.2 實作「Client has not spoken yet」與「Graceful degradation when no monitoring is active」兩種情境的文案顯示：分別對應「客戶還沒回應」與「目前沒有即時分析（可能沒有 agent session 在監看）」；驗證：手動模擬對應端點回傳值，確認畫面顯示對應文案而非空白或報錯畫面
 - [ ] 4.3 實作「One suggestion, not a checklist」情境：建議區塊只顯示一句話，不渲染成清單；驗證：模擬多筆待確認欄位的回傳資料，確認畫面只顯示一句建議文字
 
 ## 5. 監看操作說明與生命週期
