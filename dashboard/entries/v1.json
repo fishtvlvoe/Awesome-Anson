@@ -1,0 +1,14 @@
+{
+  "version": "v1",
+  "date": "2026-08-22",
+  "topic": "首次盤點：說明書基準版上線",
+  "summary": "第一次把案神的全部功能盤點成一份說明書：4 個 Agent（project-manager、commercial-proposal-quotation-specialist、簡報師、開課師）、9 個 Skill（case-page、engagement-quote、domain-modeling、grill-with-docs、grilling、pm-discovery-upgrade、kimi-slide、ppt-master、im-human），畫出跟蓋神／報價師（規劃中）／簡報師-case-page 平行輸出的串接關係，以及跟譯神／Key神／待神／剪神同家族但沒有直接資料交接的關係。這份基準之後案神加新 Agent 或新 Skill，就往這份紀錄加一筆新版本。",
+  "added": [
+    "4 個 Agent 完整說明（含使用場景）",
+    "9 個 Skill 完整說明（依功能分四組）",
+    "/client-quote 入口指令與接力流程",
+    "神系列串接關係圖（含規劃中項目）",
+    "版本紀錄機制本身（state.json + entries/*.json）"
+  ],
+  "links": []
+}

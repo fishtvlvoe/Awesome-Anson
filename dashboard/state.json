@@ -1,0 +1,23 @@
+{
+  "project": "anson-manual",
+  "updated_at": "2026-08-22T12:00:00+08:00",
+  "updated_by": "網頁設計師",
+  "current_version": "v1",
+  "one_liner": "案神使用說明書 v1：4 個 Agent、9 個 Skill、跟神系列家族的串接關係，一次盤點清楚。",
+  "changes_in_progress": [],
+  "open_questions": [],
+  "key_files": [
+    "README.md",
+    "CLAUDE.md",
+    ".claude/agents/project-manager.md",
+    ".claude/agents/commercial-proposal-quotation-specialist.md",
+    ".claude/agents/簡報師.md",
+    ".claude/agents/開課師.md",
+    ".claude/skills/*/SKILL.md"
+  ],
+  "connected_systems": [
+    "蓋神 Awesome-Gason（成交後接手，轉 Spectra 規格）",
+    "報價師 quote-master（規劃中，案神下指令才動）",
+    "簡報師／case-page（平行的兩條輸出路徑）"
+  ]
+}

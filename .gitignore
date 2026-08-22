@@ -11,3 +11,4 @@ presentations/*/
 *credentials*
 .spectra/
 openspec/.vector-search.db*
+.wrangler/

@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>案神使用說明書 — Awesome-Anson</title>
+<meta name="description" content="案神（Awesome-Anson）接案分析工具包的使用說明書：4 個 Agent、9 個 Skill、跟神系列家族的串接關係。" />
+<style>
+  :root{
+    color-scheme: light dark;
+    --paper: #faf9f4;
+    --band: #e8f0e4;
+    --band-soft: #f1f6ee;
+    --ink: #202b1e;
+    --ink-soft: #4b5a46;
+    --ink-faint: #6f7d69;
+    --rule: #c3d0bd;
+    --card-bg: #ffffff;
+    --card-bg-dim: #f4f2ea;
+    --card-border: #d8e2d3;
+    --display: #123a34;
+    --stamp-confirm: #7a1a1a;
+    --stamp-pending: #7a4e0a;
+    --stamp-guess: #4c5250;
+    --thread: #a5302f;
+    --thread-dashed: #8a8f86;
+    --link: #123a34;
+    --focus: #123a34;
+    --shadow: rgba(32, 43, 30, 0.12);
+
+    --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    --font-sans: -apple-system, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper: #12160f;
+      --band: #182016;
+      --band-soft: #151b13;
+      --ink: #e7ecdf;
+      --ink-soft: #aab6a2;
+      --ink-faint: #8b9686;
+      --rule: #2c3627;
+      --card-bg: #171d14;
+      --card-bg-dim: #1b2117;
+      --card-border: #2c3627;
+      --display: #7fd9c9;
+      --stamp-confirm: #ff8b8b;
+      --stamp-pending: #e8b968;
+      --stamp-guess: #a9b3a4;
+      --thread: #ff6b6b;
+      --thread-dashed: #6f7a67;
+      --link: #7fd9c9;
+      --focus: #7fd9c9;
+      --shadow: rgba(0, 0, 0, 0.4);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper: #12160f;
+    --band: #182016;
+    --band-soft: #151b13;
+    --ink: #e7ecdf;
+    --ink-soft: #aab6a2;
+    --ink-faint: #8b9686;
+    --rule: #2c3627;
+    --card-bg: #171d14;
+    --card-bg-dim: #1b2117;
+    --card-border: #2c3627;
+    --display: #7fd9c9;
+    --stamp-confirm: #ff8b8b;
+    --stamp-pending: #e8b968;
+    --stamp-guess: #a9b3a4;
+    --thread: #ff6b6b;
+    --thread-dashed: #6f7a67;
+    --link: #7fd9c9;
+    --focus: #7fd9c9;
+    --shadow: rgba(0, 0, 0, 0.4);
+  }
+
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior: auto; }
+    *{ animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  }
+
+  body{
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      var(--band-soft) 0px,
+      var(--band-soft) 28px,
+      var(--paper) 28px,
+      var(--paper) 56px
+    );
+  }
+
+  a{ color: var(--link); text-decoration-thickness: 1.5px; }
+  :focus-visible{
+    outline: 3px solid var(--focus);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  .wrap{ max-width: 1040px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---------- Top folder-tab nav ---------- */
+  .tabs-outer{
+    position: sticky; top: 0; z-index: 40;
+    background: var(--paper);
+    border-bottom: 1px solid var(--rule);
+  }
+  .tabs{
+    max-width: 1040px; margin: 0 auto; padding: 0 16px;
+    display: flex; gap: 2px; overflow-x: auto;
+    scrollbar-width: thin;
+  }
+  .tabs a{
+    flex: none;
+    display: inline-block;
+    padding: 12px 16px 10px;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    letter-spacing: 0.02em;
+    color: var(--ink-soft);
+    text-decoration: none;
+    border-top: 3px solid transparent;
+    white-space: nowrap;
+  }
+  .tabs a:hover, .tabs a:focus-visible{ color: var(--display); }
+  .tabs a.is-active{
+    color: var(--display);
+    border-top-color: var(--display);
+    background: var(--card-bg-dim);
+  }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    padding: 64px 0 40px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .file-tab{
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 3px;
+    padding: 5px 10px;
+    margin-bottom: 22px;
+  }
+  .file-tab .dot{ width: 6px; height: 6px; border-radius: 50%; background: var(--stamp-confirm); }
+  h1{
+    font-family: var(--font-mono);
+    color: var(--display);
+    font-size: clamp(1.8rem, 4.2vw, 2.7rem);
+    line-height: 1.25;
+    margin: 0 0 18px;
+    letter-spacing: -0.01em;
+  }
+  .hero p.lead{
+    font-size: 1.1rem;
+    color: var(--ink-soft);
+    max-width: 640px;
+    margin: 0 0 22px;
+  }
+  .hero .spirit{
+    font-size: 0.98rem;
+    color: var(--ink);
+    max-width: 640px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-left: 4px solid var(--display);
+    padding: 14px 18px;
+    border-radius: 2px;
+  }
+
+  /* ---------- Section shell ---------- */
+  section{ padding: 52px 0; border-bottom: 1px solid var(--rule); }
+  section:last-of-type{ border-bottom: none; }
+  .eyebrow{
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    letter-spacing: 0.14em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    margin: 0 0 8px;
+  }
+  h2{
+    font-family: var(--font-mono);
+    color: var(--display);
+    font-size: clamp(1.35rem, 2.6vw, 1.7rem);
+    margin: 0 0 10px;
+  }
+  .section-intro{ color: var(--ink-soft); max-width: 680px; margin: 0 0 30px; }
+
+  /* ---------- Stamp legend / badges (signature element) ---------- */
+  .stamp{
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    padding: 3px 9px;
+    border-radius: 3px;
+    transform: rotate(-2deg);
+    white-space: nowrap;
+  }
+  .stamp-confirm{ border: 2px double var(--stamp-confirm); color: var(--stamp-confirm); }
+  .stamp-pending{ border: 2px dashed var(--stamp-pending); color: var(--stamp-pending); }
+  .stamp-guess{ border: 1.5px dotted var(--stamp-guess); color: var(--stamp-guess); font-style: italic; }
+
+  .legend{
+    display: flex; flex-wrap: wrap; gap: 14px 22px;
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    padding: 16px 20px; border-radius: 4px; margin-bottom: 34px;
+  }
+  .legend .item{ display: flex; align-items: center; gap: 10px; font-size: 0.88rem; color: var(--ink-soft); }
+
+  /* ---------- Relay diagram (agents) ---------- */
+  .relay{
+    display: flex; flex-wrap: wrap; align-items: stretch; gap: 0;
+    margin-bottom: 8px;
+  }
+  .relay .baton{
+    flex: 1 1 200px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 4px;
+    padding: 16px 18px;
+    position: relative;
+  }
+  .relay .arrow{
+    flex: 0 0 40px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ink-faint);
+    font-family: var(--font-mono);
+  }
+  .relay .baton .num{
+    font-family: var(--font-mono); font-size: 0.75rem; color: var(--ink-faint);
+  }
+  .relay .baton h4{ margin: 4px 0 6px; font-size: 1rem; color: var(--ink); }
+  .relay .baton p{ margin: 0; font-size: 0.88rem; color: var(--ink-soft); }
+
+  /* ---------- Cards grid (agents detail) ---------- */
+  .cards{ display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  @media (max-width: 720px){ .cards{ grid-template-columns: 1fr; } }
+  .card{
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 4px;
+    padding: 22px 24px;
+    position: relative;
+  }
+  .card.aside{ background: var(--card-bg-dim); border-style: dashed; }
+  .card .tag-row{ display:flex; align-items:center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+  .card h3{ margin: 0; font-size: 1.08rem; color: var(--display); font-family: var(--font-mono); }
+  .card .who{ font-family: var(--font-mono); font-size: 0.74rem; color: var(--ink-faint); margin: 0 0 10px; }
+  .card p{ margin: 0 0 10px; color: var(--ink-soft); font-size: 0.94rem; }
+  .card ul{ margin: 8px 0 0; padding-left: 20px; color: var(--ink-soft); font-size: 0.9rem; }
+  .card li{ margin-bottom: 4px; }
+
+  /* ---------- Skill table groups ---------- */
+  .skill-group{ margin-bottom: 28px; }
+  .skill-group h4{
+    font-family: var(--font-mono); font-size: 0.85rem;
+    color: var(--ink-faint); letter-spacing: 0.05em;
+    margin: 0 0 10px; text-transform: uppercase;
+  }
+  .skill-row{
+    display: grid; grid-template-columns: 200px 1fr;
+    gap: 16px;
+    padding: 12px 0;
+    border-top: 1px solid var(--rule);
+    align-items: baseline;
+  }
+  @media (max-width: 640px){ .skill-row{ grid-template-columns: 1fr; gap: 4px; } }
+  .skill-row .name{ font-family: var(--font-mono); font-size: 0.92rem; color: var(--ink); }
+  .skill-row .name small{ display:block; font-size: 0.72rem; color: var(--ink-faint); margin-top: 3px; }
+  .skill-row .desc{ font-size: 0.9rem; color: var(--ink-soft); }
+
+  /* ---------- Terminal / command block ---------- */
+  .terminal{
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 6px;
+    padding: 20px 22px;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    overflow-x: auto;
+    box-shadow: 0 8px 24px var(--shadow);
+  }
+  :root[data-theme="dark"] .terminal, @media (prefers-color-scheme: dark){ .terminal{ background: #050704; } }
+  .terminal .p{ color: var(--display); }
+  .terminal .c{ opacity: 0.65; }
+  .steps{ counter-reset: step; list-style: none; margin: 22px 0 0; padding: 0; }
+  .steps li{
+    counter-increment: step;
+    position: relative;
+    padding: 4px 0 16px 34px;
+    border-left: 2px solid var(--rule);
+    margin-left: 10px;
+    color: var(--ink-soft);
+    font-size: 0.92rem;
+  }
+  .steps li:last-child{ border-left-color: transparent; }
+  .steps li::before{
+    content: counter(step);
+    position: absolute; left: -13px; top: 0;
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--card-bg); border: 1px solid var(--display);
+    color: var(--display); font-family: var(--font-mono); font-size: 0.74rem;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ---------- Network / corkboard diagram ---------- */
+  .board{
+    background: var(--card-bg-dim);
+    border: 1px dashed var(--card-border);
+    border-radius: 6px;
+    padding: 32px 24px 24px;
+  }
+  .board-center{ display:flex; justify-content:center; margin-bottom: 6px; }
+  .pin-card{
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 4px;
+    padding: 14px 18px;
+    text-align: center;
+    box-shadow: 0 3px 10px var(--shadow);
+    max-width: 260px;
+  }
+  .pin-card.main{ border-color: var(--display); border-width: 2px; }
+  .pin-card h5{ margin: 0 0 4px; font-family: var(--font-mono); font-size: 0.96rem; color: var(--display); }
+  .pin-card p{ margin: 0; font-size: 0.82rem; color: var(--ink-soft); }
+  .threads{ display:flex; justify-content:center; }
+  .threads svg{ display:block; width: 100%; max-width: 720px; height: 64px; }
+  .row3{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 34px; }
+  @media (max-width: 720px){ .row3{ grid-template-columns: 1fr; } }
+  .row3 .pin-card{ max-width: none; }
+  .row3 .pin-card .stamp{ margin-top: 8px; }
+
+  .family-note{
+    font-family: var(--font-mono); font-size: 0.76rem; letter-spacing: 0.05em;
+    color: var(--ink-faint); text-align:center; margin: 6px 0 16px;
+  }
+  .row4{ display:grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  @media (max-width: 720px){ .row4{ grid-template-columns: repeat(2, 1fr); } }
+  .row4 .pin-card{ border-style: dotted; padding: 12px 10px; }
+  .row4 .pin-card h5{ font-size: 0.86rem; }
+  .row4 .pin-card p{ font-size: 0.76rem; }
+
+  .callout{
+    margin-top: 24px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-left: 4px solid var(--stamp-guess);
+    border-radius: 2px;
+    padding: 16px 18px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout strong{ color: var(--ink); }
+
+  /* ---------- Version timeline ---------- */
+  .version-head{ display:flex; align-items:center; gap: 14px; flex-wrap: wrap; margin-bottom: 18px; }
+  .version-badge{
+    font-family: var(--font-mono); font-weight: 600; font-size: 1.4rem;
+    color: var(--display); border: 2px solid var(--display);
+    padding: 4px 14px; border-radius: 4px;
+  }
+  #sync-note{ font-family: var(--font-mono); font-size: 0.76rem; color: var(--ink-faint); }
+  .timeline{ list-style:none; margin:0; padding:0; }
+  .timeline li{
+    display: grid; grid-template-columns: 120px 1fr; gap: 18px;
+    padding: 16px 0; border-top: 1px solid var(--rule);
+  }
+  @media (max-width: 640px){ .timeline li{ grid-template-columns: 1fr; gap: 4px; } }
+  .timeline .date{ font-family: var(--font-mono); font-size: 0.85rem; color: var(--ink-faint); }
+  .timeline .topic{ font-weight: 600; margin: 0 0 6px; color: var(--ink); }
+  .timeline .summary{ margin: 0 0 8px; color: var(--ink-soft); font-size: 0.9rem; }
+  .timeline .added{ margin: 0; padding-left: 18px; font-size: 0.85rem; color: var(--ink-soft); }
+
+  footer{ padding: 40px 0 60px; }
+  footer p{ font-size: 0.8rem; color: var(--ink-faint); font-family: var(--font-mono); }
+</style>
+</head>
+<body>
+
+<div class="tabs-outer">
+  <nav class="tabs" aria-label="章節">
+    <a href="#overview">01 · 案神是什麼</a>
+    <a href="#agents">02 · 4 個 Agent</a>
+    <a href="#skills">03 · 9 個 Skill</a>
+    <a href="#entry">04 · 怎麼叫它</a>
+    <a href="#network">05 · 跟誰串接</a>
+    <a href="#versions">06 · 版本紀錄</a>
+  </nav>
+</div>
+
+<header class="hero wrap">
+  <div class="file-tab"><span class="dot"></span>CASE FILE / ANSON / v1</div>
+  <h1>案神在幹什麼：把客戶的逐字稿，變成你敢拿去談判的報價單跟簡報。</h1>
+  <p class="lead">案神（Awesome-Anson）是一組「丟案件資料進去、吐結構化產出出來」的接案分析架構：4 個 Agent 接力處理需求、報價、簡報；9 個 Skill 在背後被這些 Agent 呼叫，或單獨拿來用。</p>
+  <p class="spirit"><strong>它不是常駐系統。</strong>沒有背景排程、沒有狀態機一直在跑——你打指令或點名它才動，不叫它就完全靜止，像精靈一樣呼之即來、揮之即去。</p>
+</header>
+
+<section id="overview" class="wrap">
+  <p class="eyebrow">01 · 讀法說明</p>
+  <h2>這份說明書怎麼標記內容</h2>
+  <p class="section-intro">案神教它的 PM Agent，把每一項需求標成「已確認 / 待確認 / 我猜的」三種狀態。這份說明書用同一套方法標記自己：凡是直接對照原始 <code>.md</code> 檔案寫出來的，蓋「已確認」章；還在規劃、尚未真的存在的，老實蓋「待確認」或「我猜的」章，不裝作它已經是一個現成工具。</p>
+  <div class="legend">
+    <div class="item"><span class="stamp stamp-confirm">已確認</span> 對照原始檔案逐字核對過</div>
+    <div class="item"><span class="stamp stamp-pending">待確認</span> 有明確規劃方向，還沒真正落地</div>
+    <div class="item"><span class="stamp stamp-guess">我猜的</span> 推測或尚未存在，需要 Fish 確認</div>
+  </div>
+
+  <p class="eyebrow">接力賽總覽</p>
+  <div class="relay">
+    <div class="baton">
+      <div class="num">助理 1</div>
+      <h4>project-manager</h4>
+      <p>讀逐字稿、拆需求，每一項標好狀態</p>
+    </div>
+    <div class="arrow">→</div>
+    <div class="baton">
+      <div class="num">助理 2</div>
+      <h4>commercial-proposal-quotation-specialist</h4>
+      <p>算價格、寫條款，先出網頁版</p>
+    </div>
+    <div class="arrow">→</div>
+    <div class="baton">
+      <div class="num">助理 3（平行兩條路）</div>
+      <h4>簡報師 ／ case-page</h4>
+      <p>做成簡報，或做成一份能直接開的網頁</p>
+    </div>
+  </div>
+  <p class="section-intro" style="margin-top:18px;">每一棒都停下來等你點頭才往下走，不會自己偷跑——三個助理各做各的，互不知道對方在忙什麼，只認「上一棒交過來、你已經點頭確認過」的東西。</p>
+</section>
+
+<section id="agents" class="wrap">
+  <p class="eyebrow">02 · Agent</p>
+  <h2>4 個 Agent：各做各的，互不知道對方在忙什麼</h2>
+  <p class="section-intro">「Agent」是一個有固定角色、固定做事規則的身分，你點名它，它才用那個角色的方式做事。</p>
+  <div class="cards">
+
+    <div class="card">
+      <div class="tag-row"><h3>project-manager</h3><span class="stamp stamp-confirm">已確認</span></div>
+      <p class="who">中文角色：專案管理與需求分析師</p>
+      <p>把客戶逐字稿、會議記錄整理成「已確認的需求」跟一份可交接的 PM 資料包。它不自行承諾價格，也不把自己的推測寫成客戶已經決定的事。</p>
+      <ul>
+        <li>每一項需求都標「已確認 / 待確認 / 我猜的」</li>
+        <li>交出去的東西有固定長相：<code>PM-TO-QUOTE-DATA-PACK.md</code></li>
+        <li>需要多輪訪談時，會先跑 <code>pm-discovery-upgrade</code> 這個 Skill</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="tag-row"><h3>commercial-proposal-quotation-specialist</h3><span class="stamp stamp-confirm">已確認</span></div>
+      <p class="who">中文角色：商務提案與報價顧問</p>
+      <p>把 PM 資料包算成價格、寫成條款，變成客戶看得懂、金額可重算、責任邊界清楚的提案。先出網頁版給客戶看，客戶點頭才轉成正式 PDF。</p>
+      <ul>
+        <li>背後真正在做計算的是 <code>engagement-quote</code> 這個 Skill</li>
+        <li>轉 PDF 前一定先給你看過網頁版</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="tag-row"><h3>簡報師</h3><span class="stamp stamp-confirm">已確認</span></div>
+      <p class="who">Presentation Manager Agent</p>
+      <p>把簡報想法、完整文案、報價單整理成可確認的逐頁結構。大綱確認後，你選一條路：Kimi 網頁提詞，或本機 <code>ppt-master</code> 做出正式 .pptx 檔。簡報師本身不會自動送出、也不會自己生出 .pptx 檔。</p>
+      <ul>
+        <li>Kimi 路徑用 <code>kimi-slide</code> 產生提詞，你自己貼去 Kimi 網站</li>
+        <li>本機路徑產出交接包，給 <code>ppt-master</code> 接手做檔案</li>
+      </ul>
+    </div>
+
+    <div class="card aside">
+      <div class="tag-row"><h3>開課師</h3><span class="stamp stamp-confirm">已確認</span></div>
+      <p class="who">Course Builder Agent · 旁支，跟接案報價無關</p>
+      <p>拿主題、素材跟講師經驗，走完六階段開課流程，交付課程綱要、簡報中繼稿、簡報輸出跟學員 PDF 講義。算附贈功能，不影響上面三個接案助理的流程，也不會被 <code>/client-quote</code> 呼叫到。</p>
+    </div>
+
+  </div>
+</section>
+
+<section id="skills" class="wrap">
+  <p class="eyebrow">03 · Skill</p>
+  <h2>9 個 Skill：工具函式，不是角色</h2>
+  <p class="section-intro">「Skill」是一包寫好的做事技巧或模板，不會自己判斷、不會自己問問題，被 Agent 呼叫或你自己單獨叫都可以。</p>
+
+  <div class="skill-group">
+    <h4>訪談與思考工具</h4>
+    <div class="skill-row">
+      <div class="name">pm-discovery-upgrade<small>project-manager 用</small></div>
+      <div class="desc">PM Agent 分析需求前，先做一輪一題一題的前期調查，產出可交給報價流程的確認資料包。</div>
+    </div>
+    <div class="skill-row">
+      <div class="name">grilling<small>通用討論工具</small></div>
+      <div class="desc">一題一題逼問使用者，直到對計畫、決策或想法有共同理解，把決策拆成一棵「決策樹」。</div>
+    </div>
+    <div class="skill-row">
+      <div class="name">grill-with-docs<small>通用討論工具</small></div>
+      <div class="desc">帶著既有文件跑一場 grilling 訪談，邊問邊順手產出 ADR 跟術語表。</div>
+    </div>
+    <div class="skill-row">
+      <div class="name">domain-modeling<small>通用思考工具</small></div>
+      <div class="desc">把一個專案的業務領域拆解、鎖定用詞，維護 CONTEXT.md 跟 ADR 記錄。</div>
+    </div>
+  </div>
+
+  <div class="skill-group">
+    <h4>生成與計算引擎</h4>
+    <div class="skill-row">
+      <div class="name">engagement-quote<small>報價顧問背後的引擎</small></div>
+      <div class="desc">把已確認的 PM/FRD 需求轉成可核對的接案報價資料包，跟 HTML／PDF 報價單。這是報價顧問實際在用來算價格的引擎，不是另一個獨立功能。</div>
+    </div>
+    <div class="skill-row">
+      <div class="name">case-page<small>跟簡報師平行的輸出路徑</small></div>
+      <div class="desc">把已確認的提案內容轉成一份自包含 HTML 頁面，不透過任何外部服務或帳號，開瀏覽器就能看。只負責「生成」，不部署上網、不管帳號、不設密碼或到期時間——這些是呼叫方自己決定的事。</div>
+    </div>
+  </div>
+
+  <div class="skill-group">
+    <h4>簡報產出（簡報師背後的兩條路）</h4>
+    <div class="skill-row">
+      <div class="name">kimi-slide<small>簡報師的 Kimi 路徑</small></div>
+      <div class="desc">把素材或想法收斂成中繼 md，依 Kimi PPT 官方建議格式產出提詞文字。只產出提詞，不呼叫 Kimi API，不自動送出。</div>
+    </div>
+    <div class="skill-row">
+      <div class="name">ppt-master<small>簡報師的本機路徑</small></div>
+      <div class="desc">把交接包做成真正可編輯的 .pptx 檔，還能重建版面、管理品牌/風格/版型工作區。Python 工具，第一次用要先 <code>pip install -r requirements.txt</code>。</div>
+    </div>
+  </div>
+
+  <div class="skill-group">
+    <h4>通用工具（不是接案專屬）</h4>
+    <div class="skill-row">
+      <div class="name">im-human<small>語態控制／去 AI 味</small></div>
+      <div class="desc">把 AI 味的文字改成人話，兩種模式：語態模式讓 Claude 自己說話變自然，編輯模式改寫貼文、Email、文案。只支援台灣繁中跟英文，不做翻譯或事實查核。</div>
+    </div>
+  </div>
+</section>
+
+<section id="entry" class="wrap">
+  <p class="eyebrow">04 · 入口指令</p>
+  <h2>怎麼叫它</h2>
+  <p class="section-intro">整案分析到報價一條龍走完，打這一行：</p>
+  <div class="terminal"><span class="p">$</span> /client-quote &lt;案件資料夾或逐字稿路徑&gt; <span class="c"># 換成你的檔案路徑</span></div>
+  <ol class="steps">
+    <li>串起 project-manager → commercial-proposal-quotation-specialist → 簡報師 三個角色接力</li>
+    <li>案子複雜會先多問幾輪（這步驟叫 <code>grill-with-docs</code>），一題一題問，答完才問下一題</li>
+    <li>需求整理完先給你看摘要，你說「對」才進報價</li>
+    <li>報價表跟網頁版你都看過、點頭，才轉成正式 PDF</li>
+    <li>報價確認完，中文跟它說「幫我做成簡報」，它自己知道叫簡報師，不用背指令</li>
+  </ol>
+  <p class="section-intro" style="margin-top:22px;">只想單獨叫某一位助理、不走整條流程：沒有現成斜線指令，用 Agent 工具直接點名，例如「這次麻煩用簡報師的身分幫我」。</p>
+</section>
+
+<section id="network" class="wrap">
+  <p class="eyebrow">05 · 串接關係</p>
+  <h2>案神跟誰串接</h2>
+  <p class="section-intro">案神是「神系列」家族接力鏈的第一棒。客戶點頭確認提案之後，資料真的會往下傳的只有這幾條線；其餘家族成員只是同一個系列，沒有直接資料交接。</p>
+
+  <div class="board">
+    <div class="board-center">
+      <div class="pin-card main">
+        <h5>📋 案神 Awesome-Anson</h5>
+        <p>接案分析、拆需求、算報價</p>
+      </div>
+    </div>
+    <div class="threads" aria-hidden="true">
+      <svg viewBox="0 0 720 64" preserveAspectRatio="none">
+        <line x1="360" y1="0" x2="120" y2="64" stroke="var(--thread)" stroke-width="2" />
+        <line x1="360" y1="0" x2="360" y2="64" stroke="var(--thread)" stroke-width="2" />
+        <line x1="360" y1="0" x2="600" y2="64" stroke="var(--thread-dashed)" stroke-width="2" stroke-dasharray="6 6" />
+      </svg>
+    </div>
+    <div class="row3">
+      <div class="pin-card">
+        <h5>簡報師 ／ case-page</h5>
+        <p>客戶點頭確認提案後，平行兩條輸出：做成簡報，或做成網頁草稿</p>
+        <span class="stamp stamp-confirm">已確認</span>
+      </div>
+      <div class="pin-card">
+        <h5>🏗️ 蓋神 Awesome-Gason</h5>
+        <p>客戶付訂金／成交後，需求轉 Spectra 規格，開始寫程式</p>
+        <span class="stamp stamp-confirm">已確認</span>
+      </div>
+      <div class="pin-card">
+        <h5>報價師 quote-master</h5>
+        <p>案神下指令才動：算 14 天報價倒數、每日漲價曲線、訂金鎖價狀態。不是自己獨立運作的系統。</p>
+        <span class="stamp stamp-pending">規劃中</span>
+      </div>
+    </div>
+
+    <p class="family-note">— 同家族，沒有直接資料交接 —</p>
+    <div class="row4">
+      <div class="pin-card">
+        <h5>🗣️ 譯神</h5>
+        <p>技術名詞翻譯、去 AI 味（案神內建 im-human，功能類似但獨立運作）</p>
+      </div>
+      <div class="pin-card">
+        <h5>⌨️ Key神</h5>
+        <p>第三方平台申請帳號、自動填表</p>
+      </div>
+      <div class="pin-card">
+        <h5>🎬 剪神</h5>
+        <p>影片後製剪輯</p>
+      </div>
+      <div class="pin-card">
+        <h5>📊 待神</h5>
+        <p>這頁本身借用的就是它設計的儀表板模式</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>老實話：</strong>待神設計的儀表板自動化腳本（<code>~/.claude/scripts/dashboard-init-project.sh</code>）目前還不存在——那個 change 是 0/21 task，只有設計圖，沒有做出來。所以這份頁面是<strong>照著待神的設計精神手動做的一份</strong>（<code>index.html</code> 讀 <code>state.json</code> 加 <code>entries/</code> 歷史紀錄），不是呼叫一個現成的自動化工具。
+      <span class="stamp stamp-guess" style="margin-left:6px;">我猜的手動仿造</span>
+    </div>
+  </div>
+</section>
+
+<section id="versions" class="wrap">
+  <p class="eyebrow">06 · 版本紀錄</p>
+  <h2>目前版本／更新紀錄</h2>
+  <p class="section-intro">案神以後加新 Agent 或新 Skill，就往 <code>entries/</code> 加一筆新版本，一眼就能看出「這次多了什麼」。資料存在 <code>state.json</code> 跟 <code>entries/manifest.json</code>／<code>entries/&lt;版本&gt;.json</code>，不是資料庫，AI 可以直接 fetch 這兩份檔案。</p>
+
+  <div class="version-head">
+    <span class="version-badge" id="current-version">v1</span>
+    <span id="sync-note">讀取中…</span>
+  </div>
+
+  <ul class="timeline" id="timeline">
+    <li>
+      <div class="date">2026-08-22</div>
+      <div>
+        <p class="topic">首次盤點：說明書基準版上線</p>
+        <p class="summary">盤點 4 個 Agent、9 個 Skill，畫出跟蓋神／報價師／神系列家族的串接關係，作為之後新增功能的比對基準。</p>
+      </div>
+    </li>
+  </ul>
+</section>
+
+<footer class="wrap">
+  <p>案神 Awesome-Anson · 這份說明書本身也是靜態檔案，沒有後端、沒有資料庫 · 授權明細見 repo 內 THIRD-PARTY-NOTICES.md</p>
+</footer>
+
+<script>
+(function(){
+  function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+
+  fetch('state.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(state){
+    if(!state) return;
+    var v = document.getElementById('current-version');
+    var s = document.getElementById('sync-note');
+    if(state.current_version) v.textContent = state.current_version;
+    if(state.updated_at) s.textContent = '資料同步自 state.json · 最後更新 ' + state.updated_at;
+  }).catch(function(){
+    var s = document.getElementById('sync-note');
+    if(s) s.textContent = '（離線或無法讀取 state.json，顯示的是頁面內建的基準內容）';
+  });
+
+  fetch('entries/manifest.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(manifest){
+    if(!manifest || !manifest.entries || !manifest.entries.length) return;
+    return Promise.all(manifest.entries.map(function(e){
+      return fetch('entries/' + e.file).then(function(r){ return r.ok ? r.json() : null; });
+    })).then(function(full){
+      var list = document.getElementById('timeline');
+      list.innerHTML = '';
+      full.filter(Boolean).reverse().forEach(function(entry){
+        var li = document.createElement('li');
+        var added = (entry.added || []).map(function(a){ return '<li>' + esc(a) + '</li>'; }).join('');
+        li.innerHTML =
+          '<div class="date">' + esc(entry.date || '') + '</div>' +
+          '<div>' +
+            '<p class="topic">' + esc(entry.topic || '') + '</p>' +
+            '<p class="summary">' + esc(entry.summary || '') + '</p>' +
+            (added ? '<ul class="added">' + added + '</ul>' : '') +
+          '</div>';
+        list.appendChild(li);
+      });
+    });
+  }).catch(function(){ /* 保留頁面內建的基準內容 */ });
+
+  var sections = document.querySelectorAll('section[id]');
+  var links = document.querySelectorAll('.tabs a');
+  function onScroll(){
+    var y = window.scrollY + 90;
+    var current = sections[0] && sections[0].id;
+    sections.forEach(function(sec){ if(sec.offsetTop <= y) current = sec.id; });
+    links.forEach(function(a){
+      a.classList.toggle('is-active', a.getAttribute('href') === '#' + current);
+    });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+</script>
+
+</body>
+</html>
