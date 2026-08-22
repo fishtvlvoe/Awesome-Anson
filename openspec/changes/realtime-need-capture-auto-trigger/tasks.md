@@ -14,7 +14,7 @@
 
 - [x] 3.1 在 `tools/realtime-voice/server.py` 新增 `GET /analysis/<session_id>` 端點，實作「Analysis results delivered via a polling HTTP endpoint」規格：讀取對應的 `.analysis.json` 並回傳；驗證：`curl http://localhost:8420/analysis/<有效session-id>` 在檔案存在時回傳其 JSON 內容，狀態碼 200
 - [x] 3.2 實作「No analysis yet」情境：檔案不存在時端點回傳 200 且內容為 `{"status": "not_yet_analyzed"}`；驗證：對一個還沒產生分析結果的 session id 呼叫端點，確認回傳狀態碼 200（不是 404）且內容符合預期結構
-- [ ] 3.3 實作「Malformed analysis file」情境：檔案存在但無法解析時端點回傳 `{"status": "analysis_error"}`；驗證：手動寫一個壞掉的 JSON 到對應路徑，呼叫端點確認回傳這個錯誤狀態而非拋出未處理例外
+- [x] 3.3 實作「Malformed analysis file」情境：檔案存在但無法解析時端點回傳 `{"status": "analysis_error"}`；驗證：手動寫一個壞掉的 JSON 到對應路徑，呼叫端點確認回傳這個錯誤狀態而非拋出未處理例外
 
 ## 4. 前端顯示
 
