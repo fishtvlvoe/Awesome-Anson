@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Monitor transcript timestamps and report pause-trigger events.
 
-This process deliberately watches only the transcript file.  Browser audio/VAD
-logic stays in ``static/index.html`` and is not imported or inspected here.
+This process deliberately watches only the transcript file. Browser audio/VAD
+logic is not imported or inspected here.
 """
 
 from __future__ import annotations
