@@ -24,6 +24,8 @@ cd ~/Development/Awesome-Kuson && git pull -q && graphify explain "顧問事前�
 
 **每次查詢前先 `git pull`**：庫神會持續往這個 repo 加新資料，先拉最新版再查，避免用到舊內容。
 
+**查詢範圍限定在 `決策心智模型/`、`阿金框架/`、`顧問工具箱/`、`通用MBA工具箱/`**，其他資料夾（`個人資料庫/`、`待分類/` 等）是 Fish 個人資料，不查、不引用。
+
 ## 工作流程
 
 1. 讀取 PM-to-Quote Data Pack、FRD、既有報價單與案件規則。Data Pack 若帶有 `capture_mode`（`realtime`/`post-hoc`）、`decomposition`（`realtime-need-capture` 產出的即時拆解）這兩個擴充欄位，視為附加資訊直接讀取即可，既有報價計算邏輯不因這兩個欄位存在或缺席而改變。
