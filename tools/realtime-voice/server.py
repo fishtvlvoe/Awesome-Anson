@@ -6,6 +6,8 @@
 
 import asyncio
 import datetime
+import json
+import re
 import socket
 import ssl
 import subprocess
@@ -20,6 +22,7 @@ STATIC_DIR = Path(__file__).parent / "static"
 OUTPUT_DIR = Path(__file__).parent / "output"
 CERT_DIR = Path(__file__).parent / "certs"
 LOW_CONFIDENCE_MARK = "[聽不清楚]"
+SESSION_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]*$")
 
 
 def load_model():
@@ -109,6 +112,30 @@ async def handle_index(request: web.Request) -> web.Response:
     return web.FileResponse(STATIC_DIR / "index.html")
 
 
+def analysis_output_path(session_id: str) -> Path | None:
+    """Resolve a session analysis file without allowing path traversal."""
+    if not SESSION_ID_RE.fullmatch(session_id):
+        return None
+    return OUTPUT_DIR / f"{session_id}.analysis.json"
+
+
+async def handle_analysis(request: web.Request) -> web.Response:
+    """Return the latest agent analysis, or an explicit non-error status."""
+    output_path = analysis_output_path(request.match_info["session_id"])
+    if output_path is None:
+        return web.json_response({"status": "invalid_session_id"}, status=400)
+    if not output_path.exists():
+        return web.json_response({"status": "not_yet_analyzed"})
+
+    try:
+        payload = json.loads(output_path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return web.json_response({"status": "analysis_error"})
+    if not isinstance(payload, dict):
+        return web.json_response({"status": "analysis_error"})
+    return web.json_response(payload)
+
+
 async def handle_stream(request: web.Request) -> web.WebSocketResponse:
     ws = web.WebSocketResponse(max_msg_size=20 * 1024 * 1024)
     await ws.prepare(request)
@@ -157,6 +184,7 @@ def build_app(model, converter, session_id: str) -> web.Application:
     app["session_id"] = session_id
     app.router.add_get("/", handle_index)
     app.router.add_get("/stream", handle_stream)
+    app.router.add_get("/analysis/{session_id}", handle_analysis)
     app.router.add_static("/static/", STATIC_DIR)
     return app
 
