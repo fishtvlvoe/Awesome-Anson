@@ -35,6 +35,14 @@ cd ~/Development/Awesome-Kuson && git pull -q && graphify query "怎麼判斷是
 
 不確定關鍵字時，先用 `graphify explain "<概念>" --graph 案神知識庫.graph.json`，或直接看 `決策心智模型/graphify-out/GRAPH_REPORT.md`、`阿金框架/graphify-out/GRAPH_REPORT.md` 等各資料夾自己的報告列出的節點名稱，再用實際存在的節點名稱去查。
 
+**`graphify query` 查無結果時，不能就此判定「知識庫沒有相關內容」**——它只是機械式比對節點標題文字，不是語意理解，一個概念換個說法就查不到很正常。這個知識庫目前只有約 80 個檔案（`決策心智模型/`、`阿金框架/`、`顧問工具箱/`、`通用MBA工具箱/` 加總），量小到可以直接用 grep 找候選再自己讀：
+
+```bash
+cd ~/Development/Awesome-Kuson && grep -rli "<概念相關字詞>" 決策心智模型/ 阿金框架/ 顧問工具箱/ 通用MBA工具箱/ --include="*.md"
+```
+
+抓到候選檔名後用 Read 工具讀內容，**用自己的語意理解判斷是否相關、怎麼引用**，不要因為 graphify 沒找到節點就直接說「知識庫沒有」。graphify 只是輔助快篩用的機械工具，真正的判斷交給你自己。
+
 **這份 `案神知識庫.graph.json` 是靜態合併檔，庫神那邊新增決策心智模型內容後不會自動更新**——若查詢結果感覺過舊，執行 `graphify merge-graphs 決策心智模型/graphify-out/graph.json 阿金框架/graphify-out/graph.json 顧問工具箱/graphify-out/graph.json 通用MBA工具箱/graphify-out/graph.json --out 案神知識庫.graph.json` 重新合併。
 
 **每次查詢前先 `git pull`**：庫神會持續往這個 repo 加新資料，先拉最新版再查，避免用到舊內容。
