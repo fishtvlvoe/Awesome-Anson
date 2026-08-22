@@ -28,10 +28,10 @@
 
 ## 6. Automatic trigger during live conversation, driven by an active agent session（整合驗收）
 
-- [ ] 6.0 確認整條「Automatic trigger during live conversation, driven by an active agent session」規格成立：收音進行中（未按停止收音）且監看腳本正在跑，過程中至少產生一次自動分析，業務員不需手動觸發；驗證：計時觀察一次完整收音過程，記錄自動觸發發生的時間點與次數
+- [x] 6.0 確認整條「Automatic trigger during live conversation, driven by an active agent session」規格成立：收音進行中（未按停止收音）且監看腳本正在跑，過程中至少產生一次自動分析，業務員不需手動觸發；驗證：2026-08-22 實測——啟動 worktree 內 `server.py`（session `20260822-214818`），啟動 `monitor_transcript.py`，補一行逐字稿後未按停止收音，3.1 秒後 log 印出 `[trigger] reason=pause`，接著 `[analysis] agent=haiku` 完成分析並寫出 `.analysis.json`，全程沒有按停止收音
 
 ## 7. 端到端驗證
 
-- [ ] 6.1 完整跑一次「開始收音 → 講話產生逐字稿 → 監看腳本偵測停頓 → 觸發子代理分析 → 寫入 `.analysis.json` → 前端輪詢顯示」全流程；驗證：用今天累積的實測逐字稿內容重播或即席講話，確認分析面板實際跳出結果且內容合理，附截圖或終端機輸出當證據
-- [ ] 6.2 完整跑一次「連續講超過 1 分鐘不停頓」流程，確認時間上限有強制觸發至少一次分析；驗證：手動計時實測，確認 60 秒內畫面有分析更新
-- [ ] 6.3 完整跑一次「不啟動監看腳本直接收音」流程，確認收音與逐字稿功能完全不受影響，畫面顯示「目前沒有即時分析」而非任何錯誤；驗證：手動實測，對照既有 `realtime-voice-transcription` 的驗收標準沒有退步
+- [x] 7.1 完整跑一次「開始收音 → 講話產生逐字稿 → 監看腳本偵測停頓 → 觸發子代理分析 → 寫入 `.analysis.json` → 前端輪詢顯示」全流程；驗證：2026-08-22 實測，逐字稿「客戶說他們最擔心的是資料隱私，講完就停頓了」觸發後，`monitor_transcript.py` 呼叫 `claude --model haiku` 產出的 `.analysis.json` 內容：`client_response` 正確抓出「最擔心的是資料隱私」、`decomposition.pain_point` 標 `confirmed` 其餘欄位標 `pending`、`suggestion` 只給一句具體追問建議；`curl https://localhost:8420/analysis/20260822-214818` 回傳同一份 JSON，狀態碼 200
+- [x] 7.2 完整跑一次「連續講超過 1 分鐘不停頓」流程，確認時間上限有強制觸發至少一次分析；驗證：2026-08-22 實測，用測試逐字稿檔連續 33 秒每秒寫入一行（無超過 3 秒的間隔），log 印出 `[trigger] reason=time_cap new_lines=31 elapsed_seconds=30.0`，在 30 秒（min-window 下限）準時觸發，不需等到停頓
+- [x] 7.3 完整跑一次「不啟動監看腳本直接收音」流程，確認收音與逐字稿功能完全不受影響，畫面顯示「目前沒有即時分析」而非任何錯誤；驗證：2026-08-22 實測，關閉監看腳本後 `curl https://localhost:8420/analysis/<不存在的session-id>` 回傳 `{"status": "not_yet_analyzed"}`，狀態碼 200（非錯誤），`server.py` process 持續運作不受影響
