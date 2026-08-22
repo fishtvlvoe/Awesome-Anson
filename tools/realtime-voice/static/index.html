@@ -44,6 +44,8 @@
   let hasSpeechInSegment = false;
   let silenceStartedAt = null;
   let vadTimer = null;
+  let stopRequested = false;
+  let cleanupTimer = null;
 
   function appendTranscript(text) {
     const p = document.createElement('p');
@@ -60,7 +62,20 @@
     ws.onmessage = (evt) => {
       const data = JSON.parse(evt.data);
       appendTranscript(data.text);
+      // 按停止時最後一段音檔還在等伺服器辨識回應，收到最後這則才真的收尾關連線，
+      // 不然辨識結果來不及送回來就被切斷（這是原本 bug 的根因）
+      if (stopRequested) performCleanup();
     };
+  }
+
+  function performCleanup() {
+    if (cleanupTimer) { clearTimeout(cleanupTimer); cleanupTimer = null; }
+    if (mediaStream) { mediaStream.getTracks().forEach((t) => t.stop()); mediaStream = null; }
+    if (ws) { ws.close(); ws = null; }
+    if (audioContext) { audioContext.close(); audioContext = null; }
+    toggleBtn.textContent = '開始收音';
+    toggleBtn.classList.remove('recording');
+    statusEl.textContent = '已停止';
   }
 
   function startSegmentRecorder() {
@@ -142,15 +157,17 @@
 
   function stop() {
     recording = false;
+    stopRequested = true;
     if (vadTimer) cancelAnimationFrame(vadTimer);
-    if (recorder && recorder.state === 'recording') recorder.stop();
-    if (mediaStream) mediaStream.getTracks().forEach((t) => t.stop());
-    if (ws) ws.close();
-    if (audioContext) audioContext.close();
-
-    toggleBtn.textContent = '開始收音';
-    toggleBtn.classList.remove('recording');
-    statusEl.textContent = '已停止';
+    statusEl.textContent = '收尾中，最後一段辨識結果送回來就結束…';
+    if (recorder && recorder.state === 'recording') {
+      recorder.stop(); // onstop 會把最後一段送給伺服器，等伺服器回應後才 performCleanup()
+    } else {
+      performCleanup();
+      return;
+    }
+    // 安全網：萬一伺服器沒回應（斷線等），5 秒後還是收尾，不讓麥克風卡著不放
+    cleanupTimer = setTimeout(performCleanup, 5000);
   }
 
   toggleBtn.addEventListener('click', () => {
