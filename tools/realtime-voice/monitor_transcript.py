@@ -60,28 +60,42 @@ def now_utc() -> dt.datetime:
     return dt.datetime.now(dt.timezone.utc)
 
 
-def report_pause_trigger(
+def report_trigger(
     transcript_path: Path,
     pending_entries: list[TranscriptEntry],
-    idle_seconds: float,
+    reason: str,
+    idle_seconds: float | None = None,
 ) -> None:
     last_entry = pending_entries[-1]
+    elapsed_seconds = (
+        last_entry.timestamp - pending_entries[0].timestamp
+    ).total_seconds()
+    idle_report = (
+        f" idle_seconds={idle_seconds:.1f}" if idle_seconds is not None else ""
+    )
     print(
-        "[trigger] reason=pause "
-        f"idle_seconds={idle_seconds:.1f} "
+        f"[trigger] reason={reason}{idle_report} "
         f"new_lines={len(pending_entries)} "
+        f"elapsed_seconds={elapsed_seconds:.1f} "
         f"analyzed_through_ts={last_entry.timestamp.isoformat()} "
         f"transcript={transcript_path}",
         flush=True,
     )
 
 
-def monitor(transcript_path: Path, pause_threshold: float, poll_interval: float) -> None:
+def monitor(
+    transcript_path: Path,
+    pause_threshold: float,
+    min_window: float,
+    max_window: float,
+    poll_interval: float,
+) -> None:
     """Poll the transcript until a pause follows newly appended content."""
     cursor = len(read_entries(transcript_path))
     print(
         f"[monitor] watching={transcript_path} "
-        f"pause_threshold={pause_threshold:.1f}s",
+        f"pause_threshold={pause_threshold:.1f}s "
+        f"time_window={min_window:.1f}-{max_window:.1f}s",
         flush=True,
     )
 
@@ -98,9 +112,23 @@ def monitor(transcript_path: Path, pause_threshold: float, poll_interval: float)
                 idle_seconds = (
                     now_utc() - pending_entries[-1].timestamp
                 ).total_seconds()
+                elapsed_seconds = (
+                    pending_entries[-1].timestamp
+                    - pending_entries[0].timestamp
+                ).total_seconds()
                 if idle_seconds > pause_threshold:
-                    report_pause_trigger(
-                        transcript_path, pending_entries, idle_seconds
+                    report_trigger(
+                        transcript_path,
+                        pending_entries,
+                        reason="pause",
+                        idle_seconds=idle_seconds,
+                    )
+                    cursor = len(entries)
+                elif elapsed_seconds >= min_window:
+                    report_trigger(
+                        transcript_path,
+                        pending_entries,
+                        reason="time_cap",
                     )
                     cursor = len(entries)
 
@@ -121,6 +149,18 @@ def build_parser() -> argparse.ArgumentParser:
         help="seconds without a new timestamp before triggering (default: 3)",
     )
     parser.add_argument(
+        "--min-window",
+        type=float,
+        default=30.0,
+        help="minimum continuous-content window before a time-cap trigger (default: 30)",
+    )
+    parser.add_argument(
+        "--max-window",
+        type=float,
+        default=60.0,
+        help="maximum documented continuous-content window (default: 60)",
+    )
+    parser.add_argument(
         "--poll-interval",
         type=float,
         default=0.5,
@@ -137,7 +177,16 @@ def main() -> int:
     if args.poll_interval <= 0:
         print("--poll-interval must be greater than 0", file=sys.stderr)
         return 2
-    monitor(args.transcript, args.pause_threshold, args.poll_interval)
+    if args.min_window <= 0 or args.max_window < args.min_window:
+        print("--max-window must be >= --min-window > 0", file=sys.stderr)
+        return 2
+    monitor(
+        args.transcript,
+        args.pause_threshold,
+        args.min_window,
+        args.max_window,
+        args.poll_interval,
+    )
     return 0
 
 

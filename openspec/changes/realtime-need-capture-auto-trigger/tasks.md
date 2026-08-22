@@ -1,7 +1,7 @@
 ## 1. 觸發判斷：基於逐字稿檔案時間戳，不用音訊 VAD
 
 - [x] 1.1 寫一個監看腳本（bash 或 python，供 Monitor 類工具驅動），持續讀取 `tools/realtime-voice/output/<session-id>.md`，比對最後一行時間戳與目前時間，實作「Dual trigger condition based on transcript timestamps」規格的停頓條件（初值 3 秒無新行視為停頓）；驗證：手動附加一行帶時間戳的測試資料到暫存檔案，等待超過門檻秒數，確認腳本印出觸發事件
-- [ ] 1.2 在同一個腳本實作時間上限條件：累積新增內容（依時間戳計算）達 30-60 秒未觸發過停頓時強制觸發；驗證：模擬連續每秒附加一行、持續 65 秒不間斷，確認腳本在時間窗內印出時間上限觸發事件而不是一直等停頓
+- [x] 1.2 在同一個腳本實作時間上限條件：累積新增內容（依時間戳計算）達 30-60 秒未觸發過停頓時強制觸發；驗證：模擬連續每秒附加一行、持續 65 秒不間斷，確認腳本在時間窗內印出時間上限觸發事件而不是一直等停頓
 - [ ] 1.3 驗證「Trigger detection is independent from the browser's audio VAD」情境：確認這個監看腳本完全不讀取、不修改 `tools/realtime-voice/static/index.html` 既有的 VAD 邏輯或其 700ms 分段門檻；驗證：code review 確認監看腳本與前端程式碼之間沒有共用變數或直接依賴
 
 ## 2. 分析執行者：執行中的 AI coding agent session，不裝獨立模型；用 Haiku 等級子代理即可，不需要高階模型
