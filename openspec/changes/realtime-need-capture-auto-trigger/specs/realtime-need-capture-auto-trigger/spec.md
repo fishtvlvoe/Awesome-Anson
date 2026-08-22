@@ -1,68 +1,73 @@
 ## ADDED Requirements
 
-### Requirement: Automatic trigger during live conversation
+### Requirement: Automatic trigger during live conversation, driven by an active agent session
 
-The system SHALL monitor the growing transcript file produced by `tools/realtime-voice/server.py` while a recording session is active, and SHALL trigger a real-time need-capture analysis without requiring the salesperson to manually stop recording or manually invoke the analysis.
+The system SHALL support automatic real-time need-capture analysis while a recording session is active, driven by an active AI coding agent session that monitors the growing transcript file. The system SHALL NOT require the salesperson to manually stop recording or manually invoke the analysis for this to happen.
 
-#### Scenario: Analysis fires on pause, not on button press
+#### Scenario: Analysis fires while recording is still in progress
 
-- **WHEN** the salesperson is recording a live conversation and has not clicked "停止收音"
-- **THEN** the system SHALL still produce at least one analysis update during the session, triggered automatically by the conditions defined below
+- **WHEN** an agent session is actively monitoring a recording session's transcript file and the salesperson has not clicked "停止收音"
+- **THEN** the system SHALL produce at least one analysis update during the session, triggered automatically by the conditions defined below
 
-### Requirement: Dual trigger condition — pause detection or time cap
+### Requirement: Dual trigger condition based on transcript timestamps
 
-The system SHALL trigger an analysis pass when either of the following conditions is met, whichever occurs first: (a) silence is detected for longer than the pause threshold after new transcript content was appended, or (b) newly appended transcript content has accumulated for between 30 and 60 seconds without a pause-triggered analysis occurring.
+The monitoring logic SHALL trigger an analysis pass when either of the following conditions is met, whichever occurs first: (a) no new transcript line has been appended for longer than the pause threshold since the last new content, or (b) newly appended transcript content has accumulated for between 30 and 60 seconds without a pause-triggered analysis occurring. Both conditions SHALL be evaluated using the timestamps already recorded in the transcript file, not raw audio signal.
 
 #### Scenario: Pause after client speech triggers analysis
 
-- **WHEN** new transcript content is appended and the microphone then registers silence continuously for longer than the configured pause threshold
-- **THEN** the system SHALL trigger one analysis pass using all transcript content appended since the previous analysis
+- **WHEN** new transcript content is appended and no further line is appended for longer than the configured pause threshold
+- **THEN** the monitoring logic SHALL trigger one analysis pass using all transcript content appended since the previous analysis
 
 #### Scenario: Continuous speech without pause still triggers within the time cap
 
-- **WHEN** the salesperson or client speaks continuously for more than 60 seconds without a silence period exceeding the pause threshold
-- **THEN** the system SHALL trigger an analysis pass once the accumulated new content reaches the 30-to-60-second window, without waiting for a pause
+- **WHEN** transcript lines continue to be appended for more than 60 seconds without a gap exceeding the pause threshold
+- **THEN** the monitoring logic SHALL trigger an analysis pass once the accumulated new content reaches the 30-to-60-second window, without waiting for a pause
 
-#### Scenario: Pause threshold is independent from the segment-flush threshold
+#### Scenario: Trigger detection is independent from the browser's audio VAD
 
-- **WHEN** the existing voice-activity detection in `tools/realtime-voice/static/index.html` flushes a recording segment for transcription purposes
-- **THEN** that segment-flush event SHALL NOT be treated as satisfying the analysis pause-trigger condition unless the silence duration also independently exceeds the analysis pause threshold, because the two thresholds serve different purposes and MUST be configured and evaluated separately
+- **WHEN** the monitoring logic evaluates the pause and time-cap conditions
+- **THEN** it SHALL do so using only the transcript file's recorded timestamps, and SHALL NOT depend on or interfere with the existing voice-activity detection in `tools/realtime-voice/static/index.html` that governs how recording segments are flushed for transcription
 
-### Requirement: On-device analysis via Apple Foundation Models Guided Generation
+### Requirement: Analysis performed by a lightweight agent, not a dedicated local model
 
-The system SHALL perform the real-time analysis (client response extraction, decomposition, next-step suggestion) using Apple's on-device Foundation Models framework with Guided Generation (schema-constrained structured output), and SHALL NOT send conversation transcript content to any cloud-based large language model API for this analysis.
+The system SHALL perform each triggered analysis (client response extraction, decomposition, next-step suggestion) using an AI agent invocation — a lightweight/fast-tier agent is sufficient given the task is field extraction against a fixed rule set already defined in the `realtime-need-capture` skill, not open-ended reasoning. The system SHALL NOT install, bundle, or depend on any dedicated local or cloud LLM component (such as an on-device model framework or a separately-run inference server) for this analysis.
 
-#### Scenario: Structured output instead of free-form rewriting
+#### Scenario: No dedicated model dependency
 
-- **WHEN** the system calls the on-device model to analyze a transcript segment
-- **THEN** the call SHALL use a Guided Generation schema that constrains the model's output to the defined decomposition fields, confirmation-state enum, and suggestion field, rather than requesting free-form text that the caller must parse
+- **WHEN** the auto-trigger feature is set up
+- **THEN** it SHALL require no additional model download, no additional inference runtime installation, and no platform-specific on-device AI capability
 
-#### Scenario: On-device model unavailable
+#### Scenario: No active agent session monitoring
 
-- **WHEN** `SystemLanguageModel.default.availability` reports a value other than `available`
-- **THEN** the system SHALL disable the automatic analysis feature for the session, SHALL display a message in the analysis panel stating that on-device analysis is unavailable, and SHALL NOT interrupt or degrade the existing transcription-and-write-to-file functionality
+- **WHEN** no agent session is currently monitoring a given recording session's transcript file
+- **THEN** the system SHALL NOT produce any automatic analysis for that session, and the recording and transcription functionality SHALL continue to work unaffected
 
-#### Scenario: Analysis call fails or times out
+### Requirement: Analysis results delivered via a polling HTTP endpoint
 
-- **WHEN** a triggered analysis call raises an error or does not complete within the call's timeout
-- **THEN** the system SHALL skip that analysis cycle, SHALL mark the analysis panel to indicate the most recent attempt failed and a retry will occur at the next trigger, and SHALL NOT silently show stale results as if they were current
+The system SHALL write each analysis result to a JSON file associated with the recording session, and `tools/realtime-voice/server.py` SHALL expose a read-only HTTP endpoint that returns the current contents of that file for the recording page to poll.
 
-### Requirement: Analysis results delivered over the existing WebSocket connection
+#### Scenario: Endpoint returns current analysis
 
-The system SHALL deliver each analysis result to the recording page over the existing `/stream` WebSocket connection used for transcription, using a distinct message type that the frontend can distinguish from transcript messages.
+- **WHEN** the recording page requests the analysis endpoint for an active session that has at least one analysis result
+- **THEN** the endpoint SHALL return the most recently written analysis JSON
 
-#### Scenario: Frontend renders analysis without a new connection
+#### Scenario: No analysis yet
 
-- **WHEN** the frontend receives a WebSocket message with `type: "analysis"`
-- **THEN** it SHALL render the message's `client_response`, `decomposition`, and `suggestion` fields into a dedicated analysis panel on the same page, without opening any additional network connection
+- **WHEN** the recording page requests the analysis endpoint before any analysis has been produced for that session
+- **THEN** the endpoint SHALL return a successful response indicating no analysis is available yet, rather than an error status
+
+#### Scenario: Malformed analysis file
+
+- **WHEN** the analysis JSON file exists but cannot be parsed
+- **THEN** the endpoint SHALL return a response indicating an analysis error, and the recording page SHALL display that the most recent analysis attempt could not be read, rather than displaying stale or corrupted data as if it were valid
 
 ### Requirement: Analysis panel shows three fixed sections in order
 
-The system SHALL render, for each analysis update, exactly three sections in this order: what the client expressed, the current decomposition state (with confirmation-state tags), and one next-step suggestion for the salesperson.
+The recording page SHALL render, for each analysis update, exactly three sections in this order: what the client expressed, the current decomposition state (with confirmation-state tags), and one next-step suggestion for the salesperson.
 
 #### Scenario: Client has not spoken yet
 
-- **WHEN** the transcript content analyzed in this cycle contains no content attributable to the client (e.g. the salesperson is speaking alone)
+- **WHEN** the transcript content analyzed in this cycle contains no content attributable to the client
 - **THEN** the "what the client expressed" section SHALL explicitly state that the client has not responded yet, rather than being left blank or inventing client statements
 
 #### Scenario: One suggestion, not a checklist
@@ -70,11 +75,20 @@ The system SHALL render, for each analysis update, exactly three sections in thi
 - **WHEN** the decomposition contains more than one field in `pending-confirmation` or `assumed-guess` state
 - **THEN** the suggestion section SHALL contain exactly one recommended next question or action, chosen as the most relevant gap, rather than listing all outstanding gaps as a checklist
 
+### Requirement: Graceful degradation when no monitoring is active
+
+The recording page SHALL clearly indicate when no automatic analysis is available, distinguishing this from an error condition, so the salesperson understands the recording and manual-analysis workflow are unaffected.
+
+#### Scenario: No agent session started monitoring
+
+- **WHEN** the analysis endpoint has never returned a result for the current session
+- **THEN** the recording page SHALL display a message indicating live analysis is not currently active, without implying a malfunction
+
 ### Requirement: Automatic monitoring stops when recording stops
 
-The system SHALL stop the transcript-monitoring and auto-trigger behavior when the recording session ends (the salesperson clicks "停止收音" or the page/service is closed), and SHALL NOT persist any background monitoring process after the session ends.
+Any agent-driven monitoring process for a given recording session SHALL be understood to stop tracking that session once the session ends (the salesperson clicks "停止收音" or the recording service process exits), and the system SHALL NOT require any server-side background process to persist after the recording service exits.
 
-#### Scenario: No residual process after stopping
+#### Scenario: No server-side residual process
 
-- **WHEN** the salesperson clicks "停止收音"
-- **THEN** any in-progress or scheduled analysis polling for that session SHALL be cancelled, and no monitoring process SHALL remain running once the recording service process exits
+- **WHEN** the recording service (`tools/realtime-voice/server.py`) process exits
+- **THEN** no additional server-side process introduced by this capability SHALL remain running, because this capability introduces no persistent server-side process — only a read-only HTTP endpoint on the existing server and an external agent-driven monitoring loop that is independent of the server's lifecycle
