@@ -1,0 +1,348 @@
+<title>即時語音接案神</title>
+<style>
+  :root{
+    --bg:#faf7f2;
+    --surface:#ffffff;
+    --surface-2:#f2ecdf;
+    --ink:#211c17;
+    --ink-soft:#5b5148;
+    --ink-faint:#8a7f70;
+    --line:#e4dccd;
+    --accent:#d97a2b;
+    --accent-soft:#f3ddc0;
+    --accent-ink:#8a4413;
+    --good:#3f7a53;
+    --good-soft:#dfeee3;
+    --risk:#b23b3b;
+    --risk-soft:#f7e2df;
+    --font-display:'Noto Sans TC','PingFang TC','Heiti TC',sans-serif;
+    --font-mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;
+  }
+  :root:not([data-theme="light"]){
+    @media (prefers-color-scheme: dark){
+      --bg:#171410;
+      --surface:#211d18;
+      --surface-2:#2a251e;
+      --ink:#f3ece0;
+      --ink-soft:#b8ab99;
+      --ink-faint:#847a6c;
+      --line:#3a3229;
+      --accent:#e2953f;
+      --accent-soft:#3a2a17;
+      --accent-ink:#f6c98b;
+      --good:#6fbf8b;
+      --good-soft:#213328;
+      --risk:#e2695f;
+      --risk-soft:#3a2420;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#171410;
+    --surface:#211d18;
+    --surface-2:#2a251e;
+    --ink:#f3ece0;
+    --ink-soft:#b8ab99;
+    --ink-faint:#847a6c;
+    --line:#3a3229;
+    --accent:#e2953f;
+    --accent-soft:#3a2a17;
+    --accent-ink:#f6c98b;
+    --good:#6fbf8b;
+    --good-soft:#213328;
+    --risk:#e2695f;
+    --risk-soft:#3a2420;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--font-display);
+    line-height:1.6;
+    max-width:920px;
+    margin:0 auto;
+    padding:56px 24px 96px;
+  }
+  h1,h2,h3{text-wrap:balance; font-family:var(--font-display); font-weight:700;}
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:12px;
+    letter-spacing:.08em;
+    color:var(--accent-ink);
+    text-transform:uppercase;
+    margin:0 0 10px;
+  }
+  h1{font-size:clamp(28px,4vw,38px); margin:0 0 14px; letter-spacing:-.01em;}
+  .lede{font-size:17px; color:var(--ink-soft); max-width:640px; margin:0 0 8px;}
+  .status-line{
+    display:flex; gap:8px; align-items:center;
+    font-family:var(--font-mono); font-size:13px; color:var(--ink-faint);
+    margin-top:28px;
+  }
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--risk);}
+
+  section{margin-top:64px;}
+  h2{font-size:22px; margin:0 0 6px;}
+  .section-sub{color:var(--ink-soft); font-size:15px; margin:0 0 28px; max-width:620px;}
+
+  figure{margin:0;}
+  figcaption{
+    font-size:13px; color:var(--ink-faint); margin-top:12px; max-width:640px;
+  }
+  svg{max-width:100%; height:auto; display:block;}
+  svg text{font-family:var(--font-mono); fill:currentColor;}
+
+  .pipeline-wrap{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:28px 24px 20px;
+  }
+
+  .gap-tag{
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:var(--font-mono); font-size:12px;
+    background:var(--risk-soft); color:var(--risk);
+    padding:4px 10px; border-radius:999px; margin-top:16px;
+  }
+
+  .options{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:16px;
+    margin-top:8px;
+  }
+  .card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:20px 20px 22px;
+    display:flex; flex-direction:column; gap:12px;
+  }
+  .card.recommend{
+    border-color:var(--accent);
+    box-shadow:0 0 0 1px var(--accent) inset;
+  }
+  .card-tag{
+    font-family:var(--font-mono); font-size:11px; letter-spacing:.06em;
+    text-transform:uppercase; color:var(--ink-faint);
+  }
+  .card.recommend .card-tag{color:var(--accent-ink);}
+  .card h3{font-size:17px; margin:0;}
+  .card p{font-size:14px; color:var(--ink-soft); margin:0;}
+  .traits{list-style:none; margin:4px 0 0; padding:0; display:flex; flex-direction:column; gap:7px;}
+  .traits li{
+    display:flex; gap:8px; align-items:baseline;
+    font-size:13.5px; color:var(--ink-soft);
+  }
+  .traits b{color:var(--ink); font-weight:600; min-width:74px; flex-shrink:0;}
+  .pick{
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:var(--font-mono); font-size:12px; font-weight:600;
+    background:var(--accent-soft); color:var(--accent-ink);
+    padding:5px 11px; border-radius:999px; align-self:flex-start; margin-top:auto;
+  }
+
+  .steps{
+    display:flex; flex-direction:column; gap:0;
+    border:1px solid var(--line); border-radius:14px; overflow:hidden;
+    background:var(--surface);
+  }
+  .step{
+    display:grid; grid-template-columns:44px 1fr; gap:16px;
+    padding:18px 22px; border-bottom:1px solid var(--line);
+  }
+  .step:last-child{border-bottom:none;}
+  .step-num{
+    font-family:var(--font-mono); font-size:13px; color:var(--ink-faint);
+    display:flex; align-items:flex-start; padding-top:2px;
+  }
+  .step h4{margin:0 0 4px; font-size:15px;}
+  .step p{margin:0; font-size:14px; color:var(--ink-soft);}
+  .step code{
+    font-family:var(--font-mono); font-size:12.5px;
+    background:var(--surface-2); padding:2px 6px; border-radius:5px;
+  }
+
+  .checklist{display:flex; flex-direction:column; gap:10px; margin-top:8px;}
+  .check-row{
+    display:flex; align-items:center; gap:12px;
+    font-size:14.5px; padding:12px 16px;
+    background:var(--surface); border:1px solid var(--line); border-radius:10px;
+  }
+  .mark{
+    width:22px; height:22px; border-radius:6px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size:13px; font-weight:700;
+  }
+  .mark.yes{background:var(--good-soft); color:var(--good);}
+  .mark.no{background:var(--risk-soft); color:var(--risk);}
+
+  footer{margin-top:72px; padding-top:24px; border-top:1px solid var(--line);}
+  footer p{font-size:13px; color:var(--ink-faint); margin:0;}
+
+  @media (max-width:600px){
+    .traits li{flex-direction:column; gap:2px;}
+    .traits b{min-width:0;}
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+<p class="eyebrow">Realtime Voice → Anson · 架構對焦圖</p>
+<h1>邊講話、邊變文字、邊被案神分析</h1>
+<p class="lede">你要的是按一個鍵就開始運作，講完客戶需求，案神自動讀到、自動判斷。現在管線裡有一段還是空的——這張圖標出來，也標出三種補法。</p>
+<div class="status-line"><span class="dot"></span> 現況：文字進得去案神就能分析；「聲音變文字」這一段還沒接上</div>
+
+<section>
+  <h2>現在的管線，卡在哪一段</h2>
+  <p class="section-sub">五個環節，前四個都還沒有實作，只有最後兩個真的測過會動。</p>
+  <div class="pipeline-wrap">
+    <figure>
+      <svg viewBox="0 0 880 220" role="img" aria-label="五段管線：你講話、錄音擷取、即時轉文字、寫進資料夾、案神分析。中間兩段目前是空的，用虛線框標示未實作，其餘四段標記已可動。">
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 Z" fill="currentColor"/>
+          </marker>
+        </defs>
+
+        <!-- baseline -->
+        <line x1="60" y1="90" x2="820" y2="90" stroke="currentColor" stroke-opacity="0.15" stroke-width="1"/>
+
+        <!-- Stage 1: 你講話 -->
+        <rect x="20" y="60" width="130" height="60" rx="10" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+        <text x="85" y="86" text-anchor="middle" font-size="13" font-weight="600">你講話</text>
+        <text x="85" y="104" text-anchor="middle" font-size="11" fill="currentColor" fill-opacity="0.55">跟客戶對談</text>
+
+        <line x1="150" y1="90" x2="188" y2="90" stroke="currentColor" marker-end="url(#arrow)"/>
+
+        <!-- Stage 2: 錄音擷取 (未實作) -->
+        <rect x="190" y="55" width="150" height="70" rx="10" fill="none" stroke="var(--risk)" stroke-dasharray="5 4" stroke-width="1.6"/>
+        <text x="265" y="82" text-anchor="middle" font-size="13" font-weight="600" fill="var(--risk)">錄音擷取</text>
+        <text x="265" y="99" text-anchor="middle" font-size="10.5" fill="var(--risk)" fill-opacity="0.85">按鍵開始收音</text>
+        <text x="265" y="150" text-anchor="middle" font-size="10.5" fill="var(--risk)">未實作</text>
+
+        <line x1="340" y1="90" x2="378" y2="90" stroke="currentColor" marker-end="url(#arrow)"/>
+
+        <!-- Stage 3: 即時轉文字 (未實作) -->
+        <rect x="380" y="55" width="150" height="70" rx="10" fill="none" stroke="var(--risk)" stroke-dasharray="5 4" stroke-width="1.6"/>
+        <text x="455" y="76" text-anchor="middle" font-size="13" font-weight="600" fill="var(--risk)">即時轉文字</text>
+        <text x="455" y="93" text-anchor="middle" font-size="10.5" fill="var(--risk)" fill-opacity="0.85">邊講邊出字</text>
+        <text x="455" y="108" text-anchor="middle" font-size="10.5" fill="var(--risk)" fill-opacity="0.85">(選 A/B/C)</text>
+        <text x="455" y="150" text-anchor="middle" font-size="10.5" fill="var(--risk)">未實作</text>
+
+        <line x1="530" y1="90" x2="568" y2="90" stroke="currentColor" marker-end="url(#arrow)"/>
+
+        <!-- Stage 4: 寫進資料夾 -->
+        <rect x="570" y="60" width="130" height="60" rx="10" fill="none" stroke="var(--good)" stroke-width="1.4"/>
+        <text x="635" y="86" text-anchor="middle" font-size="13" font-weight="600" fill="var(--good)">寫進資料夾</text>
+        <text x="635" y="104" text-anchor="middle" font-size="10.5" fill="var(--good)" fill-opacity="0.85">逐字稿落地</text>
+
+        <line x1="700" y1="90" x2="738" y2="90" stroke="currentColor" marker-end="url(#arrow)"/>
+
+        <!-- Stage 5: 案神分析 -->
+        <rect x="740" y="55" width="120" height="70" rx="10" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/>
+        <text x="800" y="82" text-anchor="middle" font-size="13" font-weight="700" fill="var(--accent-ink)">案神分析</text>
+        <text x="800" y="99" text-anchor="middle" font-size="10.5" fill="var(--accent-ink)">拆解需求</text>
+        <text x="800" y="150" text-anchor="middle" font-size="10.5" fill="var(--good)">已測過會動</text>
+      </svg>
+      <figcaption>五段管線：你講話 → 錄音擷取 → 即時轉文字 → 寫進資料夾 → 案神分析。中間虛線框的兩段（錄音擷取、即時轉文字）是目前唯一的缺口，其他三段都已經有實際可動的程式碼或測過的流程。</figcaption>
+    </figure>
+    <div class="gap-tag">缺口只有一段：怎麼把聲音變成即時文字</div>
+  </div>
+</section>
+
+<section>
+  <h2>缺口那一段，有三種補法</h2>
+  <p class="section-sub">分歧點在「即時轉文字」怎麼做。三種各有代價，選一種才能往下寫 SR。</p>
+  <div class="options">
+    <div class="card recommend">
+      <span class="card-tag">方案 A</span>
+      <h3>瀏覽器本機頁面</h3>
+      <p>電腦（或手機）開一個網頁，用瀏覽器內建的語音辨識，按鍵就開始，文字即時吐出來寫進資料夾。</p>
+      <ul class="traits">
+        <li><b>安裝</b>開瀏覽器就好，不用另外裝東西</li>
+        <li><b>網路</b>要連線（辨識本身在雲端跑）</li>
+        <li><b>手機</b>手機瀏覽器也能當麥克風用</li>
+        <li><b>花費</b>不用另外的 API 費用</li>
+        <li><b>風險</b>吵雜環境、多人交叉講話時準確度會掉</li>
+      </ul>
+      <span class="pick">最快能動，先選這個</span>
+    </div>
+    <div class="card">
+      <span class="card-tag">方案 B</span>
+      <h3>雲端 Whisper 串流</h3>
+      <p>之前 SR 就設計好的路線：聲音串流送到 Cloudflare 的 Whisper 服務轉文字。中文辨識更穩，但要另外搭一個收音＋上傳的小工具。</p>
+      <ul class="traits">
+        <li><b>安裝</b>要寫收音＋串流上傳的程式</li>
+        <li><b>網路</b>要連線，且吃流量</li>
+        <li><b>手機</b>要另外做手機端錄音頁</li>
+        <li><b>花費</b>每次轉錄都算 API 費用</li>
+        <li><b>風險</b>做起來工程量最大</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="card-tag">方案 C</span>
+      <h3>本機安裝 Whisper 模型</h3>
+      <p>把語音轉文字模型直接裝在你的 Mac 上跑，完全不用網路、不用付 API 費。</p>
+      <ul class="traits">
+        <li><b>安裝</b>要下載模型檔（幾百 MB 起）</li>
+        <li><b>網路</b>裝好之後完全不用網路</li>
+        <li><b>手機</b>手機沒辦法跑，只能電腦本機用</li>
+        <li><b>花費</b>免費，但吃電腦效能</li>
+        <li><b>風險</b>電腦效能不夠時，字會慢慢才跑出來</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>選方案 A 的話，實際會長這樣</h2>
+  <p class="section-sub">從按鍵到案神看到文字，四個步驟。</p>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div>
+        <h4>開啟本機頁面，按下「開始」</h4>
+        <p>電腦或手機開瀏覽器連到一個本機小網頁，畫面上一個按鍵，按下去就開始收音辨識，跟 ChatGPT 的語音模式操作感一致。</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div>
+        <h4>講話同時，文字即時跳出來</h4>
+        <p>畫面上會即時顯示辨識出來的逐字稿，你可以邊看邊確認講對了沒有。</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div>
+        <h4>文字自動寫進案神的資料夾</h4>
+        <p>網頁背景把逐字稿片段持續寫進 <code>Awesome-Anson/realtime-inbox/</code>，不用你手動存檔或複製貼上。</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div>
+        <h4>案神偵測到新內容，自動分析</h4>
+        <p>案神看到資料夾裡有新逐字稿，直接套用 <code>realtime-need-capture</code> 的拆解邏輯，即時吐出人群/場景/痛點/需求判斷。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>現在有的 vs 還要做的</h2>
+  <div class="checklist">
+    <div class="check-row"><span class="mark yes">✓</span> 案神會讀逐字稿、拆解需求、標信心等級</div>
+    <div class="check-row"><span class="mark yes">✓</span> 拆解完能自動生出可操作的 Demo 網址</div>
+    <div class="check-row"><span class="mark no">✕</span> 按鍵就能開始收音的本機頁面</div>
+    <div class="check-row"><span class="mark no">✕</span> 講話同時即時轉文字</div>
+    <div class="check-row"><span class="mark no">✕</span> 文字自動落地到案神會讀的資料夾</div>
+  </div>
+</section>
+
+<footer>
+  <p>對焦用圖解，不是最終規格。方案選定後才會寫進正式 SR（Awesome-Anson · realtime-voice-transcription）。</p>
+</footer>
