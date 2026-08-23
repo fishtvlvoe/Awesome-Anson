@@ -10,8 +10,8 @@ user-invocable: false
 
 ## 範圍
 
-只查 `~/Development/Awesome-Kuson/` 底下這四個資料夾（阿金創業大課、顧問小課、事前驗屍法、客戶分析表、SWOT 等，約 80 個檔案）：
-`決策心智模型/`、`阿金框架/`、`顧問工具箱/`、`通用MBA工具箱/`
+只查 `~/Development/Awesome-Kuson/` 底下這六個資料夾（阿金創業大課、顧問小課、事前驗屍法、客戶分析表、SWOT、跨學科理論、人際覺察技巧等，約 270 個檔案）：
+`決策心智模型/`、`阿金框架/`、`顧問工具箱/`、`通用MBA工具箱/`、`跨學科底層知識庫/`、`人際覺察與同理框架/`
 
 `個人資料庫/`、`待分類/`、`截圖待OCR/` 是 Fish 個人資料、AI 技術筆記，跟接案判斷無關，技術上不在這份查詢範圍裡（見下方查詢用的圖檔）。
 
@@ -35,15 +35,15 @@ user-invocable: false
 3. **查無結果不代表沒有相關內容，改用 grep + 自己讀**：`graphify query` 只是機械式比對節點標題文字，不是語意理解，概念換個說法就查不到很正常。這個知識庫量小（約 80 個檔案），查無結果時：
 
    ```bash
-   grep -rli "<概念相關字詞>" 決策心智模型/ 阿金框架/ 顧問工具箱/ 通用MBA工具箱/ --include="*.md"
+   grep -rli "<概念相關字詞>" 決策心智模型/ 阿金框架/ 顧問工具箱/ 通用MBA工具箱/ 跨學科底層知識庫/ 人際覺察與同理框架/ --include="*.md"
    ```
 
    抓到候選檔名後用 Read 工具讀內容，**用自己的語意理解判斷是否相關、怎麼引用**——真正做判斷的是你自己（LLM），graphify 只是輔助快篩的機械工具，不是最終答案。查無結果不能就此說「知識庫沒有」。
 
 ## 維護
 
-`案神知識庫.graph.json` 是靜態合併檔（`決策心智模型/`、`阿金框架/`、`顧問工具箱/`、`通用MBA工具箱/` 四份圖合併而成），庫神那邊新增內容不會自動更新這份合併檔。查詢結果感覺過舊，重新合併：
+`案神知識庫.graph.json` 是靜態合併檔（`決策心智模型/`、`阿金框架/`、`顧問工具箱/`、`通用MBA工具箱/`、`跨學科底層知識庫/`、`人際覺察與同理框架/` 六份圖合併而成），庫神那邊新增內容不會自動更新這份合併檔。查詢結果感覺過舊，重新合併：
 
 ```bash
-graphify merge-graphs 決策心智模型/graphify-out/graph.json 阿金框架/graphify-out/graph.json 顧問工具箱/graphify-out/graph.json 通用MBA工具箱/graphify-out/graph.json --out 案神知識庫.graph.json
+graphify merge-graphs 決策心智模型/graphify-out/graph.json 阿金框架/graphify-out/graph.json 顧問工具箱/graphify-out/graph.json 通用MBA工具箱/graphify-out/graph.json 跨學科底層知識庫/graphify-out/graph.json 人際覺察與同理框架/graphify-out/graph.json --out 案神知識庫.graph.json
 ```
