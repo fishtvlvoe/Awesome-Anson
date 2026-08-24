@@ -26,6 +26,34 @@ venv/bin/python server.py
 
 用電腦或手機瀏覽器打開對應網址，按「開始」開始收音，講話同時畫面會即時顯示辨識出的繁體文字。文字同時持續寫進 `output/<session-id>.md`。
 
+## 對談中啟用即時分析
+
+即時分析不是 `server.py` 的背景服務。開始收音後，請由目前的 agent session
+在前景執行監看器：
+
+```bash
+cd tools/realtime-voice
+venv/bin/python monitor_transcript.py output/<session-id>.md
+```
+
+把 `<session-id>` 換成 server 啟動時印出的實際 session id。監看器只讀取逐字稿
+每行的時間戳，不讀取瀏覽器音訊，也不改動既有 700ms VAD 分段。
+
+- 最後一行超過 3 秒沒有新增內容：觸發一次停頓分析。
+- 沒有停頓時，新增內容依時間戳累積達 30 秒：觸發一次時間上限分析。
+- 觸發後，Haiku 等級的外部 agent 只分析上次分析之後新增的內容。
+- 結果寫入 `output/<session-id>.analysis.json`，頁面每 4 秒輪詢並顯示。
+
+監看器以前景程序執行，不會自行 daemonize。停止收音後，讓同一個 agent session
+停止這個監看指令；server 關閉時不會留下任何 server-side 監看程序。若 server
+是由背景程序啟動，可傳入 PID 讓 server 行程退出時自動結束監看器：
+
+```bash
+venv/bin/python monitor_transcript.py output/<session-id>.md --server-pid <server-pid>
+```
+
+沒有 agent session 監看時，收音與逐字稿仍照常運作，頁面顯示「目前沒有即時分析（可能沒有 agent session 在監看）」。
+
 ## 對談結束後
 
 在終端機按 `Ctrl+C` 關閉服務。這個服務**不會**背景常駐、**不會**開機自動啟動，關掉就是真的關掉，下次要用再重新執行 `venv/bin/python server.py`。

@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>案神使用說明書 — Awesome-Anson</title>
-<meta name="description" content="案神（Awesome-Anson）接案分析工具包的使用說明書：4 位助理、9 個工具，怎麼叫它、跟誰串接。" />
+<meta name="description" content="案神（Awesome-Anson）接案分析工具包的使用說明書：4 位助理、12 個功能工具，從需求分析到即時對談與 Demo 交付。" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -368,7 +368,7 @@
   <nav class="sidebar-nav" aria-label="章節">
     <a href="#overview">總覽</a>
     <a href="#agents">4 位助理</a>
-    <a href="#skills">9 個工具</a>
+    <a href="#skills">12 個工具</a>
     <a href="#entry">怎麼叫它</a>
     <a href="#network">跟誰串接</a>
     <a href="#versions">版本紀錄</a>
@@ -379,7 +379,7 @@
   <header class="hero wrap">
     <p class="eyebrow">案件分析工具包 · 使用說明書</p>
     <h1>案神在幹什麼：把客戶的逐字稿，變成你敢拿去談判的報價單跟簡報。</h1>
-    <p class="lead">案神（Awesome-Anson）做一件事：你把案子的資料丟給它，它交出一份你敢拿去跟客戶談的報價單和簡報。裡面分兩層——4 位「助理」接力處理需求、報價、簡報；9 個「工具」在背後被這些助理拿去用，你自己也可以單獨拿出來用。</p>
+    <p class="lead">案神（Awesome-Anson）把客戶的資料、逐字稿或對談中的聲音，整理成可確認的需求、報價、簡報，必要時再交付一個客戶當場能操作的 Demo。裡面分兩層——4 位「助理」負責不同工作；12 個功能工具在背後接力，你也可以單獨叫其中一個。</p>
     <p class="spirit"><strong>它不會自己偷偷在背景跑。</strong>沒有人幫它排定時間表、沒有東西一直醒著等你——你叫它，它才動；你沒叫它，它就完全安靜，像個乖乖等你按門鈴才出現的管家。</p>
   </header>
 
@@ -413,7 +413,7 @@
         <p>做成簡報，或做成一份能直接開的網頁</p>
       </div>
     </div>
-    <p class="section-intro" style="margin-top:18px;">每一棒都停下來等你點頭才往下走，不會自己偷跑——三位助理各做各的，互不知道對方在忙什麼，只認「上一棒交過來、你已經點頭確認過」的東西。</p>
+    <p class="section-intro" style="margin-top:18px;">每一棒都停下來等你點頭才往下走，不會自己偷跑。對談中的即時分析也一樣：收音與監看都要由人啟動，不是背景服務。</p>
   </section>
 
   <section id="agents" class="wrap">
@@ -464,8 +464,8 @@
 
   <section id="skills" class="wrap">
     <p class="eyebrow">工具</p>
-    <h2>9 個工具：現成的技巧包，不是助理</h2>
-    <p class="section-intro">「工具」就像工具箱裡已經做好、隨時能拿出來用的扳手或量尺：它不會自己想事情、不會自己問你問題，要有人（助理，或者你自己）拿去用，它才會動。</p>
+    <h2>12 個功能工具：現成的技巧包，不是助理</h2>
+    <p class="section-intro">「工具」就像工具箱裡已經做好、隨時能拿出來用的扳手或量尺：它不會自己想事情、不會自己問你問題，要有人（助理，或者你自己）拿去用，它才會動。repo 裡另外還有 Spectra 開發流程工具，那些是維護案神用的，不是接案成果。</p>
 
     <div class="skill-group">
       <h4>訪談與思考工具</h4>
@@ -497,6 +497,22 @@
         <div class="name">case-page<small>跟簡報師平行的輸出路徑</small></div>
         <div class="desc">把已經確認好的提案內容，做成一份網頁檔案，不用架任何伺服器、不用申請帳號，雙擊打開瀏覽器就能看。它只負責「做出這份檔案」，至於要不要放到網路上讓別人看、要不要設密碼或到期時間，交給呼叫它的人自己決定。</div>
       </div>
+      <div class="skill-row">
+        <div class="name">demo-generation-deploy<small>確認後的可操作 Demo</small></div>
+        <div class="desc">把已確認的需求資料包與使用者確認過的 mockup，生成客戶當場能操作的 Cloudflare Pages Production Demo。需要登入才配置 D1；第三方服務、缺少的圖片或影片會明白標成示意，不假裝已經完成。</div>
+      </div>
+    </div>
+
+    <div class="skill-group">
+      <h4>對談中即時協助</h4>
+      <div class="skill-row">
+        <div class="name">realtime-need-capture<small>人啟動才運作</small></div>
+        <div class="desc">讀取本機收音服務持續產生的逐字稿，拆成人群／場景／痛點／需求／解決方案，或服務型任務的 4×4＝12 格；每格標「已確認／待確認／我猜的」，另接住客戶提到的引薦機會。即時回應固定給客戶反應、目前拆解、唯一一個下一步建議。</div>
+      </div>
+      <div class="skill-row">
+        <div class="name">kuson-knowledge-query<small>Agent 背後的判斷支援</small></div>
+        <div class="desc">project-manager 或報價顧問判斷客戶真實意圖、痛點或風險卡住時，查庫神六類商業與人際判斷知識庫。它不是每次都查，也不是個人資料庫；先用 graphify 快篩，查無結果再用文字搜尋與人工理解補查。</div>
+      </div>
     </div>
 
     <div class="skill-group">
@@ -518,6 +534,11 @@
         <div class="desc">把讀起來很像 AI 寫的文字，改成像人在說話。兩種用法：一種是讓 Claude 自己講話時就自然一點，另一種是幫你改寫貼文、Email、文案。只處理台灣繁體中文跟英文，不做翻譯，也不會幫你查證內容對不對。</div>
       </div>
     </div>
+
+    <div class="callout">
+      <strong>即時語音的現況：</strong>收音目前是本機／區網 HTTP，FunASR 在本機辨識，逐字稿寫到 <code>tools/realtime-voice/output/</code>。手機要從公開 HTTPS 網址收音的方案仍在規劃，尚未算成已完成能力。
+      <span class="tag tag-warn" style="margin-left:6px;">待確認</span>
+    </div>
   </section>
 
   <section id="entry" class="wrap">
@@ -533,12 +554,25 @@
       <li>報價確認完，中文跟它說「幫我做成簡報」，它自己知道要找簡報師，不用背指令</li>
     </ol>
     <p class="section-intro" style="margin-top:22px;">只想單獨叫某一位助理、不走整條流程：沒有現成斜線指令，直接跟它說「這次麻煩用簡報師的身分幫我」就可以，不用背指令。</p>
+    <div class="cards-grid" style="margin-top:22px;">
+      <div class="card">
+        <div class="tag-row"><h3>對談中即時拆解</h3><span class="tag tag-ok">已確認</span></div>
+        <p>先啟動 <code>tools/realtime-voice/server.py</code> 收音，再請目前的 Agent session 在前景監看逐字稿：</p>
+        <div class="terminal"><span class="p">$</span> venv/bin/python monitor_transcript.py output/&lt;session-id&gt;.md</div>
+        <p>停頓超過 3 秒，或連續內容累積到 30 秒，會觸發一次即時分析。沒有監看器時，收音與逐字稿仍可正常使用。</p>
+      </div>
+      <div class="card">
+        <div class="tag-row"><h3>做成可操作 Demo</h3><span class="tag tag-ok">已確認</span></div>
+        <p>把已確認需求交給 <code>demo-generation-deploy</code>。有視覺需求時，必須先由網頁設計師產出並讓你確認 mockup；有敘事內容才另外委派簡報師。</p>
+        <p>mockup 沒確認不能部署，部署失敗要保留上一個成功網址。這條路和只做離線 HTML 的 <code>case-page</code> 是兩件事。</p>
+      </div>
+    </div>
   </section>
 
   <section id="network" class="wrap">
     <p class="eyebrow">串接關係</p>
     <h2>案神跟誰串接</h2>
-    <p class="section-intro">案神是「神系列」家族接力鏈的第一棒。客戶點頭確認提案之後，資料真的會往下傳的只有這幾條線；其餘家族成員只是同一個系列，沒有直接資料交接。</p>
+    <p class="section-intro">案神是「神系列」家族接力鏈的第一棒。需求確認後，可以平行產出簡報、離線網頁或可操作 Demo；成交後才把確認過的需求交給蓋神進入開發。其餘家族成員是同系列工具，不代表案神會自動替你呼叫它們。</p>
 
     <div class="board">
       <div class="board-center">
@@ -596,6 +630,9 @@
         <strong>老實話：</strong>待神原本設計的「自動生成儀表板」小工具，目前還沒真的做出來，只有設計圖（規劃進度是 0/21，還沒動工）。所以你現在看到的這份頁面，是照著待神已經上線驗證過的設計系統，重新排版出來的一份——網頁本身會自動讀 <code>state.json</code> 跟 <code>entries/</code> 資料夾裡的歷史紀錄，但版面是照著設計系統手刻的，不是靠某個現成的自動化工具生出來的。
         <span class="tag tag-guess" style="margin-left:6px;">我猜的手動仿造</span>
       </div>
+      <div class="callout" style="margin-top:12px;">
+        <strong>案神自己的邊界：</strong>它不會自動寄信、替你向客戶承諾價格、偷偷部署未確認的 Demo，也不會把「我猜的」升級成「已確認」。每一步都要有資料交接與人工確認。
+      </div>
     </div>
   </section>
 
@@ -605,15 +642,15 @@
     <p class="section-intro">以後案神多了新助理或新工具，就會在 <code>entries/</code> 資料夾裡多一筆紀錄，讓你一眼看出「這次多了什麼」。這些紀錄存在幾份小檔案裡（<code>state.json</code> 跟 <code>entries/manifest.json</code>／<code>entries/&lt;版本&gt;.json</code>），不是資料庫，網頁自己讀檔案就能顯示，不需要額外的伺服器。</p>
 
     <div class="version-head">
-      <span class="version-badge" id="current-version">v1</span>
+      <span class="version-badge" id="current-version">v2</span>
       <span id="sync-note">讀取中…</span>
     </div>
 
     <div id="timeline">
       <div class="timeline-item">
-        <div class="timeline-date">2026-08-22</div>
-        <div class="timeline-topic">首次盤點：說明書基準版上線</div>
-        <p class="timeline-summary">把現有的 4 位助理、9 個工具整理清楚，畫出跟蓋神、報價師、神系列家族的關係，當作以後新增功能時的對照基準。</p>
+        <div class="timeline-date">2026-08-24</div>
+        <div class="timeline-topic">v2：補齊即時對談、Demo 與判斷支援</div>
+        <p class="timeline-summary">補上本機即時語音、對談中需求拆解、引薦訊號、已確認需求轉可操作 Demo，以及庫神知識庫支援；同步標明公開 HTTPS 收音仍未完成。</p>
       </div>
     </div>
   </section>

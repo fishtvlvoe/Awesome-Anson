@@ -1,6 +1,12 @@
 {
   "entries": [
     {
+      "version": "v2",
+      "date": "2026-08-24",
+      "topic": "v2：補齊即時對談、Demo 與判斷支援",
+      "file": "v2.json"
+    },
+    {
       "version": "v1",
       "date": "2026-08-22",
       "topic": "首次盤點：說明書基準版上線",

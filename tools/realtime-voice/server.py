@@ -6,8 +6,9 @@
 
 import asyncio
 import datetime
+import json
+import re
 import socket
-import ssl
 import subprocess
 import sys
 import tempfile
@@ -18,8 +19,8 @@ from aiohttp import web
 PORT = 8420
 STATIC_DIR = Path(__file__).parent / "static"
 OUTPUT_DIR = Path(__file__).parent / "output"
-CERT_DIR = Path(__file__).parent / "certs"
 LOW_CONFIDENCE_MARK = "[聽不清楚]"
+SESSION_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]*$")
 
 
 def load_model():
@@ -106,7 +107,37 @@ def append_transcript_line(session_id: str, text: str) -> None:
 
 
 async def handle_index(request: web.Request) -> web.Response:
-    return web.FileResponse(STATIC_DIR / "index.html")
+    html = (STATIC_DIR / "index.html").read_text(encoding="utf-8")
+    html = html.replace("__REALTIME_SESSION_ID__", request.app["session_id"])
+    return web.Response(
+        text=html,
+        content_type="text/html",
+        headers={"Cache-Control": "no-store"},
+    )
+
+
+def analysis_output_path(session_id: str) -> Path | None:
+    """Resolve a session analysis file without allowing path traversal."""
+    if not SESSION_ID_RE.fullmatch(session_id):
+        return None
+    return OUTPUT_DIR / f"{session_id}.analysis.json"
+
+
+async def handle_analysis(request: web.Request) -> web.Response:
+    """Return the latest agent analysis, or an explicit non-error status."""
+    output_path = analysis_output_path(request.match_info["session_id"])
+    if output_path is None:
+        return web.json_response({"status": "invalid_session_id"}, status=400)
+    if not output_path.exists():
+        return web.json_response({"status": "not_yet_analyzed"})
+
+    try:
+        payload = json.loads(output_path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return web.json_response({"status": "analysis_error"})
+    if not isinstance(payload, dict):
+        return web.json_response({"status": "analysis_error"})
+    return web.json_response(payload)
 
 
 async def handle_stream(request: web.Request) -> web.WebSocketResponse:
@@ -128,28 +159,6 @@ async def handle_stream(request: web.Request) -> web.WebSocketResponse:
     return ws
 
 
-def get_ssl_context() -> ssl.SSLContext:
-    """手機瀏覽器對非 localhost 的 http 來源會擋麥克風權限，必須用 https。
-    自簽憑證只在本機/區網用，不需要真的憑證機構簽發，第一次啟動自動產生一次，之後重複使用。"""
-    cert_path = CERT_DIR / "cert.pem"
-    key_path = CERT_DIR / "key.pem"
-    if not cert_path.exists() or not key_path.exists():
-        CERT_DIR.mkdir(parents=True, exist_ok=True)
-        subprocess.run(
-            [
-                "openssl", "req", "-x509", "-newkey", "rsa:2048",
-                "-keyout", str(key_path), "-out", str(cert_path),
-                "-days", "365", "-nodes",
-                "-subj", "/CN=realtime-voice-local",
-            ],
-            capture_output=True,
-            check=True,
-        )
-    context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-    context.load_cert_chain(str(cert_path), str(key_path))
-    return context
-
-
 def build_app(model, converter, session_id: str) -> web.Application:
     app = web.Application()
     app["model"] = model
@@ -157,6 +166,7 @@ def build_app(model, converter, session_id: str) -> web.Application:
     app["session_id"] = session_id
     app.router.add_get("/", handle_index)
     app.router.add_get("/stream", handle_stream)
+    app.router.add_get("/analysis/{session_id}", handle_analysis)
     app.router.add_static("/static/", STATIC_DIR)
     return app
 
@@ -169,16 +179,15 @@ def main() -> None:
     session_id = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     lan_ip = get_lan_ip()
 
-    ssl_context = get_ssl_context()
-
     print("即時語音接案神啟動完成")
-    print(f"  電腦本機：https://localhost:{PORT}")
-    print(f"  手機（同 Wi-Fi）：https://{lan_ip}:{PORT}（第一次連線瀏覽器會警告憑證不受信任，選「繼續前往」即可，這是自簽憑證，不影響本機/區網使用）")
+    print(f"  電腦本機：http://localhost:{PORT}")
+    print(f"  區網位址（僅供參考，手機瀏覽器不支援）：http://{lan_ip}:{PORT}")
+    print("  手機瀏覽器對非 localhost 的 http 來源會擋麥克風權限，這個服務目前只支援電腦本機收音")
     print(f"  逐字稿輸出：{session_output_path(session_id)}")
     print("  按 Ctrl+C 關閉服務（不會背景常駐）")
 
     app = build_app(model, converter, session_id)
-    web.run_app(app, host="0.0.0.0", port=PORT, ssl_context=ssl_context, print=None)
+    web.run_app(app, host="0.0.0.0", port=PORT, print=None)
 
 
 if __name__ == "__main__":
