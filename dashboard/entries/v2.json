@@ -1,0 +1,14 @@
+{
+  "version": "v2",
+  "date": "2026-08-24",
+  "topic": "v2：補齊即時對談、Demo 與判斷支援",
+  "summary": "依目前 repo 的實體 Agent、Skill、即時語音程式與 Spectra 規格更新手冊，不把規劃中的公開 HTTPS 收音寫成已完成。",
+  "added": [
+    "12 個功能工具的現況分類，另把 Spectra 開發流程工具排除在接案成果之外",
+    "本機 FunASR 收音、逐字稿輸出與對談中自動觸發分析的使用方式",
+    "realtime-need-capture 的五分類／服務型 4×4＝12 格拆解與引薦訊號",
+    "demo-generation-deploy 的 mockup 確認、Cloudflare Pages、D1 條件與失敗邊界",
+    "庫神知識庫查詢範圍與公開 HTTPS 收音尚未完成的限制"
+  ],
+  "links": []
+}
