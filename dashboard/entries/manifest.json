@@ -1,6 +1,12 @@
 {
   "entries": [
     {
+      "version": "v3",
+      "date": "2026-08-24",
+      "topic": "v3：白話案例與客戶串接流程",
+      "file": "v3.json"
+    },
+    {
       "version": "v2",
       "date": "2026-08-24",
       "topic": "v2：補齊即時對談、Demo 與判斷支援",

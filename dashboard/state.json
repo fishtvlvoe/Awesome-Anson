@@ -1,9 +1,9 @@
 {
   "project": "anson-manual",
-  "updated_at": "2026-08-24T11:00:00+08:00",
+  "updated_at": "2026-08-24T11:35:54+08:00",
   "updated_by": "文件維護",
-  "current_version": "v2",
-  "one_liner": "案神使用說明書 v2：4 個 Agent、12 個功能工具，補齊即時對談、Demo 交付與真實邊界。",
+  "current_version": "v3",
+  "one_liner": "案神使用說明書 v3：用案例、白話流程與客戶串接圖，先讓小白看懂再看工具名稱。",
   "changes_in_progress": [
     "realtime-voice-public-https-url：規劃中，尚未實作"
   ],
