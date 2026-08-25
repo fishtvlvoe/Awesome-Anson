@@ -50,20 +50,20 @@ speaker embedding，不保存到 Git，也不送到雲端。
 可以使用 Google Drive for Desktop，但目前是「Google Drive 同步資料夾」，不是案神直接呼叫 Google Drive API。先在每台電腦安裝並登入 Google Drive for Desktop，建立同一個資料夾，例如：
 
 ```text
-Google Drive/案神/voice-profile/
+Google Drive/Awesome-Anson/voice-profile/
 ```
 
 啟動服務前，把 `ANSON_VOICE_PROFILE_DIR` 指到這個資料夾。Mac 範例（實際 Google Drive 路徑依帳號不同）：
 
 ```bash
-export ANSON_VOICE_PROFILE_DIR="$HOME/Library/CloudStorage/GoogleDrive-你的帳號/My Drive/案神/voice-profile"
+export ANSON_VOICE_PROFILE_DIR="$HOME/Library/CloudStorage/GoogleDrive-你的帳號/My Drive/Awesome-Anson/voice-profile"
 bash scripts/start-realtime-voice.sh
 ```
 
 Windows Git Bash 範例：
 
 ```bash
-export ANSON_VOICE_PROFILE_DIR="G:/My Drive/案神/voice-profile"
+export ANSON_VOICE_PROFILE_DIR="G:/My Drive/Awesome-Anson/voice-profile"
 bash scripts/start-realtime-voice.sh
 ```
 
