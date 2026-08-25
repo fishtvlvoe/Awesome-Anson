@@ -128,19 +128,52 @@ node scripts/anson-sync.js install-login --config ~/.config/anson-sync/config.js
 
 除了事後整理逐字稿，案神也有一條人啟動的即時路徑：`tools/realtime-voice/` 在本機收音、用 FunASR 轉成繁體逐字稿，再由目前的 Agent session 監看新增內容，依停頓或時間上限觸發 `realtime-need-capture`。它會回報客戶反應、目前需求拆解、心智模型與 1–3 個下一步回應選項；沒有監看器時，收音與逐字稿仍可單獨使用。
 
-#### 換電腦安裝與同步
+#### 安裝、第一次設定與換電腦
 
-程式碼、介面與安裝流程放在 GitHub；本機的 Python 虛擬環境、聲音 profile、逐字稿與模型快取不放進 Git。換另一臺電腦時：
+拿到這個 repo 的人只要做一次安裝。安裝完成後，腳本會自動啟動本機服務、打開面板，並先帶到「建立聲音身份」 onboarding；沒有完成聲音身份前，不會直接進入正式工作台。
 
 ```bash
 git clone https://github.com/fishtvlvoe/Awesome-Anson.git
 cd Awesome-Anson
 bash scripts/setup-realtime-voice.sh
-cd tools/realtime-voice
-bash ../../scripts/start-realtime-voice.sh
 ```
 
-瀏覽器開啟 `http://localhost:8420`。安裝腳本會自動安裝 Python 套件、ffmpeg，並預下載 SenseVoice 與 speaker model；要同步程式更新，執行 `git pull --ff-only origin main` 後重新跑安裝腳本。公開 UI 示範頁是 [awesome-anson.pages.dev](https://awesome-anson.pages.dev/)，真實麥克風與 FunASR 辨識仍需本機服務。
+第一次操作：
+
+1. 允許瀏覽器使用麥克風
+2. 錄製自己的聲音 15–30 秒
+3. 播放確認後按「建立聲音身份」
+4. 完成後會自動回到即時錄音工作台
+5. 按「開始收音」才會開始錄製客戶對話
+
+之後每天啟動：
+
+```bash
+bash scripts/start-realtime-voice.sh
+```
+
+面板網址是 `http://localhost:8420`。如果只想啟動服務、不自動開瀏覽器，使用 `bash scripts/start-realtime-voice.sh --no-open`。如果安裝腳本只想安裝、不立即啟動，使用 `bash scripts/setup-realtime-voice.sh --no-launch`。
+
+#### 聲音身份與跨電腦同步
+
+聲音身份是敏感的生物識別資料，不會放進 GitHub。程式碼可以用 GitHub 同步，但以下資料目前各自留在每台電腦：
+
+- 聲音 profile：`~/.config/anson/voice-profile/`
+- 錄音逐字稿：`tools/realtime-voice/output/`
+- FunASR 模型快取：`~/.cache/modelscope/`
+
+Mac 使用者可以把 profile 放到 iCloud Drive；Windows 使用者不需要 iCloud，可以使用 OneDrive、Google Drive、Dropbox 或 USB。但目前 repo 只支援用 `ANSON_VOICE_PROFILE_DIR` 指定資料夾，**尚未提供自動加密匯出／匯入與雲端同步介面**。不要把原始聲音或 `profile.json` 直接提交 GitHub，也不要把未加密的 profile 放進公開共享資料夾。
+
+換電腦目前的安全做法：重新錄製一次聲音身份。跨平台免重錄版本要補上「加密匯出 → 雲端／USB 搬移 → 另一台加密匯入」，這會是獨立功能，不會偷偷把聲音資料上傳。
+
+要同步程式更新：
+
+```bash
+git pull --ff-only origin main
+bash scripts/setup-realtime-voice.sh
+```
+
+公開 UI 示範頁是 [awesome-anson.pages.dev](https://awesome-anson.pages.dev/)，真實麥克風與 FunASR 辨識仍需本機服務。
 
 需求確認後，可以叫 `demo-generation-deploy` 把已確認資料包與確認過的 mockup 變成 Cloudflare Pages Production Demo。需要登入才配置 D1；缺少的第三方服務、圖片或影片會標成示意。這條路和只產出離線 HTML 的 `case-page` 分開，公開 HTTPS 收音目前仍是待做項目。
 

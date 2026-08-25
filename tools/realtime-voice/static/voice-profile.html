@@ -39,7 +39,7 @@
     <nav class="top-actions" aria-label="頁面操作"><a class="button button-quiet" href="/">回到工作台</a><button class="button button-quiet" id="theme-toggle" type="button">切換深色</button></nav>
   </header>
   <main class="page">
-    <section class="page-heading"><h1>建立你的聲音身份</h1><p class="lead">直接錄一段你自己的聲音，讓案神知道對話裡哪一邊是你。其他聲音會先標成客戶候選；不確定的片段會保留給你確認。</p></section>
+    <section class="page-heading"><h1 id="page-title">建立你的聲音身份</h1><p class="lead" id="page-lead">直接錄一段你自己的聲音，讓案神知道對話裡哪一邊是你。其他聲音會先標成客戶候選；不確定的片段會保留給你確認。</p></section>
     <section class="layout" aria-label="建立聲音身份">
       <article class="card">
         <header class="card-header"><div><h2>錄一段你的聲音</h2><p>請在安靜環境，用平常跟客戶說話的方式講話。</p></div><span class="status" id="profile-status">尚未建立</span></header>
@@ -59,6 +59,8 @@
   <script>
     (() => {
       const recordButton = document.getElementById('record-button'); const stopButton = document.getElementById('stop-button'); const resetButton = document.getElementById('reset-button'); const buildButton = document.getElementById('build-profile'); const title = document.getElementById('record-title'); const copy = document.getElementById('record-copy'); const timer = document.getElementById('timer'); const samples = document.getElementById('samples'); const result = document.getElementById('result'); const profileStatus = document.getElementById('profile-status'); const identityName = document.getElementById('identity-name'); const identityCopy = document.getElementById('identity-copy');
+      const onboarding = new URLSearchParams(window.location.search).get('onboarding') === '1';
+      if (onboarding) { document.getElementById('page-title').textContent = '先建立聲音身份，再開始使用案神'; document.getElementById('page-lead').textContent = '這是第一次設定。錄 15 至 30 秒你的聲音，案神才能把你的話放在右邊，其他說話人放在左邊。'; }
       const MIN_RECORDING_SECONDS = 2;
       let recorder = null; let stream = null; let chunks = []; let audioUrl = null; let startedAt = 0; let timerId = null;
       const formatTime = (seconds) => `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`; const updateTimer = () => { timer.textContent = formatTime(Math.floor((Date.now() - startedAt) / 1000)); }; const showResult = (message) => { result.textContent = message; result.classList.add('is-visible'); }; const stopTracks = () => { if (stream) stream.getTracks().forEach((track) => track.stop()); stream = null; };
@@ -91,7 +93,8 @@
             throw new Error(response.status === 404 ? '本機服務尚未載入聲音身份功能，請重新啟動案神錄音服務。' : `伺服器回應格式錯誤（HTTP ${response.status}）`);
           }
           if (!response.ok) throw new Error(payload.message || '聲音身份建立失敗');
-          profileStatus.textContent = '已建立'; profileStatus.classList.add('ready'); identityName.textContent = '我的聲音身份'; identityCopy.textContent = '之後符合這個聲音的片段會標示為「我／專案經理」，其他聲音會分到客戶側。'; showResult('聲音身份已保存到本機。speaker model 可用時，工作台會使用這個 profile 判別角色。');
+          profileStatus.textContent = '已建立'; profileStatus.classList.add('ready'); identityName.textContent = '我的聲音身份'; identityCopy.textContent = '之後符合這個聲音的片段會標示為「我／專案經理」，其他聲音會分到客戶側。'; showResult(onboarding ? '聲音身份已保存，準備開啟案神工作台。' : '聲音身份已保存到本機。speaker model 可用時，工作台會使用這個 profile 判別角色。');
+          if (onboarding) window.setTimeout(() => { window.location.href = '/'; }, 1200);
         } catch (error) { showResult(`無法保存聲音身份：${error.message}`); }
         buildButton.disabled = false; buildButton.textContent = '建立聲音身份';
       });

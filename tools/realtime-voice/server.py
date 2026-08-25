@@ -189,6 +189,12 @@ def append_session_event(session_id: str, event: dict[str, object]) -> None:
 
 
 async def handle_index(request: web.Request) -> web.Response:
+    try:
+        profile = request.app["voice_profile_store"].load_profile()
+    except VoiceProfileError:
+        profile = None
+    if profile is None:
+        raise web.HTTPFound("/static/voice-profile.html?onboarding=1")
     html = (STATIC_DIR / "index.html").read_text(encoding="utf-8")
     html = html.replace("__REALTIME_SESSION_ID__", request.app["session_id"])
     return web.Response(

@@ -11,12 +11,14 @@ VOICE_DIR="$ROOT_DIR/tools/realtime-voice"
 VENV_DIR="$VOICE_DIR/venv"
 INSTALL_SYSTEM_DEPS="false"
 CHECK_ONLY="false"
+AUTO_LAUNCH="true"
 
 for arg in "$@"; do
   case "$arg" in
     --with-system-deps) INSTALL_SYSTEM_DEPS="true" ;;
     --check-only) CHECK_ONLY="true" ;;
-    -h|--help) sed -n '1,8p' "$0"; exit 0 ;;
+    --no-launch) AUTO_LAUNCH="false" ;;
+    -h|--help) sed -n '1,12p' "$0"; exit 0 ;;
     *) echo "未知參數：$arg" >&2; exit 2 ;;
   esac
 done
@@ -100,11 +102,14 @@ cat <<EOF
 
 安裝完成。
 
-啟動本機收音：
-  cd "$VOICE_DIR"
-  venv/bin/python server.py
+第一次使用會自動開啟聲音身份設定；錄完 15–30 秒後，案神會回到即時錄音工作台。
+日後啟動：bash "$ROOT_DIR/scripts/start-realtime-voice.sh"
+本機網址：http://localhost:8420
 
-瀏覽器開啟：http://localhost:8420
-
-注意：venv、聲音 profile、逐字稿只留在本機，不會同步到 Git。
+注意：聲音 profile、逐字稿與模型快取只留在本機，不會同步到 GitHub。
 EOF
+
+if [[ "$AUTO_LAUNCH" == "true" ]]; then
+  echo "啟動案神面板（按 Ctrl+C 可關閉）"
+  exec bash "$ROOT_DIR/scripts/start-realtime-voice.sh"
+fi

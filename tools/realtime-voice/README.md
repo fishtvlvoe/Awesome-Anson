@@ -45,6 +45,30 @@ speaker embedding，不保存到 Git，也不送到雲端。
 的片段回傳 `operator`／`pm`；其他穩定 speaker key 可映射成匿名 `client-1`、`client-2`。
 模型未安裝、音檔轉換失敗或信心不足時，一律回傳 `unknown`／`pending`，不把未知聲音假裝辨識成功。
 
+### 使用 Google Drive 跨電腦保存 profile
+
+可以使用 Google Drive for Desktop，但目前是「Google Drive 同步資料夾」，不是案神直接呼叫 Google Drive API。先在每台電腦安裝並登入 Google Drive for Desktop，建立同一個資料夾，例如：
+
+```text
+Google Drive/案神/voice-profile/
+```
+
+啟動服務前，把 `ANSON_VOICE_PROFILE_DIR` 指到這個資料夾。Mac 範例（實際 Google Drive 路徑依帳號不同）：
+
+```bash
+export ANSON_VOICE_PROFILE_DIR="$HOME/Library/CloudStorage/GoogleDrive-你的帳號/My Drive/案神/voice-profile"
+bash scripts/start-realtime-voice.sh
+```
+
+Windows Git Bash 範例：
+
+```bash
+export ANSON_VOICE_PROFILE_DIR="G:/My Drive/案神/voice-profile"
+bash scripts/start-realtime-voice.sh
+```
+
+不要讓兩台電腦同時建立或更新聲音身份，等 Google Drive 顯示同步完成後再換另一台使用。目前 profile 尚未加密，請使用私人 Google Drive，不要設成公開共享；正式對外版本應改用案神提供的加密匯出／匯入流程。
+
 每段即時回應都包含 `speaker_id`、`role`、`confidence`、`identity_status`。舊的 Markdown 逐字稿
 格式保持不變，結構化身份資料另存為 `output/<session-id>.segments.jsonl`，也可由
 `GET /segments/<session-id>` 讀取。
