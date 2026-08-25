@@ -379,46 +379,46 @@
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
     }
-    /* Variant B: 深色指揮台。適合長時間盯著即時資訊的 PM。 */
+    /* 舊版深色介面改用案神目前的低刺激炭灰主題。 */
     :root {
-      --background: #0a0f1e;
-      --surface: #111827;
-      --surface-raised: #1a2236;
-      --surface-warm: #211b0b;
-      --text: #e8eeff;
-      --text-secondary: #c8d5f0;
-      --muted: #8da0c4;
-      --subtle: #63759b;
-      --border: #263653;
-      --border-strong: #405377;
-      --signal-soft: #3b2b0a;
-      --client-soft: #3b2b0a;
-      --pm-soft: #172554;
-      --pm-ink: #93c5fd;
-      --success: #34d399;
-      --success-soft: #052e16;
+      --background: #111318;
+      --surface: #191c22;
+      --surface-raised: #22262d;
+      --surface-warm: #29251f;
+      --text: #eeede9;
+      --text-secondary: #d0d0c9;
+      --muted: #a2a5a0;
+      --subtle: #757b75;
+      --border: #30353d;
+      --border-strong: #474d55;
+      --signal-soft: #3b3022;
+      --client-soft: #3b3022;
+      --pm-soft: #263b39;
+      --pm-ink: #8dbbb3;
+      --success: #8fbea8;
+      --success-soft: #20332d;
     }
     body { background: var(--background); }
-    .topbar { background: rgba(10, 15, 30, .92); border-color: var(--border); }
+    .topbar { background: rgba(17, 19, 24, .92); border-color: var(--border); }
     .brand-copy span, .session-meta, .intro-copy, .panel-subtitle, .prototype-note, .footer-note { color: var(--muted); }
     .prototype-note, .button, .recording-bar, .panel, .speaker-role, .message-bubble, .quick-action, .thread-message.ai, .composer textarea { background: var(--surface); border-color: var(--border); }
     .button { color: var(--text-secondary); }
     .button-quiet { background: transparent; }
-    .recording-bar, .panel { box-shadow: 0 14px 30px rgba(0, 0, 0, .18); }
-    .panel-header, .command-panel .panel-header { background: #0f172a; border-color: var(--border); }
+    .recording-bar, .panel { box-shadow: 0 10px 24px rgba(0, 0, 0, .18); }
+    .panel-header, .command-panel .panel-header { background: var(--surface); border-color: var(--border); }
     .panel-index { color: var(--muted); background: var(--surface-raised); }
     .context-strip, .suggestion-card { background: var(--surface-warm); border-color: #6b4e15; }
-    .message.client .message-bubble { background: #211b0b; border-color: #5b4618; }
-    .message.pm .message-bubble { background: var(--pm-soft); border-color: #1e40af; }
-    .speaker-map { background: #0f172a; border-color: var(--border); }
+    .message.client .message-bubble { background: var(--client-soft); border-color: #6b4f2f; }
+    .message.pm .message-bubble { background: var(--pm-soft); border-color: #456d67; }
+    .speaker-map { background: var(--surface-raised); border-color: var(--border); }
     .analysis-summary { background: var(--surface-raised); }
     .tag { background: var(--surface); border-color: var(--border-strong); color: var(--text-secondary); }
-    .tag.confirmed { color: #a7f3d0; background: var(--success-soft); border-color: #166534; }
-    .tag.pending { color: #fde68a; background: var(--signal-soft); border-color: #6b4e15; }
-    .thread-message.user { color: #fde68a; background: var(--signal-soft); border-color: #6b4e15; }
-    .ai-reply { background: var(--success-soft); border-color: #166534; }
-    .ai-reply p { color: #a7f3d0; }
-    .reply-actions button { color: #6ee7b7; }
+    .tag.confirmed { color: #a6d1bf; background: var(--success-soft); border-color: #386451; }
+    .tag.pending { color: #e1bd87; background: var(--signal-soft); border-color: #765a38; }
+    .thread-message.user { color: #e1bd87; background: var(--signal-soft); border-color: #765a38; }
+    .ai-reply { background: var(--success-soft); border-color: #386451; }
+    .ai-reply p { color: #a6d1bf; }
+    .reply-actions button { color: #9bc8b5; }
   </style>
 </head>
 <body>
