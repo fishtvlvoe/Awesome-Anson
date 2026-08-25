@@ -23,39 +23,32 @@
     <header class="topbar">
       <div class="brand-group">
         <div class="brand-mark" aria-hidden="true">AS</div>
-        <div class="brand-copy"><strong>案神 · 即時錄音工作台</strong><span>邊聽、邊整理、邊指揮 AI</span></div>
-        <div class="session-meta" aria-label="目前工作階段"><span>需求訪談</span><strong>即時收音</strong></div>
+        <div class="brand-copy"><strong>案神</strong></div>
       </div>
-      <div class="topbar-actions"><a class="button button-quiet" href="/static/voice-profile.html">聲音身份</a><button class="button button-quiet" type="button" id="theme-toggle">切換深色</button><button class="button button-quiet" type="button" id="save-session">儲存這次記錄</button><button class="button" type="button">結束訪談</button></div>
+      <div class="topbar-actions"><div class="recording-inline" id="recordingBar" aria-label="錄音狀態"><span class="live-dot" id="liveDot" aria-hidden="true"></span><span id="recordingLabel">待機</span><span class="recording-status" id="status">未收音</span><span class="timer" id="sessionTimer">--:--</span></div><button class="button button-primary button-small icon-button" id="toggle" type="button" aria-label="開始或停止收音" title="開始或停止收音"><svg class="svg-icon mic-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 14.5a3.5 3.5 0 0 0 3.5-3.5V6a3.5 3.5 0 0 0-7 0v5a3.5 3.5 0 0 0 3.5 3.5Z"/><path d="M5 10.5a7 7 0 0 0 14 0M12 17.5V21M8.5 21h7"/></svg></button><details class="function-menu"><summary class="button button-small icon-button menu-trigger" aria-label="開啟功能選單" title="功能選單"><span aria-hidden="true">☰</span></summary><div class="function-menu-popover"><button class="button button-small" id="simulateDemo" type="button" title="第一次使用示範">▶ 示範</button><a class="button button-small" href="/static/voice-profile.html">⚙ 聲音身份</a><button class="button button-small theme-button" type="button" id="theme-toggle"><svg class="svg-icon theme-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"/><path class="moon-mark" d="M17.5 3.8a7.5 7.5 0 1 0 2.7 14.5A8.5 8.5 0 0 1 17.5 3.8Z"/></svg><span id="theme-label">主題</span></button></div></details><button class="button button-small" type="button" id="save-session">儲存</button><button class="button button-small" type="button" id="end-session">結束</button></div>
     </header>
 
     <main class="page">
-      <section class="recording-bar" id="recordingBar" aria-label="錄音控制">
-        <div class="live-meta"><span class="live-dot" id="liveDot" aria-hidden="true"></span><div class="live-copy"><strong id="recordingLabel">尚未開始</strong><span id="status">等待你允許麥克風後開始收音</span></div></div>
-        <div class="waveform" aria-label="音量波形"><i style="--bar: 11px"></i><i style="--bar: 22px"></i><i style="--bar: 16px"></i><i style="--bar: 28px"></i><i style="--bar: 13px"></i><i style="--bar: 25px"></i><i style="--bar: 19px"></i><i style="--bar: 31px"></i><i style="--bar: 15px"></i><i style="--bar: 24px"></i><i style="--bar: 12px"></i><i style="--bar: 27px"></i><i style="--bar: 18px"></i><i style="--bar: 29px"></i><i style="--bar: 14px"></i><i style="--bar: 22px"></i><i style="--bar: 10px"></i><i style="--bar: 25px"></i><i style="--bar: 16px"></i><i style="--bar: 30px"></i></div>
-        <div class="live-meta" style="justify-content:flex-end"><span class="timer" id="sessionTimer">--:--</span><button class="button button-small" id="simulateDemo" type="button">播放示範對談</button><button class="button button-primary button-small" id="toggle" type="button">開始收音</button></div>
-      </section>
       <div id="permission-notice">需要允許麥克風權限才能開始收音。這個頁面不會在沒有權限時假裝已錄音。</div>
 
       <section class="workspace" aria-label="即時錄音三欄工作台">
         <article class="panel conversation-panel">
-          <header class="panel-header"><div class="panel-title"><div><h2>現場對話</h2><p class="panel-subtitle">客戶在左邊，我在右邊，最新內容固定在下面</p></div></div><div class="panel-actions"><span class="tag confirmed" id="transcriptCount">0 段</span><button class="button button-small back-to-latest" id="backToLatest" type="button" hidden>回到最新</button></div></header>
+          <header class="panel-header"><div class="panel-title"><div><h2>現場對話</h2></div></div><div class="panel-actions"><span class="tag confirmed" id="transcriptCount">0</span><button class="button button-small back-to-latest icon-button" id="backToLatest" type="button" aria-label="回到最新內容" title="回到最新" hidden>↓</button></div></header>
           <div class="panel-body conversation-body">
-            <div class="context-strip"><span><strong>身份辨識：</strong>先用你的聲音辨識「我」，其他聲音標為客戶，低信心片段保留待確認</span></div>
-            <div id="transcript" aria-live="polite"><div class="transcript-empty" id="transcriptEmpty">開始收音後，真實逐字稿會出現在這裡。<br>最新內容會自動停在最下面。</div></div>
+            <div id="transcript" aria-live="polite"><div class="transcript-empty" id="transcriptEmpty">🎙</div></div>
             <div class="speaker-map" id="speakerMap" aria-label="說話人身份對應">
               <div class="speaker-map-head"><p class="section-kicker">這場訪談的身份規則</p><div class="panel-actions"><span class="speaker-map-status" id="speakerMapStatus">● 尚待確認</span><button class="button button-small" type="button" id="confirmSpeakers">我已確認</button></div></div>
               <div class="speaker-roles"><div class="speaker-role"><span class="role-dot client" aria-hidden="true"></span><div><strong>客戶｜其他聲音</strong><span>未註冊聲音 · 左側</span></div></div><div class="speaker-role"><span class="role-dot pm" aria-hidden="true"></span><div><strong>我｜已註冊聲音</strong><span>你的聲音 · 右側</span></div></div></div>
-              <p class="speaker-map-note">先用目前使用者的聲音做辨識。無法確定時，片段會停在待確認，不會擅自判斷身份。</p>
+              <p class="speaker-map-note">無法確定時保留待確認，不自動猜身份。</p>
             </div>
           </div>
         </article>
 
         <article class="panel analysis-panel">
-          <header class="panel-header"><div class="panel-title"><div><h2>目前判斷</h2><p class="panel-subtitle">只留下 AI 看見的事、判斷依據與下一步</p></div></div><div class="panel-actions"><span class="tag pending" id="analysisTag">等待分析</span></div></header>
+          <header class="panel-header"><div class="panel-title"><div><h2>目前判斷</h2></div></div><div class="panel-actions"><span class="tag pending" id="analysisTag">…</span></div></header>
           <div class="panel-body analysis-body" aria-live="polite">
-            <div class="analysis-status" id="analysis-status">目前沒有即時分析（可能沒有 agent session 在監看）</div>
-            <section class="analysis-summary"><p class="section-kicker">我看到了什麼</p><p id="analysis-summary-text">開始收音並有分析結果後，這裡會顯示目前看到的情境。</p></section>
+            <div class="analysis-status" id="analysis-status" hidden></div>
+            <section class="analysis-summary"><p class="section-kicker">摘要</p><p id="analysis-summary-text">—</p></section>
             <section id="analysis-client-section" class="analysis-section" hidden><h3>判斷依據</h3><ul id="analysis-client-response" class="status-list"></ul></section>
             <section id="analysis-model-section" class="analysis-section" hidden><h3>使用的心智模型</h3><p id="analysis-model" class="analysis-copy">目前還沒有模型判斷。</p></section>
             <section id="analysis-decomposition-section" class="analysis-section" hidden><h3>客戶需求與結果</h3><div id="analysis-decomposition"></div></section>
@@ -65,19 +58,30 @@
         </article>
 
         <article class="panel command-panel">
-          <header class="panel-header"><div class="panel-title"><div><h2>AI 顧問</h2><p class="panel-subtitle">你看到判斷後，才需要在這裡跟我討論</p></div></div><div class="panel-actions"><span class="tag pending">持續觀察</span></div></header>
+          <header class="panel-header"><div class="panel-title"><div><h2>AI 顧問</h2></div></div><div class="panel-actions"><span class="tag pending" aria-label="持續觀察">●</span></div></header>
           <div class="panel-body command-body">
-            <p class="command-intro">左邊的對話會持續更新，中間只保留目前判斷。你可以在這裡告訴我你想採取的方式。</p>
-            <p class="quick-label">快速指令</p>
-            <div class="quick-actions"><button class="quick-action" type="button" data-command="幫我找出目前還沒問清楚、會影響報價的問題。">找出報價缺口</button><button class="quick-action" type="button" data-command="先不要建議我回覆，只整理客戶真正想要的功能。">先只整理</button><button class="quick-action" type="button" data-command="把剛才的內容整理成我可以直接問客戶的下一句話。">幫我追問</button></div>
+            <div class="quick-actions" aria-label="快速指令"><button class="quick-action" type="button" data-command="幫我找出目前還沒問清楚、會影響報價的問題。">找缺口</button><button class="quick-action" type="button" data-command="先不要建議我回覆，只整理客戶真正想要的功能。">先整理</button><button class="quick-action" type="button" data-command="把剛才的內容整理成我可以直接問客戶的下一句話。">幫我追問</button></div>
             <div class="command-thread" id="commandThread" aria-live="polite"><div class="command-message ai"><span class="command-author">AI · 工作方式</span>你可以直接告訴我現在要怎麼分析，我會依照你的指令調整。</div></div>
-            <div class="composer"><textarea class="command-input" id="commandInput" rows="3" placeholder="告訴 AI 這一段要怎麼做，例如：先不要回覆，幫我整理客戶的真正需求。"></textarea><div class="command-send-row"><span class="command-hint">Enter 送出 · Shift + Enter 換行</span><button class="button button-primary button-small" type="button" id="sendCommand">送出指令</button></div></div>
-            <div class="ai-reply"><p class="section-kicker">目前可直接拿來問客戶</p><p id="replyText">等 AI 分析出下一步建議後，這裡會出現可直接使用的句子。</p><div class="reply-actions"><button type="button" id="copyReply">複製這句</button></div></div>
+            <div class="composer"><textarea class="command-input" id="commandInput" rows="3" placeholder="輸入給 AI…"></textarea><div class="command-send-row"><span class="command-hint">↵</span><button class="button button-primary button-small icon-button" type="button" id="sendCommand" aria-label="送出指令" title="送出">➤</button></div></div>
+            <div class="ai-reply"><p class="section-kicker">回覆</p><p id="replyText">—</p><div class="reply-actions"><button class="icon-button" type="button" id="copyReply" aria-label="複製回覆" title="複製">▣</button></div></div>
           </div>
         </article>
       </section>
     </main>
   </div>
+
+  <dialog class="onboarding-modal" id="onboardingModal" aria-labelledby="onboardingTitle">
+    <div class="onboarding-card">
+      <p class="eyebrow">第一次使用</p>
+      <h2 id="onboardingTitle">這個工作台怎麼看</h2>
+      <div class="onboarding-items">
+        <div><span class="onboarding-icon">◌</span><p><strong>現場對話</strong><br>即時逐字稿。</p></div>
+        <div><span class="onboarding-icon">◈</span><p><strong>目前判斷</strong><br>AI 摘要與下一步。</p></div>
+        <div><span class="onboarding-icon">✦</span><p><strong>AI 顧問</strong><br>輸入指令、整理回覆。</p></div>
+      </div>
+      <button class="button button-primary" id="closeOnboarding" type="button">開始</button>
+    </div>
+  </dialog>
 
 <script>
 (() => {
@@ -163,6 +167,7 @@
 
   function showAnalysisStatus(message) {
     analysisStatusEl.textContent = message;
+    analysisStatusEl.hidden = true;
     analysisClientSection.hidden = true;
     analysisModelSection.hidden = true;
     analysisDecompositionSection.hidden = true;
@@ -181,7 +186,7 @@
 
   function renderAnalysis(data) {
     if (!data || data.status === 'not_yet_analyzed') {
-      showAnalysisStatus('目前沒有即時分析（可能沒有 agent session 在監看）');
+      showAnalysisStatus('');
       return;
     }
     if (data.status === 'analysis_error') {
@@ -192,6 +197,7 @@
     analysisStatusEl.textContent = data.generated_at
       ? `分析更新於 ${data.generated_at}`
       : '分析已更新';
+    analysisStatusEl.hidden = true;
     analysisTagEl.textContent = '判斷已更新';
     analysisTagEl.className = 'tag confirmed';
     analysisSummaryEl.textContent = Array.isArray(data.client_response) && data.client_response.length
@@ -262,7 +268,7 @@
   async function pollAnalysis() {
     if (demoMode) return;
     if (!sessionId || sessionId === '__REALTIME_' + 'SESSION_ID__') {
-      showAnalysisStatus('目前沒有即時分析（可能沒有 agent session 在監看）');
+      showAnalysisStatus('');
       return;
     }
     try {
@@ -271,7 +277,7 @@
       });
       renderAnalysis(await response.json());
     } catch (error) {
-      showAnalysisStatus('目前沒有即時分析（可能沒有 agent session 在監看）');
+      showAnalysisStatus('');
     }
   }
 
@@ -354,7 +360,7 @@
     if (mediaStream) { mediaStream.getTracks().forEach((t) => t.stop()); mediaStream = null; }
     if (ws) { ws.close(); ws = null; }
     if (audioContext) { audioContext.close(); audioContext = null; }
-    toggleBtn.textContent = '開始收音';
+    toggleBtn.setAttribute('aria-label', '開始收音');
     toggleBtn.classList.remove('recording');
     recordingBar.classList.remove('is-recording');
     liveDot.classList.add('paused');
@@ -434,19 +440,19 @@
     startSegmentRecorder();
     vadLoop();
 
-    toggleBtn.textContent = '停止收音';
+    toggleBtn.setAttribute('aria-label', '停止收音');
     toggleBtn.classList.add('recording');
     recordingBar.classList.add('is-recording');
     liveDot.classList.remove('paused');
     recordingLabel.textContent = '錄音進行中';
-    statusEl.textContent = '收音中，講話同時會即時顯示文字';
+    statusEl.textContent = '收音中';
   }
 
   function stop() {
     recording = false;
     stopRequested = true;
     if (vadTimer) cancelAnimationFrame(vadTimer);
-    statusEl.textContent = '收尾中，最後一段辨識結果送回來就結束…';
+    statusEl.textContent = '收尾中…';
     if (recorder && recorder.state === 'recording') {
       recorder.stop(); // onstop 會把最後一段送給伺服器，等伺服器回應後才 performCleanup()
     } else {
@@ -469,7 +475,7 @@
     transcriptCountEl.textContent = '0 段';
     transcriptEmptyEl.hidden = true;
     recordingLabel.textContent = '示範對談';
-    statusEl.textContent = '示範模式：依序展示客戶、我、AI 判斷與回應選項';
+    statusEl.textContent = '示範中';
     liveDot.classList.remove('paused');
     const demoSegments = [
       ['客戶希望第一版先解決預約與提醒。', { speaker_id: 'client-1', role: 'client', confidence: 0.91, identity_status: 'unmatched' }],
@@ -492,8 +498,15 @@
         response_options: ['第一版先做預約與提醒，這樣就是你們最想先解決的結果嗎？', '付款與會員先放第二階段，可以嗎？'],
       });
       analysisStatusEl.textContent = '示範分析已完成';
+      simulateDemoButton.hidden = true;
+      try { localStorage.setItem('anson-realtime-demo-complete', '1'); } catch (_) { /* 預覽模式可能沒有儲存權限 */ }
     }, demoSegments.length * 650 + 300);
   });
+  window.finishRealtimeSession = () => {
+    if (recording) stop();
+    recordingLabel.textContent = '已結束';
+    statusEl.textContent = '可儲存';
+  };
 })();
 </script>
 <script>
@@ -501,10 +514,35 @@
   const replyText = document.getElementById('replyText');
   const saveButton = document.getElementById('save-session');
   const themeToggle = document.getElementById('theme-toggle');
+  const themeLabel = document.getElementById('theme-label');
+  const speakerMap = document.getElementById('speakerMap');
+  const simulateDemo = document.getElementById('simulateDemo');
+  const endSession = document.getElementById('end-session');
+  const onboardingModal = document.getElementById('onboardingModal');
+  const closeOnboarding = document.getElementById('closeOnboarding');
+
+  const finishOnboarding = () => {
+    onboardingModal.close();
+    try { localStorage.setItem('anson-realtime-onboarding-seen', '1'); } catch (_) { /* 預覽模式可能沒有儲存權限 */ }
+  };
+  closeOnboarding.addEventListener('click', finishOnboarding);
+  try {
+    if (localStorage.getItem('anson-realtime-onboarding-seen') !== '1') onboardingModal.showModal();
+  } catch (_) {
+    onboardingModal.showModal();
+  }
+
+  try {
+    if (localStorage.getItem('anson-realtime-demo-complete') === '1') simulateDemo.hidden = true;
+    if (localStorage.getItem('anson-realtime-speakers-confirmed') === '1') {
+      speakerMap.classList.add('is-confirmed');
+      speakerMap.hidden = true;
+    }
+  } catch (_) { /* 預覽模式可能沒有儲存權限 */ }
 
   const updateThemeButton = () => {
     const isDark = document.documentElement.dataset.theme === 'dark';
-    themeToggle.textContent = isDark ? '切換淺色' : '切換深色';
+    themeLabel.textContent = isDark ? '淺色' : '深色';
     themeToggle.setAttribute('aria-pressed', String(isDark));
   };
   updateThemeButton();
@@ -610,18 +648,24 @@
   });
 
   document.getElementById('confirmSpeakers').addEventListener('click', (event) => {
-    const map = document.getElementById('speakerMap');
     const status = document.getElementById('speakerMapStatus');
-    map.classList.add('is-confirmed');
+    speakerMap.classList.add('is-confirmed');
+    speakerMap.hidden = true;
     status.textContent = '● 身份規則已確認';
     status.style.color = 'var(--success)';
     event.currentTarget.textContent = '已確認';
     event.currentTarget.disabled = true;
+    try { localStorage.setItem('anson-realtime-speakers-confirmed', '1'); } catch (_) { /* 預覽模式可能沒有儲存權限 */ }
   });
 
   saveButton.addEventListener('click', () => {
     saveButton.textContent = '已儲存';
     setTimeout(() => { saveButton.textContent = '儲存這次記錄'; }, 1400);
+  });
+  endSession.addEventListener('click', () => {
+    window.finishRealtimeSession?.();
+    endSession.textContent = '已結束';
+    endSession.disabled = true;
   });
 })();
 </script>
