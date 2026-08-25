@@ -109,6 +109,7 @@
   const liveDot = document.getElementById('liveDot');
   const commandInput = document.getElementById('commandInput');
   const commandThread = document.getElementById('commandThread');
+  let currentEvidenceSegmentIds = [];
 
   async function recordSessionEvent(event) {
     if (!sessionId || sessionId === '__REALTIME_' + 'SESSION_ID__') return;
@@ -233,6 +234,7 @@
     });
 
     analysisSuggestionEl.textContent = data.suggestion || '目前沒有下一步建議';
+    currentEvidenceSegmentIds = Array.isArray(data.evidence_segment_ids) ? data.evidence_segment_ids : [];
     const responseOptions = Array.isArray(data.response_options) && data.response_options.length
       ? data.response_options.slice(0, 3)
       : [data.suggestion || '目前沒有可以直接拿來問客戶的句子'];
@@ -247,7 +249,7 @@
         commandInput.focus();
         replyTextEl.textContent = option;
         window.dispatchEvent(new CustomEvent('advisor-option-selected', { detail: { index, option } }));
-        window.recordSessionEvent({ event_type: 'response_option_selected', option_index: index, option });
+        window.recordSessionEvent({ event_type: 'response_option_selected', option_index: index, option, evidence_segment_ids: currentEvidenceSegmentIds });
       });
       analysisResponseOptionsEl.appendChild(button);
     });
@@ -516,7 +518,7 @@
       button.textContent = label;
       button.addEventListener('click', () => {
         adoption.querySelectorAll('button').forEach((candidate) => candidate.classList.toggle('is-active', candidate === button));
-        window.recordSessionEvent({ event_type: 'adoption_updated', status, evidence_segment_ids: [] });
+        window.recordSessionEvent({ event_type: 'adoption_updated', status, evidence_segment_ids: currentEvidenceSegmentIds });
       });
       adoption.appendChild(button);
     });

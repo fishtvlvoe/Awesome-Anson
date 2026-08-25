@@ -145,18 +145,23 @@ def append_segment_metadata(
     identity: SpeakerIdentity,
     *,
     timestamp: str | None = None,
-) -> None:
+) -> dict[str, object]:
     """Persist speaker metadata without changing the existing `.md` contract."""
     output_path = session_segments_path(session_id)
     if output_path is None:
         raise ValueError("invalid session id")
+    existing_count = 0
+    if output_path.exists():
+        existing_count = len(output_path.read_text(encoding="utf-8").splitlines())
     payload = {
+        "id": f"seg-{existing_count + 1:04d}",
         "text": text,
         "ts": timestamp or datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
         **identity.to_dict(),
     }
     with open(output_path, "a", encoding="utf-8") as f:
         f.write(json.dumps(payload, ensure_ascii=False) + "\n")
+    return payload
 
 
 def session_events_path(session_id: str) -> Path | None:

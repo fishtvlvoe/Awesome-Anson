@@ -20,6 +20,7 @@ base = {
     'decomposition': {'need': {'value': '預約', 'state': 'confirmed'}},
     'conclusion': '先確認第一版核心結果',
     'suggestion': '先跟客戶確認成功標準',
+    'evidence_segment_ids': ['seg-0001'],
 }
 for count in (1, 2, 3):
     payload = {**base, 'response_options': [f'回應 {i}' for i in range(count)]}

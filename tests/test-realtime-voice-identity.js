@@ -147,6 +147,7 @@ with tempfile.TemporaryDirectory() as tmp:
     segment = json.loads((pathlib.Path(tmp) / 'session-a.segments.jsonl').read_text(encoding='utf-8'))
     assert markdown.endswith('客戶想先看預約流程\\n')
     assert segment['speaker_id'] == 'client-1'
+    assert segment['id'] == 'seg-0001'
     assert segment['role'] == 'client'
     assert segment['confidence'] == 0.42
     assert segment['identity_status'] == 'unmatched'
@@ -168,6 +169,7 @@ with tempfile.TemporaryDirectory() as tmp:
         'event_type': 'response_option_selected',
         'option_index': 1,
         'option': '先確認第一版成功標準',
+        'evidence_segment_ids': ['seg-0001'],
     })
     server.append_session_event('session-a', {
         'event_type': 'demo_triggered',
@@ -176,6 +178,7 @@ with tempfile.TemporaryDirectory() as tmp:
     rows = [json.loads(line) for line in (pathlib.Path(tmp) / 'session-a.events.jsonl').read_text(encoding='utf-8').splitlines()]
     assert [row['event_type'] for row in rows] == ['response_option_selected', 'demo_triggered']
     assert rows[0]['option_index'] == 1
+    assert rows[0]['evidence_segment_ids'] == ['seg-0001']
     assert rows[1]['trigger_phrase'].startswith('我覺得這個方向可以')
     try:
         server.append_session_event('session-a', {'event_type': 'run_code'})

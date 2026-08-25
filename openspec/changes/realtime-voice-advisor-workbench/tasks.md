@@ -42,7 +42,7 @@
 
 - [x] 4.1 擴充 analysis schema 與 server endpoint，支援 observed、mental_model、evidence、conclusion、response_options；驗證：valid、missing、malformed payload 各有明確 UI 狀態
 - [x] 4.2 將 1 至 3 個回應選項送入右側 advisor chat；驗證：點選後右側留下使用者訊息，中央分析仍保留
-- [ ] 4.3 實作使用者採納比對與 evidence segment ids；驗證：adopted、partial、not_adopted 三種匿名情境可重現
+- [x] 4.3 實作使用者採納比對與 evidence segment ids；驗證：adopted、partial、not_adopted 三種匿名情境可重現
 - [x] 4.4 實作 DEMO phrase event writer，與 `demo-generation-deploy` 保持 process 邊界；驗證：只寫事件檔，不在 server process 內產生或部署程式碼
 
 ## 5. 整合與文件

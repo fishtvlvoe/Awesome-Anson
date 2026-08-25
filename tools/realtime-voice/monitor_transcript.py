@@ -40,6 +40,10 @@ ANALYSIS_SCHEMA = {
             "minItems": 1,
             "maxItems": 3,
         },
+        "evidence_segment_ids": {
+            "type": "array",
+            "items": {"type": "string"},
+        },
     },
     "required": [
         "client_response",
@@ -49,6 +53,7 @@ ANALYSIS_SCHEMA = {
         "conclusion",
         "suggestion",
         "response_options",
+        "evidence_segment_ids",
     ],
     "additionalProperties": False,
 }
@@ -98,7 +103,8 @@ def build_analysis_prompt(
 ) -> str:
     """Build a strict, untrusted-transcript prompt for the lightweight agent."""
     transcript = "\n".join(
-        f"- [{entry.timestamp.isoformat()}] {entry.text}" for entry in entries
+        f"- [seg-{index:04d}] [{entry.timestamp.isoformat()}] {entry.text}"
+        for index, entry in enumerate(entries, start=1)
     )
     skill_context = (
         f"\n既有 skill 規格如下，請遵守其即時回應規則：\n{skill_text}\n"
@@ -116,6 +122,7 @@ def build_analysis_prompt(
 5. conclusion：用一句話說明你判斷客戶目前狀態、需求點與想達到的結果。
 6. suggestion：只給一句當下最重要的下一步建議。
 7. response_options：給 1 到 3 個可以直接對客戶說的不同回應；每個選項都要對應目前的判斷，不要變成問題清單。
+8. evidence_segment_ids：列出支持判斷的逐字稿 segment id，例如 seg-0001；只能使用本次逐字稿裡出現的 id。
 
 輸出 JSON 必須符合：
 {json.dumps(ANALYSIS_SCHEMA, ensure_ascii=False)}
@@ -177,6 +184,11 @@ def parse_agent_output(stdout: str) -> dict:
         raise ValueError("response_options must contain 1 to 3 options")
     if not all(isinstance(item, str) and item.strip() for item in response_options):
         raise ValueError("response_options items must be non-empty strings")
+    evidence_segment_ids = decoded.get("evidence_segment_ids")
+    if not isinstance(evidence_segment_ids, list) or not all(
+        isinstance(item, str) and item.startswith("seg-") for item in evidence_segment_ids
+    ):
+        raise ValueError("evidence_segment_ids must be a list of segment ids")
     return decoded
 
 
