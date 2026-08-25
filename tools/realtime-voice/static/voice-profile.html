@@ -3,225 +3,78 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>案神｜聲音身份設定</title>
+  <title>案神｜建立聲音身份</title>
   <script>
     (() => {
       try {
         const saved = localStorage.getItem('anson-realtime-theme');
         document.documentElement.dataset.theme = saved === 'dark' ? 'dark' : 'light';
-      } catch (error) {
-        document.documentElement.dataset.theme = 'light';
-      }
+      } catch (_) { document.documentElement.dataset.theme = 'light'; }
     })();
   </script>
   <style>
-    :root {
-      color-scheme: light;
-      --bg: #eef0ed;
-      --surface: #f8f9f7;
-      --surface-raised: #e7eae6;
-      --text: #202522;
-      --text-secondary: #3f4741;
-      --muted: #69736b;
-      --subtle: #929c94;
-      --border: #d6dbd5;
-      --border-strong: #b9c2ba;
-      --signal: #c7873c;
-      --signal-ink: #3b2917;
-      --signal-soft: #f2e5d3;
-      --success: #39705b;
-      --success-soft: #e1eee8;
-      --radius: 10px;
-      --radius-lg: 14px;
-      --shadow: 0 1px 2px rgba(34, 42, 36, .06);
-      --ease: cubic-bezier(.16, 1, .3, 1);
-    }
-    html[data-theme="dark"] {
-      color-scheme: dark;
-      --bg: #111318;
-      --surface: #191c22;
-      --surface-raised: #22262d;
-      --text: #eeede9;
-      --text-secondary: #d0d0c9;
-      --muted: #a2a5a0;
-      --subtle: #757b75;
-      --border: #30353d;
-      --border-strong: #474d55;
-      --signal: #3f444c;
-      --signal-ink: #f1f1ef;
-      --signal-soft: #25292f;
-      --success: #b8bcb8;
-      --success-soft: #24282e;
-      --shadow: 0 1px 2px rgba(0, 0, 0, .26);
-    }
-    * { box-sizing: border-box; }
-    body { min-width: 320px; min-height: 100dvh; margin: 0; color: var(--text); background: var(--bg); font-family: Inter, "Noto Sans TC", "PingFang TC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; -webkit-font-smoothing: antialiased; }
-    button, a { font: inherit; }
-    button { cursor: pointer; }
-    button:focus-visible, a:focus-visible { outline: 3px solid color-mix(in srgb, var(--signal) 46%, transparent); outline-offset: 2px; }
-    .topbar { position: sticky; z-index: 2; top: 0; display: flex; align-items: center; justify-content: space-between; min-height: 58px; padding: 10px clamp(16px, 3vw, 40px); background: color-mix(in srgb, var(--bg) 92%, transparent); border-bottom: 1px solid var(--border); backdrop-filter: blur(12px); }
-    .brand, .top-actions, .profile-line, .step-line, .sample-meta, .sample-actions, .button-row { display: flex; align-items: center; }
-    .brand { gap: 10px; }
-    .brand-mark { display: grid; width: 34px; height: 34px; place-items: center; color: var(--signal-ink); background: var(--signal); border-radius: 9px; font-size: 12px; font-weight: 800; }
-    .brand-copy { display: grid; gap: 2px; }
-    .brand-copy strong { font-size: 14px; }
-    .brand-copy span { color: var(--muted); font-size: 11px; }
-    .top-actions { gap: 8px; }
-    .button { display: inline-flex; align-items: center; justify-content: center; min-height: 36px; padding: 0 12px; color: var(--text-secondary); background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius); font-size: 12px; font-weight: 700; text-decoration: none; transition: transform 160ms var(--ease), border-color 160ms var(--ease), background 160ms var(--ease); }
-    .button:hover { border-color: var(--text-secondary); transform: translateY(-1px); }
-    .button:active { transform: translateY(1px); }
-    .button-primary { color: var(--signal-ink); background: var(--signal); border-color: transparent; }
-    .button-quiet { border-color: transparent; background: transparent; }
-    .page { width: min(1320px, 100%); margin: 0 auto; padding: 26px clamp(16px, 3vw, 40px) 48px; }
-    .page-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 22px; }
-    .eyebrow, .kicker { margin: 0 0 7px; color: var(--muted); font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
-    h1, h2, h3, p { margin-top: 0; }
-    h1 { margin-bottom: 8px; font-size: clamp(26px, 4vw, 42px); letter-spacing: -.05em; line-height: 1.06; }
-    .lead { max-width: 660px; margin-bottom: 0; color: var(--muted); font-size: 14px; line-height: 1.65; }
-    .status-badge { display: inline-flex; align-items: center; min-height: 28px; padding: 0 9px; color: var(--muted); background: var(--surface-raised); border: 1px solid var(--border); border-radius: 999px; font-size: 11px; font-weight: 800; white-space: nowrap; }
-    .status-badge::before { width: 7px; height: 7px; margin-right: 6px; background: var(--subtle); border-radius: 50%; content: ""; }
-    .status-badge.ready { color: var(--success); background: var(--success-soft); border-color: color-mix(in srgb, var(--success) 28%, var(--border)); }
-    .status-badge.ready::before { background: var(--success); }
-    .grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(300px, .75fr); gap: 14px; }
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow); }
-    .card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 17px 18px 14px; border-bottom: 1px solid var(--border); }
-    .card-header h2 { margin-bottom: 4px; font-size: 16px; letter-spacing: -.02em; }
-    .card-header p { margin-bottom: 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
-    .card-body { padding: 18px; }
-    .overview { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 18px; }
-    .metric { padding: 13px; background: var(--surface-raised); border: 1px solid var(--border); border-radius: var(--radius); }
-    .metric span { display: block; margin-bottom: 6px; color: var(--muted); font-size: 11px; }
-    .metric strong { display: block; color: var(--text-secondary); font-size: 18px; letter-spacing: -.03em; }
-    .metric small { display: block; margin-top: 4px; color: var(--subtle); font-size: 10px; }
-    .steps { display: grid; gap: 0; margin-bottom: 20px; }
-    .step { position: relative; display: grid; grid-template-columns: 28px 1fr; gap: 10px; padding-bottom: 18px; }
-    .step:not(:last-child)::after { position: absolute; top: 28px; bottom: 0; left: 13px; width: 1px; background: var(--border-strong); content: ""; }
-    .step-number { position: relative; z-index: 1; display: grid; width: 28px; height: 28px; place-items: center; color: var(--muted); background: var(--surface); border: 1px solid var(--border-strong); border-radius: 50%; font-size: 11px; font-weight: 800; }
-    .step.active .step-number { color: var(--signal-ink); background: var(--signal); border-color: var(--signal); }
-    .step h3 { margin: 2px 0 4px; font-size: 13px; }
-    .step p { margin-bottom: 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
-    .sample-list { display: grid; gap: 8px; }
-    .sample { display: grid; grid-template-columns: 20px 1fr auto; align-items: center; gap: 10px; padding: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); transition: border-color 160ms var(--ease), background 160ms var(--ease); }
-    .sample:has(input:checked) { background: var(--signal-soft); border-color: color-mix(in srgb, var(--signal) 52%, var(--border)); }
-    .sample input { width: 16px; height: 16px; accent-color: var(--signal); }
-    .sample strong { display: block; margin-bottom: 3px; color: var(--text-secondary); font-size: 12px; }
-    .sample p { margin-bottom: 0; color: var(--muted); font-size: 11px; line-height: 1.45; }
-    .sample-meta { justify-content: flex-end; gap: 7px; color: var(--subtle); font-size: 11px; white-space: nowrap; }
-    .quality { color: var(--success); background: var(--success-soft); border-radius: 999px; padding: 4px 7px; font-size: 10px; font-weight: 800; }
-    .note { margin: 15px 0 0; padding: 11px 12px; color: var(--muted); background: var(--surface-raised); border-left: 3px solid var(--signal); border-radius: 0 var(--radius) var(--radius) 0; font-size: 11px; line-height: 1.55; }
-    .side-card + .side-card { margin-top: 14px; }
-    .profile-line { gap: 12px; padding-bottom: 15px; border-bottom: 1px solid var(--border); }
-    .avatar { display: grid; width: 46px; height: 46px; place-items: center; color: var(--signal-ink); background: var(--signal-soft); border: 1px solid color-mix(in srgb, var(--signal) 38%, var(--border)); border-radius: 12px; font-size: 17px; font-weight: 800; }
-    .profile-line strong { display: block; margin-bottom: 3px; font-size: 14px; }
-    .profile-line span { color: var(--muted); font-size: 11px; }
-    .side-copy { margin: 15px 0 0; color: var(--muted); font-size: 12px; line-height: 1.65; }
-    .privacy { display: grid; gap: 8px; margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border); }
-    .privacy-row { display: flex; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 11px; }
-    .privacy-row strong { color: var(--text-secondary); }
-    .button-row { justify-content: flex-end; gap: 8px; margin-top: 18px; }
-    .result { display: none; margin-top: 14px; padding: 12px; color: var(--success); background: var(--success-soft); border: 1px solid color-mix(in srgb, var(--success) 28%, var(--border)); border-radius: var(--radius); font-size: 12px; line-height: 1.55; }
-    .result.is-visible { display: block; }
-    @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } .page-heading { display: block; } .page-heading .status-badge { margin-top: 14px; } }
-    @media (max-width: 560px) { .topbar { align-items: flex-start; gap: 10px; } .brand-copy span { display: none; } .top-actions .button-quiet { display: none; } .overview { grid-template-columns: 1fr; } .sample { grid-template-columns: 20px 1fr; } .sample-meta { grid-column: 2; justify-content: flex-start; } .card-header, .card-body { padding: 14px; } }
-    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+    :root { color-scheme: light; --bg:#f4f5f3; --surface:#fff; --raised:#e9ebe8; --text:#202522; --text-2:#3f4741; --muted:#69736b; --subtle:#929c94; --border:#d6dbd5; --border-strong:#b9c2ba; --signal:#c7873c; --signal-ink:#3b2917; --soft:#f2e5d3; --success:#39705b; --success-soft:#e1eee8; }
+    html[data-theme="dark"] { color-scheme:dark; --bg:#111318; --surface:#191c22; --raised:#22262d; --text:#eeede9; --text-2:#d0d0c9; --muted:#a2a5a0; --subtle:#757b75; --border:#30353d; --border-strong:#474d55; --signal:#3f444c; --signal-ink:#f1f1ef; --soft:#25292f; --success:#c5c9c5; --success-soft:#24282e; }
+    * { box-sizing:border-box; }
+    body { min-width:320px; min-height:100dvh; margin:0; color:var(--text); background:var(--bg); font-family:Inter,"Noto Sans TC","PingFang TC",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; -webkit-font-smoothing:antialiased; }
+    button,a { font:inherit; } button { cursor:pointer; }
+    button:focus-visible,a:focus-visible { outline:3px solid color-mix(in srgb,var(--signal) 45%,transparent); outline-offset:2px; }
+    .topbar { display:flex; align-items:center; justify-content:space-between; min-height:58px; padding:10px clamp(16px,4vw,48px); border-bottom:1px solid var(--border); }
+    .brand,.top-actions,.recording-actions { display:flex; align-items:center; }
+    .brand { gap:10px; color:var(--text); text-decoration:none; } .brand-mark { display:grid; width:34px; height:34px; place-items:center; color:var(--signal-ink); background:var(--signal); border-radius:9px; font-size:12px; font-weight:800; } .brand-copy { display:grid; gap:2px; } .brand-copy strong { font-size:14px; } .brand-copy span { color:var(--muted); font-size:11px; }
+    .top-actions { gap:8px; } .button { display:inline-flex; align-items:center; justify-content:center; min-height:38px; padding:0 13px; color:var(--text-2); background:var(--surface); border:1px solid var(--border-strong); border-radius:9px; font-size:12px; font-weight:750; text-decoration:none; transition:transform 160ms ease,background 160ms ease,border-color 160ms ease; } .button:hover { border-color:var(--text-2); transform:translateY(-1px); } .button:active { transform:translateY(1px); } .button:disabled { opacity:.42; cursor:not-allowed; transform:none; } .button-primary { color:var(--signal-ink); background:var(--signal); border-color:transparent; } .button-quiet { background:transparent; border-color:transparent; }
+    .page { width:min(1080px,100%); margin:0 auto; padding:38px clamp(16px,4vw,48px) 56px; } .page-heading { max-width:680px; margin-bottom:24px; } h1,h2,h3,p { margin-top:0; } h1 { margin-bottom:10px; font-size:clamp(28px,5vw,44px); letter-spacing:-.055em; line-height:1.08; } .lead { margin:0; color:var(--muted); font-size:15px; line-height:1.7; }
+    .layout { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(280px,.8fr); gap:14px; align-items:start; } .card { background:var(--surface); border:1px solid var(--border); border-radius:16px; box-shadow:0 1px 3px rgba(0,0,0,.08); } .card-header { display:flex; align-items:flex-start; justify-content:space-between; gap:14px; padding:18px 20px 15px; border-bottom:1px solid var(--border); } .card-header h2 { margin-bottom:5px; font-size:17px; letter-spacing:-.02em; } .card-header p { margin:0; color:var(--muted); font-size:12px; line-height:1.5; } .card-body { padding:20px; }
+    .status { display:inline-flex; align-items:center; min-height:27px; padding:0 9px; color:var(--muted); background:var(--raised); border:1px solid var(--border); border-radius:999px; font-size:11px; font-weight:800; white-space:nowrap; } .status.ready { color:var(--success); background:var(--success-soft); }
+    .recorder { display:grid; justify-items:center; padding:24px 14px 20px; border:1px solid var(--border); border-radius:14px; background:var(--raised); text-align:center; } .mic-button { display:grid; width:96px; height:96px; place-items:center; margin:5px 0 15px; color:var(--signal-ink); background:var(--signal); border:0; border-radius:50%; box-shadow:0 0 0 8px color-mix(in srgb,var(--signal) 13%,transparent); font-size:31px; transition:transform 160ms ease,box-shadow 160ms ease; } .mic-button:hover { transform:scale(1.04); } .mic-button.is-recording { box-shadow:0 0 0 8px color-mix(in srgb,var(--signal) 18%,transparent),0 0 0 17px color-mix(in srgb,var(--signal) 8%,transparent); } .recorder strong { font-size:17px; } .recorder p { margin:7px 0 0; color:var(--muted); font-size:12px; } .timer { margin-top:12px; color:var(--text-2); font-family:"JetBrains Mono",monospace; font-size:20px; font-weight:700; }
+    .recording-actions { justify-content:center; flex-wrap:wrap; gap:8px; margin-top:18px; } .samples { display:grid; gap:8px; margin-top:16px; } .sample { display:grid; grid-template-columns:1fr auto; gap:12px; align-items:center; padding:13px; border:1px solid var(--border); border-radius:10px; } .sample strong { display:block; margin-bottom:4px; font-size:13px; } .sample span { color:var(--muted); font-size:11px; } audio { width:180px; height:30px; }
+    .side { display:grid; gap:14px; } .side .card-body { padding:18px; } .side h3 { margin-bottom:8px; font-size:14px; } .side p { margin-bottom:0; color:var(--muted); font-size:12px; line-height:1.7; } .rule-list { display:grid; gap:10px; margin:0; padding:0; list-style:none; } .rule-list li { display:grid; grid-template-columns:24px 1fr; gap:9px; align-items:start; color:var(--muted); font-size:12px; line-height:1.55; } .rule-list b { display:grid; width:24px; height:24px; place-items:center; color:var(--text-2); background:var(--raised); border-radius:7px; font-size:11px; }
+    .note { margin-top:16px; padding:12px 13px; color:var(--muted); background:var(--raised); border-left:3px solid var(--border-strong); border-radius:0 9px 9px 0; font-size:11px; line-height:1.6; } .result { display:none; margin-top:14px; padding:12px; color:var(--success); background:var(--success-soft); border:1px solid var(--border); border-radius:9px; font-size:12px; line-height:1.55; } .result.is-visible { display:block; }
+    @media (max-width:800px) { .layout { grid-template-columns:1fr; } } @media (max-width:520px) { .topbar { align-items:flex-start; gap:10px; } .brand-copy span,.top-actions .button-quiet { display:none; } .card-header,.card-body { padding:15px; } .sample { grid-template-columns:1fr; } audio { width:100%; } }
   </style>
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="index.html">
-      <span class="brand-mark" aria-hidden="true">AS</span>
-      <span class="brand-copy"><strong>案神 · 即時錄音工作台</strong><span>聲音身份設定</span></span>
-    </a>
-    <nav class="top-actions" aria-label="頁面操作">
-      <a class="button button-quiet" href="index.html">回到工作台</a>
-      <button class="button button-quiet" id="theme-toggle" type="button">切換深色</button>
-    </nav>
+    <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">AS</span><span class="brand-copy"><strong>案神 · 即時錄音工作台</strong><span>聲音身份設定</span></span></a>
+    <nav class="top-actions" aria-label="頁面操作"><a class="button button-quiet" href="index.html">回到工作台</a><button class="button button-quiet" id="theme-toggle" type="button">切換深色</button></nav>
   </header>
-
   <main class="page">
-    <section class="page-heading">
-      <div>
-        <p class="eyebrow">Voice identity</p>
-        <h1>先讓案神認得 Fish 的聲音。</h1>
-        <p class="lead">從本機 Typeless 找到的錄音中，挑出你的聲音樣本。這一頁先完成樣本準備，下一步才建立本機聲音特徵。</p>
-      </div>
-      <span class="status-badge" id="page-status">尚未建立聲音特徵</span>
-    </section>
-
-    <section class="grid" aria-label="聲音身份設定工作區">
+    <section class="page-heading"><h1>建立你的聲音身份</h1><p class="lead">直接錄一段你自己的聲音，讓案神知道對話裡哪一邊是你。其他聲音會先標成客戶；不確定的片段會保留給你確認。</p></section>
+    <section class="layout" aria-label="建立聲音身份">
       <article class="card">
-        <header class="card-header"><div><h2>從 Typeless 選擇聲音樣本</h2><p>以下是本機已找到的近期錄音候選，不會上傳到雲端。</p></div><span class="status-badge ready">本機已找到</span></header>
+        <header class="card-header"><div><h2>錄一段你的聲音</h2><p>請在安靜環境，用平常跟客戶說話的方式講話。</p></div><span class="status" id="profile-status">尚未建立</span></header>
         <div class="card-body">
-          <div class="overview">
-            <div class="metric"><span>可用錄音</span><strong>1,056</strong><small>Typeless 本機資料夾</small></div>
-            <div class="metric"><span>目前選取</span><strong id="selected-count">0 段</strong><small>建議先選 4 至 8 段</small></div>
-            <div class="metric"><span>辨識方向</span><strong>Fish</strong><small>其他聲音視為客戶</small></div>
-          </div>
-
-          <div class="steps" aria-label="建立聲音身份步驟">
-            <div class="step active"><span class="step-number">1</span><div><h3>選擇你的聲音</h3><p>挑選清楚、連續、主要只有你說話的錄音。</p></div></div>
-            <div class="step"><span class="step-number">2</span><div><h3>建立聲音特徵</h3><p>本機模型會把聲音轉成特徵，不把原始錄音放進 Git。</p></div></div>
-            <div class="step"><span class="step-number">3</span><div><h3>接回即時對話</h3><p>錄音時自動標示 Fish、客戶或待確認。</p></div></div>
-          </div>
-
-          <div class="sample-list">
-            <label class="sample"><input type="checkbox" data-sample="A"><span><strong>樣本 A · 連續說話</strong><p>今天的 Typeless 錄音，語句完整，適合當主要樣本。</p></span><span class="sample-meta"><span class="quality">清楚</span><span>2:25</span></span></label>
-            <label class="sample"><input type="checkbox" data-sample="B"><span><strong>樣本 B · 需求說明</strong><p>語速接近平常工作對話，適合補充辨識變化。</p></span><span class="sample-meta"><span class="quality">清楚</span><span>2:18</span></span></label>
-            <label class="sample"><input type="checkbox" data-sample="C"><span><strong>樣本 C · 設計討論</strong><p>包含較長句與停頓，可以測試自然說話狀態。</p></span><span class="sample-meta"><span class="quality">清楚</span><span>3:11</span></span></label>
-            <label class="sample"><input type="checkbox" data-sample="D"><span><strong>樣本 D · 短句確認</strong><p>短句較多，補足快速回應時的聲音特徵。</p></span><span class="sample-meta"><span class="quality">可用</span><span>0:51</span></span></label>
-          </div>
-          <p class="note">這裡顯示的是 Typeless 的本機錄音索引。正式建立聲音特徵前，會再檢查音量、雜音與是否混入其他人的聲音。</p>
-          <div class="button-row"><button class="button" id="clear-samples" type="button">清除選取</button><button class="button button-primary" id="prepare-profile" type="button">準備建立聲音特徵</button></div>
-          <div class="result" id="prepare-result" role="status"></div>
+          <div class="recorder"><button class="mic-button" id="record-button" type="button" aria-label="開始錄音">開始</button><strong id="record-title">按一下開始錄音</strong><p id="record-copy">建議錄 15 至 30 秒，講完整幾句話。</p><div class="timer" id="timer">00:00</div></div>
+          <div class="recording-actions"><button class="button" id="stop-button" type="button" disabled>停止錄音</button><button class="button" id="reset-button" type="button" disabled>重新錄音</button><button class="button button-primary" id="build-profile" type="button" disabled>建立聲音身份</button></div>
+          <div class="samples" id="samples" aria-live="polite"></div><div class="result" id="result" role="status"></div>
+          <p class="note">錄音與聲音特徵只留在這台裝置，不會把原始聲音寫進 Git。</p>
         </div>
       </article>
-
-      <aside>
-        <article class="card side-card">
-          <header class="card-header"><div><h2>目前聲音身份</h2><p>這是案神之後判斷角色的基準。</p></div></header>
-          <div class="card-body">
-            <div class="profile-line"><span class="avatar">F</span><div><strong>Fish</strong><span>尚未建立本機聲音特徵</span></div></div>
-            <p class="side-copy">完成後，案神會先判斷「是不是 Fish」。不像 Fish 的聲音才會進入客戶判斷，不確定的片段會保留給你確認。</p>
-            <div class="privacy"><div class="privacy-row"><span>原始音檔</span><strong>留在本機</strong></div><div class="privacy-row"><span>聲音特徵</span><strong>本機保存</strong></div><div class="privacy-row"><span>寫入 Git</span><strong>不會</strong></div></div>
-          </div>
-        </article>
-        <article class="card side-card">
-          <header class="card-header"><div><h2>辨識結果會怎麼顯示</h2><p>接回錄音工作台後的角色規則。</p></div></header>
-          <div class="card-body">
-            <div class="step-line"><span class="status-badge ready">Fish</span><span class="side-copy" style="margin:0 0 0 10px">符合你的聲音特徵，顯示在右側。</span></div>
-            <div class="step-line" style="margin-top:12px"><span class="status-badge">客戶</span><span class="side-copy" style="margin:0 0 0 10px">不是你的聲音，顯示在左側。</span></div>
-            <div class="step-line" style="margin-top:12px"><span class="status-badge">待確認</span><span class="side-copy" style="margin:0 0 0 10px">信心不足，不擅自判斷。</span></div>
-          </div>
-        </article>
+      <aside class="side">
+        <article class="card"><header class="card-header"><div><h2>案神會怎麼判斷</h2><p>先辨認「是不是你」，再分辨其他說話人。</p></div></header><div class="card-body"><ol class="rule-list"><li><b>1</b><span>符合你的聲音特徵 → 顯示「我／專案經理」，對話靠右。</span></li><li><b>2</b><span>不是你的聲音 → 顯示「客戶 1、客戶 2」，對話靠左。</span></li><li><b>3</b><span>信心不足 → 顯示「待確認」，不擅自猜身份。</span></li></ol></div></article>
+        <article class="card"><header class="card-header"><div><h2>目前狀態</h2><p>建立完成後，這裡會顯示本機身份。</p></div></header><div class="card-body"><h3 id="identity-name">尚未建立聲音身份</h3><p id="identity-copy">先錄一段自己的聲音。之後可以在工作台重新錄製或更新。</p></div></article>
       </aside>
     </section>
   </main>
-
   <script>
     (() => {
-      const checks = [...document.querySelectorAll('[data-sample]')];
-      const count = document.getElementById('selected-count');
-      const status = document.getElementById('page-status');
-      const result = document.getElementById('prepare-result');
-      const updateCount = () => { count.textContent = `${checks.filter((input) => input.checked).length} 段`; };
-      checks.forEach((input) => input.addEventListener('change', updateCount));
-      document.getElementById('clear-samples').addEventListener('click', () => { checks.forEach((input) => { input.checked = false; }); updateCount(); result.classList.remove('is-visible'); });
-      document.getElementById('prepare-profile').addEventListener('click', () => {
-        const selected = checks.filter((input) => input.checked).length;
-        if (selected < 2) {
-          result.textContent = '至少先選 2 段聲音，讓第一版特徵不只依賴單一錄音。';
-          result.classList.add('is-visible');
-          return;
-        }
-        status.textContent = '樣本已準備，等待建立特徵';
-        status.classList.add('ready');
-        result.textContent = `已選取 ${selected} 段本機 Typeless 錄音。下一步接入本機聲音特徵模型，原始音檔不會離開這台電腦。`;
-        result.classList.add('is-visible');
+      const recordButton = document.getElementById('record-button'); const stopButton = document.getElementById('stop-button'); const resetButton = document.getElementById('reset-button'); const buildButton = document.getElementById('build-profile'); const title = document.getElementById('record-title'); const copy = document.getElementById('record-copy'); const timer = document.getElementById('timer'); const samples = document.getElementById('samples'); const result = document.getElementById('result'); const profileStatus = document.getElementById('profile-status'); const identityName = document.getElementById('identity-name'); const identityCopy = document.getElementById('identity-copy');
+      let recorder = null; let stream = null; let chunks = []; let audioUrl = null; let startedAt = 0; let timerId = null;
+      const formatTime = (seconds) => `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`; const updateTimer = () => { timer.textContent = formatTime(Math.floor((Date.now() - startedAt) / 1000)); }; const showResult = (message) => { result.textContent = message; result.classList.add('is-visible'); }; const stopTracks = () => { if (stream) stream.getTracks().forEach((track) => track.stop()); stream = null; };
+      const resetAudio = () => { if (audioUrl) URL.revokeObjectURL(audioUrl); audioUrl = null; chunks = []; samples.innerHTML = ''; buildButton.disabled = true; resetButton.disabled = true; };
+      recordButton.addEventListener('click', async () => {
+        if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) { showResult('這個瀏覽器不支援本機錄音，請改用最新版 Chrome 或 Safari。'); return; }
+        resetAudio(); result.classList.remove('is-visible');
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({ audio: true }); recorder = new MediaRecorder(stream); chunks = []; startedAt = Date.now(); timerId = window.setInterval(updateTimer, 250);
+          recorder.addEventListener('dataavailable', (event) => { if (event.data.size) chunks.push(event.data); }); recorder.addEventListener('stop', () => { window.clearInterval(timerId); updateTimer(); stopTracks(); if (!chunks.length) { showResult('沒有收到聲音，請再錄一次。'); return; } audioUrl = URL.createObjectURL(new Blob(chunks, { type: recorder.mimeType || 'audio/webm' })); samples.innerHTML = `<div class="sample"><div><strong>我的聲音樣本</strong><span>剛剛錄製 · ${timer.textContent}</span></div><audio controls src="${audioUrl}"></audio></div>`; title.textContent = '聲音樣本已準備好'; copy.textContent = '先播放確認，沒問題就建立聲音身份。'; buildButton.disabled = false; resetButton.disabled = false; });
+          recorder.start(); recordButton.classList.add('is-recording'); recordButton.textContent = '錄音中'; recordButton.setAttribute('aria-label', '錄音中'); stopButton.disabled = false; recordButton.disabled = true; title.textContent = '正在錄音'; copy.textContent = '講幾句你平常會對客戶說的話。';
+        } catch (error) { stopTracks(); showResult(error.name === 'NotAllowedError' ? '需要允許麥克風權限，才能建立聲音身份。' : `無法開始錄音：${error.message}`); }
       });
-      const themeToggle = document.getElementById('theme-toggle');
-      const updateTheme = () => { themeToggle.textContent = document.documentElement.dataset.theme === 'dark' ? '切換淺色' : '切換深色'; };
-      themeToggle.addEventListener('click', () => { const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'; document.documentElement.dataset.theme = next; localStorage.setItem('anson-realtime-theme', next); updateTheme(); });
-      updateTheme();
+      stopButton.addEventListener('click', () => { if (recorder?.state === 'recording') recorder.stop(); recordButton.classList.remove('is-recording'); recordButton.textContent = '開始'; recordButton.disabled = false; stopButton.disabled = true; });
+      resetButton.addEventListener('click', () => { resetAudio(); timer.textContent = '00:00'; title.textContent = '按一下開始錄音'; copy.textContent = '建議錄 15 至 30 秒，講完整幾句話。'; result.classList.remove('is-visible'); });
+      buildButton.addEventListener('click', () => { profileStatus.textContent = '已建立'; profileStatus.classList.add('ready'); identityName.textContent = '我的聲音身份'; identityCopy.textContent = '之後符合這個聲音的片段會標示為「我／專案經理」，其他聲音會分到客戶側。'; showResult('聲音樣本已準備完成。正式接入 speaker model 後，錄音工作台會使用這個身份判別角色。'); buildButton.disabled = true; });
+      document.getElementById('theme-toggle').addEventListener('click', () => { const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'; document.documentElement.dataset.theme = next; localStorage.setItem('anson-realtime-theme', next); });
     })();
   </script>
 </body>
