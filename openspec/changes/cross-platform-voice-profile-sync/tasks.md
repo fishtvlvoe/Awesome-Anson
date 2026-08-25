@@ -37,4 +37,4 @@
 - [x] 5.2 執行既有 42 項測試；驗證：46/46 PASS
 - [x] 5.3 完成 Mac 本機 fixture smoke：local profile → iCloud path → restart → read same profile
 - [x] 5.4 完成 Windows fixture smoke：local profile → Google Drive path → restart → read same profile
-- [ ] 5.5 完成 self-review，確認只修改本 SR 列出的檔案；驗證：git diff、git status 與測試輸出完整
+- [x] 5.5 完成 self-review，確認只修改本 SR 列出的檔案；驗證：git diff、git status 與測試輸出完整
