@@ -7,10 +7,10 @@
 從 repo 根目錄也可以直接執行跨電腦安裝腳本：
 
 ```bash
-bash scripts/setup-realtime-voice.sh --with-system-deps
+bash scripts/setup-realtime-voice.sh
 ```
 
-腳本會建立 `venv`、安裝 `requirements.txt`，並檢查 ffmpeg。`--with-system-deps` 在 macOS 且已有 Homebrew 時會自動安裝 ffmpeg；Linux 或其他系統請依腳本輸出的指令安裝。
+腳本會建立 `venv`、安裝 `requirements.txt`、自動安裝 ffmpeg，並預下載 SenseVoice 與 ERes2NetV2 speaker model。若只想檢查現有環境：`bash scripts/setup-realtime-voice.sh --check-only`。
 
 ```bash
 cd tools/realtime-voice
@@ -24,7 +24,7 @@ venv/bin/pip install -r requirements.txt
 
 ```bash
 cd tools/realtime-voice
-venv/bin/python server.py
+bash ../../scripts/start-realtime-voice.sh
 ```
 
 啟動後終端機會印出：

@@ -135,12 +135,12 @@ node scripts/anson-sync.js install-login --config ~/.config/anson-sync/config.js
 ```bash
 git clone https://github.com/fishtvlvoe/Awesome-Anson.git
 cd Awesome-Anson
-bash scripts/setup-realtime-voice.sh --with-system-deps
+bash scripts/setup-realtime-voice.sh
 cd tools/realtime-voice
-venv/bin/python server.py
+bash ../../scripts/start-realtime-voice.sh
 ```
 
-瀏覽器開啟 `http://localhost:8420`。聲音 profile 預設保存於 `~/.config/anson/voice-profile/`；要同步程式更新，執行 `git pull --ff-only origin main` 後重新跑安裝腳本。公開 UI 示範頁是 [awesome-anson.pages.dev](https://awesome-anson.pages.dev/)，真實麥克風與 FunASR 辨識仍需本機服務。
+瀏覽器開啟 `http://localhost:8420`。安裝腳本會自動安裝 Python 套件、ffmpeg，並預下載 SenseVoice 與 speaker model；要同步程式更新，執行 `git pull --ff-only origin main` 後重新跑安裝腳本。公開 UI 示範頁是 [awesome-anson.pages.dev](https://awesome-anson.pages.dev/)，真實麥克風與 FunASR 辨識仍需本機服務。
 
 需求確認後，可以叫 `demo-generation-deploy` 把已確認資料包與確認過的 mockup 變成 Cloudflare Pages Production Demo。需要登入才配置 D1；缺少的第三方服務、圖片或影片會標成示意。這條路和只產出離線 HTML 的 `case-page` 分開，公開 HTTPS 收音目前仍是待做項目。
 
