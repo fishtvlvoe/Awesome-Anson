@@ -4,57 +4,71 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="realtime-session-id" content="__REALTIME_SESSION_ID__">
-<title>即時語音接案神</title>
-<style>
-  body{font-family:-apple-system,BlinkMacSystemFont,"PingFang TC",sans-serif;max-width:640px;margin:40px auto;padding:0 20px;background:#faf7f2;color:#211c17;}
-  h1{font-size:20px;}
-  #toggle{font-size:18px;padding:14px 28px;border-radius:10px;border:none;background:#d97a2b;color:#fff;cursor:pointer;}
-  #toggle.recording{background:#b23b3b;}
-  #status{margin:16px 0;color:#5b5148;font-size:14px;}
-  #permission-notice{display:none;background:#f7e2df;color:#b23b3b;padding:12px 16px;border-radius:8px;margin:16px 0;font-size:14px;}
-  #transcript{margin-top:24px;border:1px solid #e4dccd;border-radius:10px;padding:16px;background:#fff;min-height:120px;}
-  #transcript p{margin:6px 0;line-height:1.6;}
-  #transcript p.low-confidence{color:#b23b3b;}
-  #analysis-panel{margin-top:24px;border:1px solid #d8c8b4;border-radius:10px;padding:16px;background:#fffaf3;}
-  #analysis-panel h2{font-size:18px;margin:0 0 8px;}
-  #analysis-status{margin:0 0 12px;color:#6b5c4d;font-size:14px;}
-  #analysis-panel section{border-top:1px solid #eadfce;padding:12px 0 0;margin-top:12px;}
-  #analysis-panel h3{font-size:15px;margin:0 0 8px;}
-  #analysis-client-response{margin:0;padding-left:20px;}
-  #analysis-client-response li{margin:4px 0;line-height:1.5;}
-  #analysis-decomposition{display:grid;gap:8px;}
-  .decomposition-row{display:grid;grid-template-columns:90px 1fr auto;gap:8px;align-items:start;font-size:14px;}
-  .decomposition-label{color:#6b5c4d;}
-  .decomposition-value{line-height:1.5;}
-  .state-tag{border-radius:999px;padding:2px 8px;font-size:12px;white-space:nowrap;}
-  .state-confirmed{background:#dcefdc;color:#27632a;}
-  .state-pending{background:#fff0c2;color:#795900;}
-  .state-guessed{background:#e7ddf5;color:#5b3a88;}
-  #analysis-suggestion{margin:0;line-height:1.6;}
-</style>
+<title>即時語音接案神｜Conversation First</title>
+<link rel="stylesheet" href="realtime-workbench-c.css">
 </head>
 <body>
-  <h1>即時語音接案神</h1>
-  <button id="toggle">開始收音</button>
-  <div id="status">尚未開始</div>
-  <div id="permission-notice">需要允許麥克風權限才能開始收音</div>
-  <div id="transcript"></div>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand-group">
+        <div class="brand-mark" aria-hidden="true">AS</div>
+        <div class="brand-copy"><strong>案神 · 即時錄音工作台</strong><span>邊聽、邊整理、邊指揮 AI</span></div>
+        <div class="session-meta" aria-label="目前工作階段"><span>需求訪談</span><strong>即時收音</strong></div>
+      </div>
+      <div class="topbar-actions"><button class="button button-quiet" type="button" id="save-session">儲存這次記錄</button><button class="button" type="button">結束訪談</button></div>
+    </header>
 
-  <div id="analysis-panel" aria-live="polite">
-    <h2>即時分析</h2>
-    <p id="analysis-status">目前沒有即時分析（可能沒有 agent session 在監看）</p>
-    <section id="analysis-client-section" hidden>
-      <h3>客戶反應了什麼</h3>
-      <ul id="analysis-client-response"></ul>
-    </section>
-    <section id="analysis-decomposition-section" hidden>
-      <h3>目前拆解狀態</h3>
-      <div id="analysis-decomposition"></div>
-    </section>
-    <section id="analysis-suggestion-section" hidden>
-      <h3>給業務員的下一步建議</h3>
-      <p id="analysis-suggestion"></p>
-    </section>
+    <main class="page">
+      <section class="intro" aria-labelledby="page-title">
+        <div><p class="eyebrow">Conversation first · runtime</p><h1 id="page-title">先分清楚誰說的，再決定怎麼問。</h1><p class="intro-copy">左邊保留客戶與 PM 的原話，中間接收真實 AI 分析，右邊讓你直接改變 AI 現在要做的事。</p></div>
+        <div class="prototype-note">C 版 · 已接真實收音</div>
+      </section>
+
+      <section class="recording-bar" id="recordingBar" aria-label="錄音控制">
+        <div class="live-meta"><span class="live-dot" id="liveDot" aria-hidden="true"></span><div class="live-copy"><strong id="recordingLabel">尚未開始</strong><span id="status">等待你允許麥克風後開始收音</span></div></div>
+        <div class="waveform" aria-label="音量波形"><i style="--bar: 11px"></i><i style="--bar: 22px"></i><i style="--bar: 16px"></i><i style="--bar: 28px"></i><i style="--bar: 13px"></i><i style="--bar: 25px"></i><i style="--bar: 19px"></i><i style="--bar: 31px"></i><i style="--bar: 15px"></i><i style="--bar: 24px"></i><i style="--bar: 12px"></i><i style="--bar: 27px"></i><i style="--bar: 18px"></i><i style="--bar: 29px"></i><i style="--bar: 14px"></i><i style="--bar: 22px"></i><i style="--bar: 10px"></i><i style="--bar: 25px"></i><i style="--bar: 16px"></i><i style="--bar: 30px"></i></div>
+        <div class="live-meta" style="justify-content:flex-end"><span class="timer" id="sessionTimer">--:--</span><button class="button button-primary button-small" id="toggle" type="button">開始收音</button></div>
+      </section>
+      <div id="permission-notice">需要允許麥克風權限才能開始收音。這個頁面不會在沒有權限時假裝已錄音。</div>
+
+      <section class="workspace" aria-label="即時錄音三欄工作台">
+        <article class="panel conversation-panel">
+          <header class="panel-header"><div class="panel-title"><span class="panel-index">01</span><div><h2>客戶 ↔ PM 的對話</h2><p class="panel-subtitle">每一段都有角色、姓名與固定顏色</p></div></div><div class="panel-actions"><span class="tag confirmed" id="transcriptCount">0 段</span></div></header>
+          <div class="panel-body conversation-body">
+            <div class="context-strip"><span><strong>收音規則：</strong>新片段先標成「待確認」，確認後才歸到客戶或 PM</span><span aria-hidden="true">↘</span></div>
+            <div class="speaker-map" id="speakerMap" aria-label="說話人身份對應">
+              <div class="speaker-map-head"><p class="section-kicker">這場訪談的身份</p><div class="panel-actions"><span class="speaker-map-status" id="speakerMapStatus">● 尚待確認</span><button class="button button-small" type="button" id="confirmSpeakers">我已確認</button></div></div>
+              <div class="speaker-roles"><div class="speaker-role"><span class="role-dot client" aria-hidden="true"></span><div><strong>客戶｜待命名</strong><span>Speaker 1 · 橘色</span></div></div><div class="speaker-role"><span class="role-dot pm" aria-hidden="true"></span><div><strong>PM｜我</strong><span>Speaker 2 · 藍色</span></div></div></div>
+              <p class="speaker-map-note">單一麥克風無法可靠判斷身份；每段先由你確認，未確認內容不會冒充客戶或 PM。</p>
+            </div>
+            <div id="transcript" aria-live="polite"><div class="transcript-empty" id="transcriptEmpty">開始收音後，真實逐字稿會出現在這裡。<br>每段旁邊都可以指定「客戶」或「PM」。</div></div>
+          </div>
+        </article>
+
+        <article class="panel analysis-panel">
+          <header class="panel-header"><div class="panel-title"><span class="panel-index">02</span><div><h2>AI 即時分析</h2><p class="panel-subtitle">讀取真實分析結果，不替你擅自決定</p></div></div><div class="panel-actions"><span class="tag pending">等待分析</span></div></header>
+          <div class="panel-body analysis-body" aria-live="polite">
+            <div class="analysis-status" id="analysis-status">目前沒有即時分析（可能沒有 agent session 在監看）</div>
+            <section class="analysis-summary"><p class="section-kicker">分析狀態</p><p id="analysis-summary-text">開始收音並有分析結果後，這裡會顯示一句話摘要。</p></section>
+            <section id="analysis-client-section" class="analysis-section" hidden><h3>客戶反應了什麼</h3><ul id="analysis-client-response" class="status-list"></ul></section>
+            <section id="analysis-decomposition-section" class="analysis-section" hidden><h3>目前拆解狀態</h3><div id="analysis-decomposition"></div></section>
+            <section id="analysis-suggestion-section" class="analysis-section" hidden><h3>AI 建議你下一句</h3><div class="suggestion-card"><p id="analysis-suggestion"></p><div class="analysis-suggestion-actions"><button class="button button-primary button-small" type="button" id="use-analysis-suggestion">帶入右邊指令</button></div></div></section>
+          </div>
+        </article>
+
+        <article class="panel command-panel">
+          <header class="panel-header"><div class="panel-title"><span class="panel-index">03</span><div><h2>直接指揮 AI</h2><p class="panel-subtitle">你可以隨時改變 AI 現在要做的事</p></div></div><div class="panel-actions"><span class="tag pending">你說了算</span></div></header>
+          <div class="panel-body command-body">
+            <p class="command-intro">不要等訪談結束。直接告訴 AI 你要整理、追問、改寫，還是先不要打斷。</p>
+            <p class="quick-label">快速指令</p>
+            <div class="quick-actions"><button class="quick-action" type="button" data-command="幫我找出目前還沒問清楚、會影響報價的問題。">找出報價缺口</button><button class="quick-action" type="button" data-command="先不要建議我回覆，只整理客戶真正想要的功能。">先只整理</button><button class="quick-action" type="button" data-command="把剛才的內容整理成我可以直接問客戶的下一句話。">幫我追問</button></div>
+            <div class="command-thread" id="commandThread" aria-live="polite"><div class="command-message ai"><span class="command-author">AI · 工作方式</span>你可以直接告訴我現在要怎麼分析，我會依照你的指令調整。</div></div>
+            <div class="composer"><textarea class="command-input" id="commandInput" rows="3" placeholder="告訴 AI 這一段要怎麼做，例如：先不要回覆，幫我整理客戶的真正需求。"></textarea><div class="command-send-row"><span class="command-hint">Enter 送出 · Shift + Enter 換行</span><button class="button button-primary button-small" type="button" id="sendCommand">送出指令</button></div></div>
+            <div class="ai-reply"><p class="section-kicker">目前可直接拿來問客戶</p><p id="replyText">等 AI 分析出下一步建議後，這裡會出現可直接使用的句子。</p><div class="reply-actions"><button type="button" id="copyReply">複製這句</button></div></div>
+          </div>
+        </article>
+      </section>
+    </main>
   </div>
 
 <script>
@@ -71,6 +85,13 @@
   const analysisClientResponseEl = document.getElementById('analysis-client-response');
   const analysisDecompositionEl = document.getElementById('analysis-decomposition');
   const analysisSuggestionEl = document.getElementById('analysis-suggestion');
+  const analysisSummaryEl = document.getElementById('analysis-summary-text');
+  const replyTextEl = document.getElementById('replyText');
+  const transcriptEmptyEl = document.getElementById('transcriptEmpty');
+  const transcriptCountEl = document.getElementById('transcriptCount');
+  const recordingBar = document.getElementById('recordingBar');
+  const recordingLabel = document.getElementById('recordingLabel');
+  const liveDot = document.getElementById('liveDot');
 
   const ANALYSIS_POLL_INTERVAL_MS = 4000;
   const DECOMPOSITION_LABELS = {
@@ -131,6 +152,9 @@
     analysisStatusEl.textContent = data.generated_at
       ? `分析更新於 ${data.generated_at}`
       : '分析已更新';
+    analysisSummaryEl.textContent = Array.isArray(data.client_response) && data.client_response.length
+      ? data.client_response[0]
+      : '分析已更新，請看下方拆解狀態與下一步建議。';
     analysisClientSection.hidden = false;
     analysisDecompositionSection.hidden = false;
     analysisSuggestionSection.hidden = false;
@@ -164,6 +188,7 @@
     });
 
     analysisSuggestionEl.textContent = data.suggestion || '目前沒有下一步建議';
+    replyTextEl.textContent = data.suggestion || '目前沒有可以直接拿來問客戶的句子';
   }
 
   async function pollAnalysis() {
@@ -185,10 +210,44 @@
   setInterval(pollAnalysis, ANALYSIS_POLL_INTERVAL_MS);
 
   function appendTranscript(text) {
-    const p = document.createElement('p');
-    p.textContent = text;
-    if (text.startsWith('[聽不清楚]')) p.className = 'low-confidence';
-    transcriptEl.appendChild(p);
+    transcriptEmptyEl.hidden = true;
+    const item = document.createElement('article');
+    item.className = 'transcript-item';
+    item.dataset.role = 'pending';
+
+    const meta = document.createElement('div');
+    meta.className = 'transcript-meta';
+    const speaker = document.createElement('span');
+    speaker.className = 'transcript-speaker';
+    speaker.textContent = 'Speaker 待確認';
+    const time = document.createElement('span');
+    time.className = 'transcript-time';
+    time.textContent = new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    meta.append(speaker, time);
+
+    const body = document.createElement('p');
+    body.className = 'transcript-text';
+    body.textContent = text;
+    if (text.startsWith('[聽不清楚]')) body.dataset.lowConfidence = 'true';
+
+    const actions = document.createElement('div');
+    actions.className = 'transcript-actions';
+    [['client', '指定為客戶'], ['pm', '指定為 PM']].forEach(([role, label]) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.dataset.role = role;
+      button.textContent = label;
+      button.addEventListener('click', () => {
+        item.dataset.role = role;
+        speaker.textContent = role === 'client' ? '客戶｜待命名' : 'PM｜我';
+        actions.querySelectorAll('button').forEach((candidate) => candidate.classList.toggle('is-active', candidate === button));
+      });
+      actions.appendChild(button);
+    });
+
+    item.append(meta, body, actions);
+    transcriptEl.appendChild(item);
+    transcriptCountEl.textContent = `${transcriptEl.querySelectorAll('.transcript-item').length} 段`;
     transcriptEl.scrollTop = transcriptEl.scrollHeight;
   }
 
@@ -212,6 +271,9 @@
     if (audioContext) { audioContext.close(); audioContext = null; }
     toggleBtn.textContent = '開始收音';
     toggleBtn.classList.remove('recording');
+    recordingBar.classList.remove('is-recording');
+    liveDot.classList.add('paused');
+    recordingLabel.textContent = '錄音已停止';
     statusEl.textContent = '已停止';
   }
 
@@ -289,6 +351,9 @@
 
     toggleBtn.textContent = '停止收音';
     toggleBtn.classList.add('recording');
+    recordingBar.classList.add('is-recording');
+    liveDot.classList.remove('paused');
+    recordingLabel.textContent = '錄音進行中';
     statusEl.textContent = '收音中，講話同時會即時顯示文字';
   }
 
@@ -309,6 +374,83 @@
 
   toggleBtn.addEventListener('click', () => {
     if (recording) stop(); else start();
+  });
+})();
+</script>
+<script>
+(() => {
+  const commandInput = document.getElementById('commandInput');
+  const commandThread = document.getElementById('commandThread');
+  const replyText = document.getElementById('replyText');
+  const saveButton = document.getElementById('save-session');
+
+  const addCommandMessage = (command) => {
+    const userMessage = document.createElement('div');
+    userMessage.className = 'command-message user';
+    const author = document.createElement('span');
+    author.className = 'command-author';
+    author.textContent = '你 · 剛剛';
+    userMessage.append(author, document.createTextNode(command));
+    commandThread.appendChild(userMessage);
+
+    const aiMessage = document.createElement('div');
+    aiMessage.className = 'command-message ai';
+    const aiAuthor = document.createElement('span');
+    aiAuthor.className = 'command-author';
+    aiAuthor.textContent = 'AI · 指令已記下';
+    aiMessage.append(aiAuthor, document.createTextNode('收到。這個 UI 已準備好接入 AI 指令 API；目前先保留你的工作方式，不會假裝已經送到後端。'));
+    commandThread.appendChild(aiMessage);
+    commandThread.scrollTop = commandThread.scrollHeight;
+  };
+
+  const sendCommand = () => {
+    const command = commandInput.value.trim();
+    if (!command) {
+      commandInput.focus();
+      return;
+    }
+    addCommandMessage(command);
+    commandInput.value = '';
+  };
+
+  document.querySelectorAll('[data-command]').forEach((button) => {
+    button.addEventListener('click', () => {
+      commandInput.value = button.dataset.command;
+      commandInput.focus();
+    });
+  });
+  document.getElementById('sendCommand').addEventListener('click', sendCommand);
+  commandInput.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      sendCommand();
+    }
+  });
+
+  document.getElementById('use-analysis-suggestion').addEventListener('click', () => {
+    commandInput.value = '把這個建議整理成我可以直接問客戶的下一句：' + document.getElementById('analysis-suggestion').textContent;
+    commandInput.focus();
+  });
+
+  document.getElementById('copyReply').addEventListener('click', async (event) => {
+    try { await navigator.clipboard.writeText(replyText.textContent); } catch (error) { /* file:// 預覽可能沒有剪貼簿權限 */ }
+    event.currentTarget.textContent = '已複製';
+    setTimeout(() => { event.currentTarget.textContent = '複製這句'; }, 1400);
+  });
+
+  document.getElementById('confirmSpeakers').addEventListener('click', (event) => {
+    const map = document.getElementById('speakerMap');
+    const status = document.getElementById('speakerMapStatus');
+    map.classList.add('is-confirmed');
+    status.textContent = '● 身份規則已確認';
+    status.style.color = 'var(--success)';
+    event.currentTarget.textContent = '已確認';
+    event.currentTarget.disabled = true;
+  });
+
+  saveButton.addEventListener('click', () => {
+    saveButton.textContent = '已儲存';
+    setTimeout(() => { saveButton.textContent = '儲存這次記錄'; }, 1400);
   });
 })();
 </script>

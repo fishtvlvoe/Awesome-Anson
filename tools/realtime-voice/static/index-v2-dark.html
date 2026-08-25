@@ -1,0 +1,778 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="案神即時錄音工作台 UI 原型：對話、AI 即時分析與 AI 指令控制台。">
+  <title>即時錄音工作台｜深色指揮台</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --background: #f8fafc;
+      --surface: #ffffff;
+      --surface-raised: #f1f5f9;
+      --surface-warm: #fffbeb;
+      --text: #0f172a;
+      --text-secondary: #334155;
+      --muted: #64748b;
+      --subtle: #94a3b8;
+      --border: #e2e8f0;
+      --border-strong: #cbd5e1;
+      --signal: #f59e0b;
+      --signal-ink: #1c0a00;
+      --signal-soft: #fff7d6;
+      --success: #059669;
+      --success-soft: #ecfdf5;
+      --danger: #dc2626;
+      --danger-soft: #fef2f2;
+      --client-ink: #92400e;
+      --client-soft: #fff7d6;
+      --pm-ink: #1d4ed8;
+      --pm-soft: #eff6ff;
+      --radius: 8px;
+      --radius-large: 16px;
+      --shadow-sm: 0 1px 3px rgba(15, 23, 42, .08), 0 1px 2px rgba(15, 23, 42, .04);
+      --shadow-hard: 3px 3px 0 rgba(15, 23, 42, .14);
+      --ease: cubic-bezier(.16, 1, .3, 1);
+      --font-sans: Inter, "Noto Sans TC", "PingFang TC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-width: 320px;
+      min-height: 100dvh;
+      margin: 0;
+      color: var(--text);
+      background: var(--background);
+      font-family: var(--font-sans);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, textarea { font: inherit; }
+    button { cursor: pointer; }
+    button:focus-visible, textarea:focus-visible { outline: 3px solid rgba(245, 158, 11, .38); outline-offset: 2px; }
+
+    .app-shell { min-height: 100dvh; }
+
+    .topbar {
+      position: sticky;
+      z-index: 10;
+      top: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 68px;
+      padding: 12px clamp(16px, 3vw, 40px);
+      background: rgba(248, 250, 252, .94);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+    }
+
+    .brand-group, .topbar-actions, .session-meta, .panel-title, .panel-actions, .live-meta, .status-line, .button-row, .composer-actions, .reply-actions {
+      display: flex;
+      align-items: center;
+    }
+
+    .brand-group { gap: 12px; }
+    .brand-mark {
+      display: grid;
+      width: 36px;
+      height: 36px;
+      place-items: center;
+      color: var(--signal-ink);
+      background: var(--signal);
+      border: 2px solid var(--signal-ink);
+      border-radius: var(--radius);
+      box-shadow: 2px 2px 0 var(--signal-ink);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: -.04em;
+    }
+
+    .brand-copy { display: grid; gap: 2px; }
+    .brand-copy strong { font-size: 15px; letter-spacing: -.02em; }
+    .brand-copy span { color: var(--muted); font-size: 12px; }
+    .session-meta { gap: 18px; color: var(--muted); font-size: 12px; }
+    .session-meta strong { color: var(--text-secondary); font-size: 13px; }
+    .topbar-actions { gap: 8px; }
+
+    .button {
+      min-height: 36px;
+      padding: 0 12px;
+      color: var(--text-secondary);
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      font-size: 12px;
+      font-weight: 700;
+      transition: transform 160ms var(--ease), border-color 160ms var(--ease), background 160ms var(--ease);
+    }
+    .button:hover { border-color: var(--text-secondary); transform: translateY(-1px); }
+    .button:active { transform: translate(1px, 1px); }
+    .button-primary {
+      color: var(--signal-ink);
+      background: var(--signal);
+      border: 2px solid var(--signal-ink);
+      box-shadow: 3px 3px 0 var(--signal-ink);
+    }
+    .button-primary:hover { background: #fbbf24; }
+    .button-quiet { border-color: transparent; background: transparent; }
+    .button-small { min-height: 30px; padding: 0 9px; font-size: 11px; }
+
+    .page {
+      width: min(1800px, 100%);
+      margin: 0 auto;
+      padding: 24px clamp(16px, 3vw, 40px) 40px;
+    }
+
+    .intro {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 18px;
+    }
+    .eyebrow {
+      margin: 0 0 7px;
+      color: var(--signal-ink);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    h1 { margin: 0; font-size: clamp(24px, 3vw, 36px); letter-spacing: -.05em; line-height: 1.05; }
+    .intro-copy { max-width: 650px; margin: 9px 0 0; color: var(--muted); font-size: 14px; line-height: 1.65; }
+    .prototype-note {
+      flex: 0 0 auto;
+      padding: 9px 11px;
+      color: var(--text-secondary);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 11px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .recording-bar {
+      display: grid;
+      grid-template-columns: auto minmax(200px, 1fr) auto;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 18px;
+      padding: 13px 15px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-large);
+      box-shadow: var(--shadow-sm);
+    }
+    .live-meta { gap: 10px; min-width: 175px; }
+    .live-dot {
+      width: 10px;
+      height: 10px;
+      background: var(--signal);
+      border-radius: 50%;
+      box-shadow: 0 0 0 4px var(--signal-soft);
+    }
+    .live-dot.paused { background: var(--subtle); box-shadow: 0 0 0 4px var(--surface-raised); }
+    .live-copy { display: grid; gap: 2px; }
+    .live-copy strong { font-size: 13px; }
+    .live-copy span { color: var(--muted); font-size: 11px; }
+    .waveform { display: flex; align-items: center; justify-content: center; gap: 4px; height: 35px; overflow: hidden; }
+    .waveform i { display: block; width: 3px; height: var(--bar, 10px); background: var(--signal); border-radius: 2px; opacity: .76; transition: height 280ms var(--ease); }
+    .recording-bar.is-recording .waveform i { animation: pulse 920ms ease-in-out infinite alternate; animation-delay: var(--delay, 0ms); }
+    @keyframes pulse { from { transform: scaleY(.66); } to { transform: scaleY(1.16); } }
+    .timer { color: var(--text-secondary); font-family: var(--font-mono); font-size: 13px; font-weight: 700; white-space: nowrap; }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(330px, .9fr) minmax(320px, .82fr);
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .panel {
+      display: flex;
+      min-height: 650px;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-large);
+      box-shadow: var(--shadow-sm);
+    }
+    .panel-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 17px 18px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .panel-title { align-items: flex-start; gap: 10px; }
+    .panel-index {
+      display: grid;
+      width: 24px;
+      height: 24px;
+      flex: 0 0 auto;
+      place-items: center;
+      color: var(--muted);
+      background: var(--surface-raised);
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+    }
+    .panel h2 { margin: 0; font-size: 15px; letter-spacing: -.02em; }
+    .panel-subtitle { margin: 4px 0 0; color: var(--muted); font-size: 11px; line-height: 1.45; }
+    .panel-actions { gap: 6px; }
+    .panel-body { flex: 1; min-height: 0; overflow: auto; }
+
+    .conversation-body { padding: 15px 16px 0; }
+    .context-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding: 9px 11px;
+      color: var(--text-secondary);
+      background: var(--surface-warm);
+      border: 1px solid #fde68a;
+      border-radius: var(--radius);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+    .context-strip strong { color: var(--signal-ink); }
+    .message-list { display: grid; gap: 14px; padding-bottom: 20px; }
+    .message { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 9px; }
+    .speaker-avatar {
+      display: grid;
+      width: 32px;
+      height: 32px;
+      place-items: center;
+      color: var(--text-secondary);
+      background: var(--surface-raised);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .message.client .speaker-avatar { color: var(--client-ink); background: var(--client-soft); border-color: #fde68a; }
+    .message.pm .speaker-avatar { color: var(--pm-ink); background: var(--pm-soft); border-color: #bfdbfe; }
+    .message.selected .message-bubble { border-color: var(--signal); box-shadow: 0 0 0 3px var(--signal-soft); }
+    .message-meta { display: flex; align-items: center; gap: 7px; margin: 1px 0 5px; }
+    .speaker { font-size: 11px; font-weight: 800; }
+    .timestamp { color: var(--subtle); font-family: var(--font-mono); font-size: 10px; }
+    .message-bubble {
+      position: relative;
+      padding: 10px 12px;
+      color: var(--text-secondary);
+      background: var(--surface-raised);
+      border: 1px solid transparent;
+      border-radius: 4px 12px 12px 12px;
+      font-size: 13px;
+      line-height: 1.65;
+      transition: border-color 160ms var(--ease), box-shadow 160ms var(--ease);
+    }
+    .message.client .message-bubble { background: #fffdf5; border-color: #fef3c7; }
+    .message.pm .message-bubble { background: var(--pm-soft); border-color: #dbeafe; }
+    .message-bubble button {
+      display: block;
+      margin-top: 7px;
+      padding: 0;
+      color: var(--muted);
+      background: transparent;
+      border: 0;
+      font-size: 10px;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .message-bubble button:hover { color: var(--signal-ink); }
+    .speaker-map { display: grid; gap: 9px; margin-bottom: 15px; padding: 11px; background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius); }
+    .speaker-map-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .speaker-map-head .section-kicker { margin: 0; }
+    .speaker-map-status { color: var(--success); font-size: 10px; font-weight: 700; }
+    .speaker-roles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+    .speaker-role { display: flex; align-items: center; gap: 7px; min-width: 0; padding: 8px; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; }
+    .role-dot { width: 8px; height: 8px; flex: 0 0 auto; border-radius: 50%; }
+    .role-dot.client { background: var(--signal); }
+    .role-dot.pm { background: var(--pm-ink); }
+    .speaker-role strong { display: block; overflow: hidden; color: var(--text-secondary); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+    .speaker-role span { display: block; margin-top: 2px; color: var(--subtle); font-family: var(--font-mono); font-size: 9px; }
+    .speaker-map-note { margin: 0; color: var(--muted); font-size: 10px; line-height: 1.45; }
+
+    .analysis-body { padding: 15px 16px 18px; }
+    .analysis-status { display: flex; align-items: center; gap: 7px; margin-bottom: 14px; color: var(--success); font-size: 11px; font-weight: 700; }
+    .analysis-status::before { width: 7px; height: 7px; background: var(--success); border-radius: 50%; content: ""; }
+    .analysis-summary { margin-bottom: 17px; padding: 14px; background: var(--surface-raised); border-left: 3px solid var(--signal); border-radius: 0 var(--radius) var(--radius) 0; }
+    .section-kicker { margin: 0 0 7px; color: var(--muted); font-family: var(--font-mono); font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+    .analysis-summary p { margin: 0; color: var(--text-secondary); font-size: 14px; line-height: 1.65; }
+    .analysis-section { padding: 15px 0; border-top: 1px solid var(--border); }
+    .analysis-section h3 { margin: 0 0 10px; font-size: 12px; }
+    .tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag { display: inline-flex; align-items: center; min-height: 26px; padding: 0 8px; color: var(--text-secondary); background: var(--surface); border: 1px solid var(--border-strong); border-radius: 999px; font-size: 11px; }
+    .tag.confirmed { color: #065f46; background: var(--success-soft); border-color: #a7f3d0; }
+    .tag.pending { color: var(--signal-ink); background: var(--signal-soft); border-color: #fde68a; }
+    .status-list { display: grid; gap: 9px; margin: 0; padding: 0; list-style: none; }
+    .status-list li { display: grid; grid-template-columns: 8px 1fr auto; align-items: start; gap: 8px; color: var(--text-secondary); font-size: 12px; line-height: 1.5; }
+    .status-list li::before { width: 6px; height: 6px; margin-top: 6px; background: var(--signal); border-radius: 50%; content: ""; }
+    .status-list em { color: var(--muted); font-size: 10px; font-style: normal; white-space: nowrap; }
+    .suggestion-card { padding: 12px; background: var(--surface-warm); border: 1px solid #fde68a; border-radius: var(--radius); }
+    .suggestion-card p { margin: 0; color: var(--text-secondary); font-size: 12px; line-height: 1.6; }
+    .button-row { gap: 7px; margin-top: 11px; }
+    .progress-label { display: flex; justify-content: space-between; margin-bottom: 7px; color: var(--muted); font-size: 10px; }
+    .progress-track { height: 6px; overflow: hidden; background: var(--surface-raised); border-radius: 999px; }
+    .progress-track span { display: block; width: 68%; height: 100%; background: var(--signal); border-radius: inherit; }
+
+    .command-panel { background: #fcfdff; }
+    .command-panel .panel-header { background: #f8fafc; }
+    .command-body { display: flex; flex-direction: column; padding: 15px 16px 16px; }
+    .command-intro { margin: 0 0 12px; color: var(--muted); font-size: 12px; line-height: 1.55; }
+    .quick-label { margin: 0 0 7px; color: var(--muted); font-family: var(--font-mono); font-size: 10px; font-weight: 700; }
+    .quick-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 17px; }
+    .quick-action { padding: 7px 9px; color: var(--text-secondary); background: var(--surface); border: 1px solid var(--border); border-radius: 999px; font-size: 11px; transition: background 160ms var(--ease), border-color 160ms var(--ease), transform 160ms var(--ease); }
+    .quick-action:hover { background: var(--signal-soft); border-color: #fde68a; transform: translateY(-1px); }
+    .instruction-thread { display: grid; gap: 11px; min-height: 165px; margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+    .thread-message { max-width: 92%; padding: 10px 11px; border-radius: var(--radius); font-size: 12px; line-height: 1.55; }
+    .thread-message.user { justify-self: end; color: var(--signal-ink); background: var(--signal-soft); border: 1px solid #fde68a; }
+    .thread-message.ai { color: var(--text-secondary); background: var(--surface); border: 1px solid var(--border); }
+    .thread-author { display: block; margin-bottom: 4px; color: var(--muted); font-family: var(--font-mono); font-size: 9px; font-weight: 700; text-transform: uppercase; }
+    .thread-message.user .thread-author { color: #92400e; }
+    .context-selected { display: none; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 8px; padding: 8px 9px; color: var(--text-secondary); background: var(--surface-raised); border: 1px solid var(--border); border-radius: var(--radius); font-size: 10px; line-height: 1.45; }
+    .context-selected.is-visible { display: flex; }
+    .context-selected button { flex: 0 0 auto; padding: 0; color: var(--muted); background: transparent; border: 0; font-size: 11px; }
+    .context-selected strong { display: block; color: var(--signal-ink); font-size: 10px; }
+    .composer { margin-top: auto; }
+    .composer textarea { display: block; width: 100%; min-height: 92px; resize: vertical; padding: 11px; color: var(--text); background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius); font-size: 12px; line-height: 1.6; }
+    .composer textarea::placeholder { color: var(--subtle); }
+    .composer-actions { justify-content: space-between; gap: 8px; margin-top: 8px; }
+    .composer-hint { color: var(--subtle); font-size: 10px; }
+    .ai-reply { margin-top: 16px; padding: 12px; background: var(--success-soft); border: 1px solid #a7f3d0; border-radius: var(--radius); }
+    .ai-reply p { margin: 0; color: #065f46; font-size: 12px; line-height: 1.6; }
+    .reply-actions { justify-content: flex-end; gap: 7px; margin-top: 8px; }
+    .reply-actions button { padding: 0; color: #047857; background: transparent; border: 0; font-size: 10px; text-decoration: underline; text-underline-offset: 2px; }
+
+    .footer-note { margin-top: 12px; color: var(--subtle); font-size: 10px; line-height: 1.5; }
+
+    @media (max-width: 1180px) {
+      .workspace { grid-template-columns: minmax(0, 1fr) minmax(300px, .82fr); }
+      .panel.conversation-panel { grid-row: span 2; }
+      .panel { min-height: 590px; }
+    }
+
+    @media (max-width: 800px) {
+      .topbar { align-items: flex-start; gap: 12px; }
+      .session-meta { display: none; }
+      .topbar-actions .button-quiet { display: none; }
+      .intro { display: block; }
+      .prototype-note { display: inline-block; margin-top: 12px; }
+      .recording-bar { grid-template-columns: 1fr auto; gap: 10px; }
+      .waveform { grid-column: 1 / -1; grid-row: 2; }
+      .workspace { grid-template-columns: 1fr; }
+      .panel.conversation-panel { grid-row: auto; }
+      .panel { min-height: 480px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+    /* Variant B: 深色指揮台。適合長時間盯著即時資訊的 PM。 */
+    :root {
+      --background: #0a0f1e;
+      --surface: #111827;
+      --surface-raised: #1a2236;
+      --surface-warm: #211b0b;
+      --text: #e8eeff;
+      --text-secondary: #c8d5f0;
+      --muted: #8da0c4;
+      --subtle: #63759b;
+      --border: #263653;
+      --border-strong: #405377;
+      --signal-soft: #3b2b0a;
+      --client-soft: #3b2b0a;
+      --pm-soft: #172554;
+      --pm-ink: #93c5fd;
+      --success: #34d399;
+      --success-soft: #052e16;
+    }
+    body { background: var(--background); }
+    .topbar { background: rgba(10, 15, 30, .92); border-color: var(--border); }
+    .brand-copy span, .session-meta, .intro-copy, .panel-subtitle, .prototype-note, .footer-note { color: var(--muted); }
+    .prototype-note, .button, .recording-bar, .panel, .speaker-role, .message-bubble, .quick-action, .thread-message.ai, .composer textarea { background: var(--surface); border-color: var(--border); }
+    .button { color: var(--text-secondary); }
+    .button-quiet { background: transparent; }
+    .recording-bar, .panel { box-shadow: 0 14px 30px rgba(0, 0, 0, .18); }
+    .panel-header, .command-panel .panel-header { background: #0f172a; border-color: var(--border); }
+    .panel-index { color: var(--muted); background: var(--surface-raised); }
+    .context-strip, .suggestion-card { background: var(--surface-warm); border-color: #6b4e15; }
+    .message.client .message-bubble { background: #211b0b; border-color: #5b4618; }
+    .message.pm .message-bubble { background: var(--pm-soft); border-color: #1e40af; }
+    .speaker-map { background: #0f172a; border-color: var(--border); }
+    .analysis-summary { background: var(--surface-raised); }
+    .tag { background: var(--surface); border-color: var(--border-strong); color: var(--text-secondary); }
+    .tag.confirmed { color: #a7f3d0; background: var(--success-soft); border-color: #166534; }
+    .tag.pending { color: #fde68a; background: var(--signal-soft); border-color: #6b4e15; }
+    .thread-message.user { color: #fde68a; background: var(--signal-soft); border-color: #6b4e15; }
+    .ai-reply { background: var(--success-soft); border-color: #166534; }
+    .ai-reply p { color: #a7f3d0; }
+    .reply-actions button { color: #6ee7b7; }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand-group">
+        <div class="brand-mark" aria-hidden="true">AS</div>
+        <div class="brand-copy">
+          <strong>案神 · 即時錄音工作台</strong>
+          <span>邊聽、邊整理、邊指揮 AI</span>
+        </div>
+        <div class="session-meta" aria-label="目前工作階段">
+          <span>需求訪談</span>
+          <strong>客戶：小樹工作室</strong>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button class="button button-quiet" type="button" id="saveButton">儲存這次記錄</button>
+        <button class="button" type="button">結束訪談</button>
+      </div>
+    </header>
+
+    <main class="page">
+      <section class="intro" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">Variant B · command room</p>
+          <h1 id="page-title">在資訊裡，快速找到下一步。</h1>
+          <p class="intro-copy">三格分工：左邊清楚標示「客戶」和「PM」的原話，中間讓 AI 整理正在發生什麼，右邊由你直接告訴 AI「現在要怎麼幫我」。</p>
+        </div>
+        <div class="prototype-note">介面原型 · 示範資料</div>
+      </section>
+
+      <section class="recording-bar" id="recordingBar" aria-label="錄音控制">
+        <div class="live-meta">
+          <span class="live-dot" id="liveDot" aria-hidden="true"></span>
+          <div class="live-copy">
+            <strong id="recordingLabel">錄音進行中</strong>
+            <span id="recordingStatus">麥克風已連線 · AI 每 4 秒更新一次</span>
+          </div>
+        </div>
+        <div class="waveform" aria-label="音量波形">
+          <i style="--bar: 11px; --delay: 0ms"></i><i style="--bar: 22px; --delay: 80ms"></i><i style="--bar: 16px; --delay: 150ms"></i><i style="--bar: 28px; --delay: 230ms"></i><i style="--bar: 13px; --delay: 310ms"></i><i style="--bar: 25px; --delay: 390ms"></i><i style="--bar: 19px; --delay: 470ms"></i><i style="--bar: 31px; --delay: 550ms"></i><i style="--bar: 15px; --delay: 630ms"></i><i style="--bar: 24px; --delay: 710ms"></i><i style="--bar: 12px; --delay: 790ms"></i><i style="--bar: 27px; --delay: 870ms"></i><i style="--bar: 18px; --delay: 950ms"></i><i style="--bar: 29px; --delay: 1030ms"></i><i style="--bar: 14px; --delay: 1110ms"></i><i style="--bar: 22px; --delay: 1190ms"></i><i style="--bar: 10px; --delay: 1270ms"></i><i style="--bar: 25px; --delay: 1350ms"></i><i style="--bar: 16px; --delay: 1430ms"></i><i style="--bar: 30px; --delay: 1510ms"></i><i style="--bar: 13px; --delay: 1590ms"></i><i style="--bar: 23px; --delay: 1670ms"></i><i style="--bar: 18px; --delay: 1750ms"></i><i style="--bar: 27px; --delay: 1830ms"></i><i style="--bar: 12px; --delay: 1910ms"></i><i style="--bar: 20px; --delay: 1990ms"></i>
+        </div>
+        <div class="live-meta" style="justify-content: flex-end">
+          <span class="timer" id="timer">00:12:48</span>
+          <button class="button button-primary button-small" type="button" id="recordButton">暫停錄音</button>
+        </div>
+      </section>
+
+      <section class="workspace" aria-label="即時錄音三欄工作台">
+        <article class="panel conversation-panel">
+          <header class="panel-header">
+            <div class="panel-title">
+              <span class="panel-index">01</span>
+              <div>
+                <h2>客戶 ↔ PM 的對話</h2>
+                <p class="panel-subtitle">每一段都有角色、姓名與固定顏色</p>
+              </div>
+            </div>
+            <div class="panel-actions"><span class="tag confirmed">12 段</span></div>
+          </header>
+          <div class="panel-body conversation-body">
+            <div class="context-strip"><span><strong>目前收音：</strong>客戶正在描述第一版想做什麼</span><span aria-hidden="true">↘</span></div>
+            <div class="speaker-map" aria-label="說話人身份對應">
+              <div class="speaker-map-head"><p class="section-kicker">已確認說話人</p><div class="panel-actions"><span class="speaker-map-status" id="speakerMapStatus">● 身份已對應</span><button class="button button-small" type="button" id="confirmRoles">重新確認</button></div></div>
+              <div class="speaker-roles">
+                <div class="speaker-role"><span class="role-dot client" aria-hidden="true"></span><div><strong>客戶｜林雅婷</strong><span>Speaker 1 · 橘色</span></div></div>
+                <div class="speaker-role"><span class="role-dot pm" aria-hidden="true"></span><div><strong>PM｜Fish</strong><span>Speaker 2 · 藍色</span></div></div>
+              </div>
+              <p class="speaker-map-note">第一次進入訪談時先確認身份；辨識不確定時顯示「待確認」，不猜誰是誰。</p>
+            </div>
+            <div class="message-list" id="messageList">
+              <article class="message client" data-message="客戶說想先做預約、提醒跟試用版，不希望第一版太複雜。">
+                <div class="speaker-avatar" aria-hidden="true">客</div>
+                <div>
+                  <div class="message-meta"><span class="speaker">客戶｜林雅婷</span><span class="timestamp">12:46:18</span></div>
+                  <div class="message-bubble">我們第一版想先簡單一點，讓客人可以預約，然後在前一天提醒他。<button type="button" class="select-message">把這段交給 AI</button></div>
+                </div>
+              </article>
+              <article class="message pm" data-message="PM 聽到客戶現在先不做付款和會員，先把預約流程跑順。">
+                <div class="speaker-avatar" aria-hidden="true">PM</div>
+                <div>
+                  <div class="message-meta"><span class="speaker">PM｜Fish</span><span class="timestamp">12:46:42</span></div>
+                  <div class="message-bubble">所以這一版先把預約流程跑順，付款跟會員功能先放到後面，這樣理解對嗎？<button type="button" class="select-message">把這段交給 AI</button></div>
+                </div>
+              </article>
+              <article class="message client" data-message="客戶確認預約與提醒是第一優先，但還沒說預算與上線時間。">
+                <div class="speaker-avatar" aria-hidden="true">客</div>
+                <div>
+                  <div class="message-meta"><span class="speaker">客戶｜林雅婷</span><span class="timestamp">12:47:05</span></div>
+                  <div class="message-bubble">對，預約跟提醒是最重要的。試用版也想一起看看，但預算和什麼時候上線，我們還要再討論。<button type="button" class="select-message">把這段交給 AI</button></div>
+                </div>
+              </article>
+              <article class="message pm" data-message="PM 想請 AI 先抓出尚未確認的問題，再決定下一句要問什麼。">
+                <div class="speaker-avatar" aria-hidden="true">PM</div>
+                <div>
+                  <div class="message-meta"><span class="speaker">PM｜Fish</span><span class="timestamp">12:47:36</span></div>
+                  <div class="message-bubble">好，那我先把第一版的範圍記下來，再確認幾個會影響報價的問題。</div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel analysis-panel">
+          <header class="panel-header">
+            <div class="panel-title">
+              <span class="panel-index">02</span>
+              <div>
+                <h2>AI 即時分析</h2>
+                <p class="panel-subtitle">先說它聽到什麼，不替你擅自決定</p>
+              </div>
+            </div>
+            <div class="panel-actions"><span class="tag confirmed">分析中</span></div>
+          </header>
+          <div class="panel-body analysis-body">
+            <div class="analysis-status">剛剛更新 · 低延遲整理中</div>
+            <div class="analysis-summary">
+              <p class="section-kicker">一句話摘要</p>
+              <p id="summaryText">客戶想先確認預約、提醒、試用版能不能放進第一版；付款與會員目前不在範圍內。</p>
+            </div>
+
+            <section class="analysis-section">
+              <h3>目前已經確認</h3>
+              <div class="tag-list">
+                <span class="tag confirmed">預約流程</span>
+                <span class="tag confirmed">前一天提醒</span>
+                <span class="tag confirmed">第一版要簡單</span>
+                <span class="tag confirmed">付款先不做</span>
+                <span class="tag confirmed">會員先不做</span>
+              </div>
+            </section>
+
+            <section class="analysis-section">
+              <h3>還需要問清楚</h3>
+              <ul class="status-list">
+                <li><span>預算大約落在哪個區間？</span><em>影響報價</em></li>
+                <li><span>希望什麼時候可以開始使用？</span><em>影響排程</em></li>
+                <li><span>試用版是必要功能還是想先看看？</span><em>範圍待定</em></li>
+              </ul>
+            </section>
+
+            <section class="analysis-section">
+              <h3>AI 建議你下一句</h3>
+              <div class="suggestion-card">
+                <p id="suggestionText">「如果先不做付款和會員，你們希望第一版大約什麼時候可以開始使用？」</p>
+                <div class="button-row">
+                  <button class="button button-primary button-small" type="button" id="useSuggestion">帶入右邊指令</button>
+                  <button class="button button-small" type="button" id="dismissSuggestion">先不要</button>
+                </div>
+              </div>
+            </section>
+
+            <section class="analysis-section">
+              <div class="progress-label"><span>需求理解進度</span><strong>4 / 6</strong></div>
+              <div class="progress-track" aria-label="需求理解進度 68%"><span></span></div>
+              <p class="footer-note">AI 的猜測會標成「待確認」，不會混進已確認內容。</p>
+            </section>
+          </div>
+        </article>
+
+        <article class="panel command-panel">
+          <header class="panel-header">
+            <div class="panel-title">
+              <span class="panel-index">03</span>
+              <div>
+                <h2>直接指揮 AI</h2>
+                <p class="panel-subtitle">你可以隨時改變 AI 現在要做的事</p>
+              </div>
+            </div>
+            <div class="panel-actions"><span class="tag pending">你說了算</span></div>
+          </header>
+          <div class="panel-body command-body">
+            <p class="command-intro">不用等訪談結束。直接告訴 AI 你要「整理、追問、改寫，還是先不要打斷」。</p>
+            <p class="quick-label">快速指令</p>
+            <div class="quick-actions">
+              <button class="quick-action" type="button" data-command="幫我找出目前還沒問清楚、會影響報價的問題。">找出報價缺口</button>
+              <button class="quick-action" type="button" data-command="先不要建議我回覆，只整理客戶真正想要的功能。">先只整理</button>
+              <button class="quick-action" type="button" data-command="把剛才的內容整理成我可以直接問客戶的下一句話。">幫我追問</button>
+              <button class="quick-action" type="button" data-command="把目前已確認與待確認的內容分開列出來。">分開確認狀態</button>
+            </div>
+
+            <div class="instruction-thread" id="instructionThread" aria-live="polite">
+              <div class="thread-message user">
+                <span class="thread-author">你 · 剛剛</span>
+                先幫我抓會影響報價的問題，不要急著幫我回答客戶。
+              </div>
+              <div class="thread-message ai" id="aiAck">
+                <span class="thread-author">AI · 已套用</span>
+                收到。我會先整理缺口，只顯示需要你確認的問題。
+              </div>
+            </div>
+
+            <div class="composer">
+              <div class="context-selected" id="contextSelected">
+                <span><strong>已帶入對話片段</strong><span id="contextText"></span></span>
+                <button type="button" id="clearContext" aria-label="清除對話片段">×</button>
+              </div>
+              <textarea id="commandInput" rows="3" placeholder="告訴 AI 這一段要怎麼做，例如：先不要回覆，幫我整理客戶的真正需求。"></textarea>
+              <div class="composer-actions">
+                <span class="composer-hint">Enter 送出 · Shift + Enter 換行</span>
+                <button class="button button-primary button-small" type="button" id="sendCommand">送出指令</button>
+              </div>
+            </div>
+
+            <div class="ai-reply">
+              <p class="section-kicker">目前可直接拿來問客戶</p>
+              <p id="replyText">如果先不做付款和會員，你們希望第一版大約什麼時候可以開始使用？</p>
+              <div class="reply-actions"><button type="button" id="copyReply">複製這句</button><button type="button" id="editReply">改成我的語氣</button></div>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (() => {
+      const recordingBar = document.getElementById('recordingBar');
+      const liveDot = document.getElementById('liveDot');
+      const recordingLabel = document.getElementById('recordingLabel');
+      const recordingStatus = document.getElementById('recordingStatus');
+      const recordButton = document.getElementById('recordButton');
+      const timer = document.getElementById('timer');
+      const commandInput = document.getElementById('commandInput');
+      const instructionThread = document.getElementById('instructionThread');
+      const aiAck = document.getElementById('aiAck');
+      const contextSelected = document.getElementById('contextSelected');
+      const contextText = document.getElementById('contextText');
+      const replyText = document.getElementById('replyText');
+      const saveButton = document.getElementById('saveButton');
+      let isRecording = true;
+      let seconds = 12 * 60 + 48;
+
+      const formatTime = (totalSeconds) => {
+        const hours = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
+        const minutes = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
+        const rest = (totalSeconds % 60).toString().padStart(2, '0');
+        return `${hours}:${minutes}:${rest}`;
+      };
+
+      setInterval(() => {
+        if (isRecording) {
+          seconds += 1;
+          timer.textContent = formatTime(seconds);
+        }
+      }, 1000);
+
+      recordButton.addEventListener('click', () => {
+        isRecording = !isRecording;
+        recordingBar.classList.toggle('is-recording', isRecording);
+        liveDot.classList.toggle('paused', !isRecording);
+        recordingLabel.textContent = isRecording ? '錄音進行中' : '錄音已暫停';
+        recordingStatus.textContent = isRecording ? '麥克風已連線 · AI 每 4 秒更新一次' : '你可以繼續訪談，準備好再按繼續';
+        recordButton.textContent = isRecording ? '暫停錄音' : '繼續錄音';
+      });
+
+      document.querySelectorAll('.select-message').forEach((button) => {
+        button.addEventListener('click', () => {
+          const message = button.closest('.message');
+          document.querySelectorAll('.message').forEach((item) => item.classList.remove('selected'));
+          message.classList.add('selected');
+          contextText.textContent = message.dataset.message;
+          contextSelected.classList.add('is-visible');
+          commandInput.focus();
+        });
+      });
+
+      document.getElementById('clearContext').addEventListener('click', () => {
+        contextSelected.classList.remove('is-visible');
+        document.querySelectorAll('.message').forEach((item) => item.classList.remove('selected'));
+      });
+
+      document.querySelectorAll('[data-command]').forEach((button) => {
+        button.addEventListener('click', () => {
+          commandInput.value = button.dataset.command;
+          commandInput.focus();
+        });
+      });
+
+      document.getElementById('useSuggestion').addEventListener('click', () => {
+        commandInput.value = '把這句整理成我可以直接問客戶的下一句，語氣自然一點：' + document.getElementById('suggestionText').textContent;
+        commandInput.focus();
+      });
+
+      document.getElementById('dismissSuggestion').addEventListener('click', (event) => {
+        event.currentTarget.textContent = '已略過';
+        event.currentTarget.disabled = true;
+      });
+
+      const respondToCommand = (command) => {
+        if (command.includes('先不要') || command.includes('只整理')) return '收到。我會先整理，不主動產生回覆，等你決定下一步。';
+        if (command.includes('追問') || command.includes('下一句')) return '收到。我會把目前缺口改成一句自然、可以直接問客戶的話。';
+        if (command.includes('報價') || command.includes('預算')) return '收到。我會優先標出會影響報價的問題，並把已確認內容排除。';
+        return '收到。我會依照你的指示調整這一輪的分析方式。';
+      };
+
+      const sendCommand = () => {
+        const command = commandInput.value.trim();
+        if (!command) {
+          commandInput.focus();
+          return;
+        }
+        const userMessage = document.createElement('div');
+        userMessage.className = 'thread-message user';
+        userMessage.innerHTML = `<span class="thread-author">你 · 剛剛</span>${command.replaceAll('<', '&lt;').replaceAll('>', '&gt;')}`;
+        instructionThread.insertBefore(userMessage, aiAck);
+        aiAck.querySelector('.thread-author').textContent = 'AI · 已套用';
+        aiAck.lastChild.textContent = respondToCommand(command);
+        replyText.textContent = command.includes('下一句') || command.includes('追問')
+          ? '那我們先確認一下：如果第一版先不做付款和會員，你們希望什麼時候開始使用？'
+          : '我先把已確認和待確認的內容分開，等你決定要不要繼續追問。';
+        commandInput.value = '';
+        instructionThread.scrollTop = instructionThread.scrollHeight;
+      };
+
+      document.getElementById('sendCommand').addEventListener('click', sendCommand);
+      commandInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' && !event.shiftKey) {
+          event.preventDefault();
+          sendCommand();
+        }
+      });
+
+      document.getElementById('copyReply').addEventListener('click', async (event) => {
+        try { await navigator.clipboard.writeText(replyText.textContent); } catch (error) { /* file:// 預覽時可能沒有剪貼簿權限 */ }
+        event.currentTarget.textContent = '已複製';
+        setTimeout(() => { event.currentTarget.textContent = '複製這句'; }, 1400);
+      });
+
+      document.getElementById('editReply').addEventListener('click', () => {
+        commandInput.value = '把目前建議回覆改得更像我平常說話，少一點正式感：' + replyText.textContent;
+        commandInput.focus();
+      });
+
+      saveButton.addEventListener('click', () => {
+        saveButton.textContent = '已儲存';
+        setTimeout(() => { saveButton.textContent = '儲存這次記錄'; }, 1400);
+      });
+
+      document.getElementById('confirmRoles').addEventListener('click', (event) => {
+        const status = document.getElementById('speakerMapStatus');
+        status.textContent = '● 正在確認…';
+        status.style.color = 'var(--signal-ink)';
+        event.currentTarget.disabled = true;
+        setTimeout(() => {
+          status.textContent = '● 身份已對應';
+          status.style.color = 'var(--success)';
+          event.currentTarget.disabled = false;
+        }, 700);
+      });
+
+      recordingBar.classList.add('is-recording');
+    })();
+  </script>
+</body>
+</html>
