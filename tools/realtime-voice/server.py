@@ -28,6 +28,7 @@ from voice_identity import (
 from voice_profile_sync import resolve_profile_storage
 
 PORT = 8420
+MAX_VOICE_PROFILE_BYTES = 20 * 1024 * 1024
 STATIC_DIR = Path(__file__).parent / "static"
 OUTPUT_DIR = Path(__file__).parent / "output"
 LOW_CONFIDENCE_MARK = "[聽不清楚]"
@@ -311,7 +312,7 @@ async def handle_voice_profile(request: web.Request) -> web.Response:
         return web.json_response(
             {"status": "invalid_sample", "message": "聲音樣本是空的"}, status=400
         )
-    if len(sample) > 20 * 1024 * 1024:
+    if len(sample) > MAX_VOICE_PROFILE_BYTES:
         return web.json_response(
             {"status": "invalid_sample", "message": "聲音樣本不可超過 20 MB"},
             status=413,
@@ -394,7 +395,10 @@ async def handle_stream(request: web.Request) -> web.WebSocketResponse:
 
 
 def build_app(model, converter, session_id: str) -> web.Application:
-    app = web.Application()
+    # Keep the aiohttp request limit aligned with the route's explicit 20 MB
+    # validation.  Without this, aiohttp rejects normal 15-30 second voice
+    # samples at its 1 MB default before handle_voice_profile can return JSON.
+    app = web.Application(client_max_size=MAX_VOICE_PROFILE_BYTES)
     app["model"] = model
     app["converter"] = converter
     app["session_id"] = session_id

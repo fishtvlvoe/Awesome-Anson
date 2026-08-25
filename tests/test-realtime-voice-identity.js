@@ -7,6 +7,21 @@ const PYTHON = fs.existsSync(VENV_PYTHON) ? VENV_PYTHON : 'python3';
 const SERVER_MODULE_DIR = path.join(__dirname, '../tools/realtime-voice');
 
 module.exports = {
+  'voice-profile-request-limit-allows-configured-sample-size': () => {
+    const script = `
+import sys
+sys.path.insert(0, ${JSON.stringify(SERVER_MODULE_DIR)})
+import server
+
+app = server.build_app(object(), object(), 'session-a')
+assert app._client_max_size == server.MAX_VOICE_PROFILE_BYTES
+assert app._client_max_size >= 20 * 1024 * 1024
+print('ok')
+`;
+    const output = execFileSync(PYTHON, ['-c', script], { encoding: 'utf8' }).trim();
+    if (output !== 'ok') throw new Error(`unexpected output: ${output}`);
+  },
+
   'voice-profile-stores-local-sample-metadata': () => {
     const script = `
 import json, pathlib, sys, tempfile
