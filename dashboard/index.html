@@ -1,695 +1,1155 @@
-<!DOCTYPE html>
-<html lang="zh-Hant">
+<!doctype html>
+<html lang="zh-Hant" data-theme="light">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>案神使用說明書 — Awesome-Anson</title>
-<meta name="description" content="把模糊需求整理成能報價、能執行的方案。確認後可拿到簡報、網站／Demo、服務報價說明書。" />
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  :root {
-    color-scheme: light;
-    --bg: #f8fafc;
-    --paper: #ffffff;
-    --text: #0f172a;
-    --text-secondary: #334155;
-    --text-faint: #64748b;
-    --border: #e2e8f0;
-    --border-strong: #cbd5e1;
-    --raised: #f1f5f9;
-    --accent: #f59e0b;
-    --accent-ink: #1c0a00;
-    --shadow: 0 1px 3px rgba(0,0,0,.10), 0 1px 2px -1px rgba(0,0,0,.10);
-    --font-sans: Inter, "Noto Sans TC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    --font-mono: "JetBrains Mono", "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
-    --radius: 8px;
-    --radius-lg: 16px;
-    --ease: cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  html.dark-mode, html[data-theme="dark"] {
-    color-scheme: dark;
-    --bg: #0a0f1e;
-    --paper: #111827;
-    --text: #e8eeff;
-    --text-secondary: #c8d5f0;
-    --text-faint: #6b7fa8;
-    --border: #1e2d4a;
-    --border-strong: #334155;
-    --raised: #1a2236;
-    --accent: #f59e0b;
-    --accent-ink: #1c0a00;
-    --shadow: 0 1px 3px rgba(0,0,0,.40), 0 1px 2px -1px rgba(0,0,0,.40);
-  }
-
-  html { scroll-behavior: smooth; scroll-padding-top: 88px; }
-
-  @media (prefers-reduced-motion: reduce) {
-    html { scroll-behavior: auto; }
-    * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-  }
-
-  body {
-    font-family: var(--font-sans);
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.7;
-    min-height: 100%;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  a { color: inherit; }
-  :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
-
-  .shell { width: min(1200px, calc(100% - 48px)); margin-inline: auto; }
-
-  .topbar {
-    position: sticky; z-index: 80; top: 0; height: 64px;
-    border-bottom: 1px solid var(--border); background: var(--bg);
-  }
-
-  .topbar-inner {
-    display: grid; grid-template-columns: auto minmax(0,1fr) auto;
-    align-items: center; gap: 20px; height: 100%;
-  }
-
-  .brand {
-    display: inline-flex; align-items: center; gap: 10px;
-    font-weight: 800; text-decoration: none; color: var(--text);
-  }
-
-  .brand-mark {
-    display: grid; place-items: center; width: 28px; height: 28px;
-    border: 2px solid var(--text); background: var(--accent); color: var(--accent-ink);
-    font-weight: 800; font-size: 14px; box-shadow: 4px 4px 0 var(--text);
-  }
-
-  .brand small { display: block; font-size: 11px; font-weight: 500; color: var(--text-faint); }
-
-  .topnav { display: flex; justify-content: center; gap: 4px; overflow-x: auto; }
-
-  .topnav a {
-    color: var(--text-faint); text-decoration: none; font-size: 0.86rem; font-weight: 600;
-    padding: 8px 10px; border-bottom: 2px solid transparent; white-space: nowrap;
-  }
-
-  .topnav a:hover, .topnav a.active { color: var(--text); border-color: var(--accent); }
-
-  .theme-inline {
-    border: 1px solid var(--border-strong); background: var(--paper); color: var(--text);
-    border-radius: var(--radius); padding: 8px 12px; cursor: pointer;
-    font: inherit; font-size: 0.82rem; font-weight: 700;
-  }
-
-  .hero {
-    display: grid; grid-template-columns: minmax(0, 1fr);
-    gap: 32px; padding: 64px 0 40px;
-  }
-
-  .kicker {
-    margin-bottom: 14px; color: var(--accent);
-    font-size: 13px; font-weight: 700;
-  }
-
-  h1 {
-    font-size: clamp(2rem, 4.2vw, 3.1rem);
-    font-weight: 800; letter-spacing: -0.035em; line-height: 1.16;
-    max-width: 16ch;
-  }
-
-  .hero-lead {
-    max-width: 38rem; margin-top: 18px;
-    font-size: 1.08rem; color: var(--text-secondary);
-  }
-
-  .hero-actions, .cta-actions {
-    display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px;
-  }
-
-  .button {
-    display: inline-flex; align-items: center; justify-content: center;
-    min-height: 44px; padding: 8px 16px; border-radius: var(--radius);
-    font-size: 14px; font-weight: 800; text-decoration: none; cursor: pointer;
-    font-family: inherit;
-  }
-
-  .button-primary {
-    border: 2px solid var(--text); background: var(--accent); color: var(--accent-ink);
-    box-shadow: 4px 4px 0 var(--text);
-    transition: transform 200ms var(--ease), box-shadow 200ms var(--ease);
-  }
-
-  .button-primary:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--text); }
-
-  .button-secondary {
-    border: 1px solid var(--border-strong); background: var(--paper); color: var(--text);
-  }
-
-  .section { padding: 56px 0; border-top: 1px solid var(--border); }
-
-  .section-head { max-width: 44rem; margin-bottom: 28px; }
-
-  .section-head h2 { font-size: clamp(1.35rem, 2.2vw, 1.7rem); font-weight: 800; }
-
-  .section-head p { margin-top: 10px; color: var(--text-secondary); }
-
-  .outcome-strip {
-    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
-    overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius-lg);
-    background: var(--paper); box-shadow: var(--shadow);
-  }
-
-  .outcome-item {
-    display: grid; grid-template-columns: auto minmax(0, 1fr);
-    align-items: center; gap: 12px; min-height: 104px; padding: 20px;
-  }
-
-  .outcome-item + .outcome-item { border-left: 1px solid var(--border); }
-
-  .output-key {
-    display: grid; place-items: center; width: 42px; height: 42px;
-    border: 2px solid var(--text); background: var(--accent); color: var(--accent-ink);
-    font-family: var(--font-mono); font-size: 10px; font-weight: 700;
-    box-shadow: 3px 3px 0 var(--text);
-  }
-
-  .outcome-item strong { display: block; font-size: 15px; }
-
-  .outcome-item span:last-child {
-    display: block; margin-top: 3px; color: var(--text-faint); font-size: 13px;
-  }
-
-  .scenario-layout {
-    display: grid; grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr); gap: 48px;
-  }
-
-  .scenario-item {
-    display: grid; grid-template-columns: auto 1fr; gap: 16px;
-    padding: 18px 0; border-top: 1px solid var(--border);
-  }
-
-  .scenario-item:last-child { border-bottom: 1px solid var(--border); }
-
-  .scenario-number {
-    color: var(--accent); font-weight: 800; font-size: 1.1rem; padding-top: 2px;
-  }
-
-  .scenario-item h3 { font-size: 1.05rem; margin-bottom: 4px; }
-
-  .scenario-item p { color: var(--text-secondary); font-size: 0.94rem; }
-
-  .case-shell {
-    background: var(--paper); border: 1px solid var(--border);
-    border-radius: var(--radius-lg); padding: 22px; box-shadow: var(--shadow);
-  }
-
-  .case-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px; }
-
-  .case-tab {
-    border: 1px solid var(--border); background: var(--bg); color: var(--text-secondary);
-    border-radius: var(--radius); padding: 10px 8px; cursor: pointer;
-    font: inherit; font-size: 0.82rem; text-align: left;
-  }
-
-  .case-tab strong { display: block; color: var(--text); font-size: 0.9rem; margin-bottom: 2px; }
-
-  .case-tab[aria-selected="true"] {
-    border-color: var(--text); background: var(--accent); color: var(--accent-ink);
-    box-shadow: 3px 3px 0 var(--text);
-  }
-
-  .case-body {
-    display: grid; grid-template-columns: minmax(220px, 0.85fr) minmax(0, 1.15fr);
-    gap: 18px;
-  }
-
-  .case-quote {
-    display: flex; flex-direction: column; justify-content: center;
-    min-height: 220px; background: var(--raised); border: 1px solid var(--border);
-    border-radius: 14px; padding: 24px;
-  }
-
-  .case-quote .case-label {
-    color: var(--text-faint); font-size: 0.74rem; font-weight: 700;
-    letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 14px;
-  }
-
-  .case-quote blockquote {
-    font-size: clamp(1.15rem, 2vw, 1.45rem); line-height: 1.45; color: var(--text);
-  }
-
-  .case-response { border: 1px solid var(--border); border-radius: 14px; padding: 24px; }
-
-  .case-response .case-kicker {
-    color: var(--accent); font-size: 0.76rem; font-weight: 800;
-    letter-spacing: 0.08em; margin-bottom: 8px;
-  }
-
-  .case-response h3 { font-size: 1.3rem; margin: 0 0 8px; }
-
-  .case-response p { color: var(--text-secondary); font-size: 0.94rem; margin: 0 0 14px; }
-
-  .case-output { background: var(--bg); border-radius: 12px; padding: 14px 16px; }
-
-  .case-output span {
-    display: block; color: var(--text-faint); font-size: 0.74rem;
-    font-weight: 700; letter-spacing: 0.06em; margin-bottom: 4px;
-  }
-
-  .case-output strong { display: block; font-size: 1rem; margin-bottom: 4px; }
-
-  .case-output p { margin: 0; font-size: 0.86rem; }
-
-  .case-note { margin-top: 14px; color: var(--text-faint); font-size: 0.82rem; }
-
-  .workflow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-
-  .workflow-step {
-    background: var(--paper); border: 1px solid var(--border);
-    border-radius: 14px; padding: 18px 14px; min-height: 148px;
-  }
-
-  .workflow-step b { color: var(--accent); font-size: 1.2rem; }
-
-  .workflow-step strong { display: block; margin: 6px 0; font-size: 1rem; }
-
-  .workflow-step p { color: var(--text-secondary); font-size: 0.82rem; }
-
-  .handoff-grid {
-    display: grid; grid-template-columns: 1fr auto 1fr auto 1fr;
-    align-items: stretch; gap: 12px;
-  }
-
-  .handoff-card {
-    background: var(--paper); border: 1px solid var(--border);
-    border-radius: 14px; padding: 20px; box-shadow: var(--shadow);
-  }
-
-  .handoff-card h3 { font-size: 1.05rem; margin-bottom: 6px; }
-
-  .handoff-card p { color: var(--text-secondary); font-size: 0.92rem; }
-
-  .handoff-arrow { display: grid; place-items: center; color: var(--accent); font-weight: 800; }
-
-  .contact-panel {
-    display: flex; flex-wrap: wrap; gap: 18px; align-items: center;
-    justify-content: space-between;
-    background: var(--paper); border: 1px solid var(--border);
-    border-radius: var(--radius-lg); padding: 28px; box-shadow: var(--shadow);
-  }
-
-  .contact-panel h2 { font-size: 1.45rem; margin-bottom: 8px; }
-
-  .contact-panel p { color: var(--text-secondary); max-width: 520px; }
-
-  .contact-meta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; font-size: 0.82rem; color: var(--text-faint); }
-
-  .version-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 18px; }
-
-  .version-badge {
-    font-weight: 800; font-size: 1.1rem; color: var(--accent-ink);
-    border: 2px solid var(--text); background: var(--accent);
-    padding: 3px 14px; box-shadow: 3px 3px 0 var(--text);
-  }
-
-  #sync-note { font-size: 0.8rem; color: var(--text-faint); }
-
-  .timeline-item { margin-bottom: 18px; padding-left: 20px; border-left: 2px solid var(--border); }
-
-  .timeline-date { font-size: 0.85em; color: var(--text-faint); font-weight: 600; }
-
-  .timeline-topic { font-weight: 700; margin: 4px 0 6px; }
-
-  .timeline-summary { font-size: 0.94em; color: var(--text-secondary); }
-
-  .timeline-added { margin: 8px 0 0; padding-left: 18px; font-size: 0.86em; color: var(--text-secondary); }
-
-  footer { padding: 36px 0 56px; }
-
-  footer p { font-size: 0.78rem; color: var(--text-faint); }
-
-  @media (max-width: 820px) {
-    .scenario-layout, .case-body, .handoff-grid, .workflow { grid-template-columns: 1fr; }
-    .handoff-arrow { transform: rotate(90deg); padding: 4px 0; }
-    .workflow-step { min-height: 0; }
-  }
-
-  @media (max-width: 768px) {
-    .shell { width: calc(100% - 32px); }
-    .topbar-inner { grid-template-columns: auto 1fr; }
-    .topnav { grid-column: 1 / -1; }
-    .outcome-strip { grid-template-columns: 1fr; }
-    .outcome-item + .outcome-item { border-left: 0; border-top: 1px solid var(--border); }
-    .case-tabs { grid-template-columns: 1fr 1fr; }
-  }
-
-  @media (max-width: 430px) {
-    .case-tabs { grid-template-columns: 1fr; }
-  }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="案神使用說明視覺方向稿。用白話案例說明如何把客戶的模糊需求整理成可確認、可報價、可交付的方案。">
+  <title>案神使用說明｜品牌統一方向稿</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600&amp;family=Noto+Sans+TC:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('startkiter-brand-preview-theme');
+        document.documentElement.dataset.theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      } catch (error) {
+        document.documentElement.dataset.theme = 'light';
+      }
+    })();
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      --olive-50: oklch(98.8% 0.003 106.5);
+      --olive-100: oklch(96.6% 0.005 106.5);
+      --olive-200: oklch(93% 0.007 106.5);
+      --olive-300: oklch(88% 0.011 106.6);
+      --olive-400: oklch(73.7% 0.021 106.9);
+      --olive-500: oklch(58% 0.031 107.3);
+      --olive-600: oklch(46.6% 0.025 107.3);
+      --olive-700: oklch(39.4% 0.023 107.4);
+      --olive-800: oklch(28.6% 0.016 107.4);
+      --olive-900: oklch(22.8% 0.013 107.4);
+      --olive-950: oklch(15.3% 0.006 107.1);
+      --background: var(--olive-50);
+      --foreground: var(--olive-950);
+      --card: #ffffff;
+      --card-foreground: var(--olive-950);
+      --muted: var(--olive-100);
+      --muted-foreground: var(--olive-600);
+      --border: var(--olive-200);
+      --border-strong: var(--olive-300);
+      --primary: var(--olive-950);
+      --primary-foreground: var(--olive-50);
+      --touch: oklch(0.51 0.12 128);
+      --touch-soft: oklch(0.95 0.025 128);
+      --radius: 0.625rem;
+      --radius-lg: 1.125rem;
+      --shadow: 0 18px 50px -32px color-mix(in oklab, var(--olive-950) 36%, transparent);
+      --container: 72rem;
+      --nav-height: 64px;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --background: var(--olive-950);
+      --foreground: var(--olive-50);
+      --card: var(--olive-900);
+      --card-foreground: var(--olive-50);
+      --muted: var(--olive-900);
+      --muted-foreground: var(--olive-400);
+      --border: var(--olive-800);
+      --border-strong: var(--olive-700);
+      --primary: var(--olive-50);
+      --primary-foreground: var(--olive-950);
+      --touch: oklch(0.76 0.11 128);
+      --touch-soft: oklch(0.25 0.035 128);
+      --shadow: 0 18px 50px -32px rgba(0, 0, 0, 0.82);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      font-size: 16px;
+      scroll-behavior: smooth;
+      scroll-padding-top: calc(var(--nav-height) + 24px);
+      overflow-x: clip;
+    }
+
+    body {
+      margin: 0;
+      overflow-x: clip;
+      background: var(--background);
+      color: var(--foreground);
+      font-family: Inter, "Noto Sans TC", ui-sans-serif, system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+      text-rendering: optimizeLegibility;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      color: var(--foreground);
+      font-family: "DM Sans", "Noto Sans TC", ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: -0.025em;
+      line-height: 1.28;
+    }
+
+    h1 { font-size: 30px; }
+    h2 { font-size: 24px; }
+    h3 { font-size: 18px; }
+
+    p,
+    figure,
+    dl,
+    dd {
+      margin: 0;
+    }
+
+    p,
+    dd {
+      color: var(--muted-foreground);
+    }
+
+    a,
+    button {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    button {
+      font: inherit;
+      color: inherit;
+    }
+
+    img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--touch);
+      outline-offset: 3px;
+    }
+
+    .skip-link {
+      position: fixed;
+      z-index: 100;
+      top: 8px;
+      left: 16px;
+      transform: translateY(-160%);
+      border-radius: var(--radius);
+      background: var(--primary);
+      color: var(--primary-foreground);
+      padding: 8px 14px;
+      text-decoration: none;
+    }
+
+    .skip-link:focus {
+      transform: translateY(0);
+    }
+
+    .shell {
+      width: min(var(--container), calc(100% - 48px));
+      margin-inline: auto;
+    }
+
+    .topbar {
+      position: sticky;
+      z-index: 50;
+      top: 0;
+      height: var(--nav-height);
+      border-bottom: 1px solid var(--border);
+      background: color-mix(in oklab, var(--background) 94%, transparent);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .topbar-inner {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 24px;
+      height: 100%;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-width: max-content;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: var(--radius);
+      background: var(--primary);
+      color: var(--primary-foreground);
+      font-size: 14px;
+    }
+
+    .brand-copy {
+      display: grid;
+      line-height: 1.15;
+    }
+
+    .brand-copy small {
+      margin-top: 3px;
+      color: var(--muted-foreground);
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .nav-links {
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .nav-links a {
+      border-radius: var(--radius);
+      color: var(--muted-foreground);
+      padding: 7px 10px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: background 150ms var(--ease), color 150ms var(--ease);
+    }
+
+    .nav-links a:hover {
+      background: var(--muted);
+      color: var(--foreground);
+    }
+
+    .theme-toggle {
+      min-height: 36px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--card);
+      color: var(--muted-foreground);
+      padding: 0 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: border-color 150ms var(--ease), color 150ms var(--ease), transform 150ms var(--ease);
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--border-strong);
+      color: var(--foreground);
+    }
+
+    .theme-toggle:active,
+    .button:active,
+    .case-link:active {
+      transform: translateY(1px) scale(0.99);
+    }
+
+    .preview-note {
+      border-bottom: 1px solid var(--border);
+      background: var(--muted);
+      color: var(--muted-foreground);
+      padding: 8px 16px;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
+      align-items: center;
+      gap: 48px;
+      padding-block: 64px 48px;
+    }
+
+    .hero-copy {
+      max-width: 540px;
+    }
+
+    .kicker {
+      margin-bottom: 14px;
+      color: var(--touch);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .hero h1 {
+      max-width: 18ch;
+    }
+
+    .hero-lead {
+      max-width: 34rem;
+      margin-top: 18px;
+      font-size: 17px;
+      line-height: 1.7;
+    }
+
+    .hero-actions,
+    .cta-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      padding: 0 17px;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: background 150ms var(--ease), border-color 150ms var(--ease), transform 150ms var(--ease);
+    }
+
+    .button-primary {
+      background: var(--primary);
+      color: var(--primary-foreground);
+    }
+
+    .button-primary:hover {
+      background: color-mix(in oklab, var(--primary) 88%, var(--touch));
+    }
+
+    .button-secondary {
+      border-color: var(--border);
+      background: var(--card);
+      color: var(--card-foreground);
+    }
+
+    .button-secondary:hover {
+      border-color: var(--border-strong);
+      background: var(--muted);
+    }
+
+    .hero-media {
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 16 / 10;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      filter: saturate(0.72) contrast(0.98);
+    }
+
+    .hero-media figcaption {
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      max-width: calc(100% - 24px);
+      border: 1px solid color-mix(in oklab, var(--border) 75%, transparent);
+      border-radius: var(--radius);
+      background: color-mix(in oklab, var(--card) 92%, transparent);
+      color: var(--muted-foreground);
+      padding: 8px 10px;
+      font-size: 12px;
+      backdrop-filter: blur(10px);
+    }
+
+    .outcome-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+
+    .outcome-item {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: center;
+      gap: 12px;
+      min-height: 104px;
+      padding: 20px;
+    }
+
+    .outcome-item + .outcome-item {
+      border-left: 1px solid var(--border);
+    }
+
+    .output-key {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border-radius: var(--radius);
+      background: var(--muted);
+      color: var(--foreground);
+      font-family: "JetBrains Mono", monospace;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .outcome-item strong {
+      display: block;
+      font-size: 15px;
+    }
+
+    .outcome-item span:last-child {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted-foreground);
+      font-size: 12px;
+    }
+
+    .section {
+      padding-block: 64px;
+    }
+
+    .section + .section {
+      border-top: 1px solid var(--border);
+    }
+
+    .section-head {
+      max-width: 44rem;
+      margin-bottom: 32px;
+    }
+
+    .section-head p {
+      margin-top: 10px;
+      font-size: 15px;
+    }
+
+    .scenario-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+      gap: 48px;
+      align-items: start;
+    }
+
+    .scenario-question {
+      position: sticky;
+      top: calc(var(--nav-height) + 32px);
+      border-left: 4px solid var(--touch);
+      padding-left: 20px;
+    }
+
+    .scenario-question p {
+      margin-top: 12px;
+    }
+
+    .scenario-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .scenario-item {
+      display: grid;
+      grid-template-columns: 2rem minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--card);
+      padding: 18px;
+    }
+
+    .scenario-number {
+      display: grid;
+      place-items: center;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 9999px;
+      background: var(--primary);
+      color: var(--primary-foreground);
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px;
+    }
+
+    .scenario-item p {
+      margin-top: 5px;
+      font-size: 14px;
+    }
+
+    .canvas-frame {
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: #ffffff;
+      box-shadow: var(--shadow);
+    }
+
+    .canvas-frame img {
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+    }
+
+    .canvas-caption {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      border-top: 1px solid var(--border);
+      background: var(--card);
+    }
+
+    .canvas-caption div {
+      padding: 16px;
+    }
+
+    .canvas-caption div + div {
+      border-left: 1px solid var(--border);
+    }
+
+    .canvas-caption strong {
+      display: block;
+      font-size: 13px;
+    }
+
+    .canvas-caption span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted-foreground);
+      font-size: 12px;
+    }
+
+    .case-stack {
+      display: grid;
+      gap: 32px;
+    }
+
+    .case-study {
+      display: grid;
+      grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+
+    .case-study:nth-child(even) .case-media {
+      order: 2;
+    }
+
+    .case-media {
+      min-height: 390px;
+      background: var(--muted);
+    }
+
+    .case-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: saturate(0.55) contrast(0.96);
+    }
+
+    .case-body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 32px;
+    }
+
+    .case-label {
+      margin-bottom: 10px;
+      color: var(--touch);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .case-summary {
+      margin-top: 10px;
+      font-size: 15px;
+    }
+
+    .case-details {
+      display: grid;
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    .case-details div {
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+
+    .case-details strong {
+      color: var(--foreground);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .case-details p {
+      margin-top: 5px;
+      font-size: 14px;
+    }
+
+    .case-note {
+      margin-top: 18px;
+      color: var(--muted-foreground);
+      font-size: 12px;
+    }
+
+    .workflow {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 0;
+    }
+
+    .workflow-step {
+      position: relative;
+      min-height: 176px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--card);
+      padding: 18px;
+    }
+
+    .workflow-step + .workflow-step {
+      margin-left: 20px;
+    }
+
+    .workflow-step + .workflow-step::before {
+      content: "→";
+      position: absolute;
+      top: 50%;
+      left: -21px;
+      width: 20px;
+      color: var(--muted-foreground);
+      text-align: center;
+      transform: translateY(-50%);
+    }
+
+    .workflow-step b {
+      display: block;
+      color: var(--touch);
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px;
+    }
+
+    .workflow-step strong {
+      display: block;
+      margin-top: 14px;
+      font-size: 15px;
+    }
+
+    .workflow-step p {
+      margin-top: 7px;
+      font-size: 13px;
+    }
+
+    .workflow-step small {
+      display: block;
+      margin-top: 14px;
+      color: var(--muted-foreground);
+      font-family: "JetBrains Mono", monospace;
+      font-size: 10px;
+    }
+
+    .handoff-grid {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr;
+      align-items: stretch;
+      gap: 16px;
+    }
+
+    .handoff-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--card);
+      padding: 20px;
+    }
+
+    .handoff-card p {
+      margin-top: 8px;
+      font-size: 13px;
+    }
+
+    .technical-name {
+      display: block;
+      margin-top: 14px;
+      color: var(--muted-foreground);
+      font-family: "JetBrains Mono", monospace;
+      font-size: 10px;
+    }
+
+    .handoff-arrow {
+      display: grid;
+      place-items: center;
+      color: var(--touch);
+      font-size: 22px;
+    }
+
+    .contact-panel {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 32px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--card);
+      padding: 32px;
+      box-shadow: var(--shadow);
+    }
+
+    .contact-panel p {
+      max-width: 42rem;
+      margin-top: 10px;
+    }
+
+    .contact-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+      margin-top: 18px;
+      color: var(--muted-foreground);
+      font-size: 12px;
+    }
+
+    .planned {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      border: 1px dashed var(--border-strong);
+      border-radius: var(--radius);
+      padding: 0 10px;
+    }
+
+    .contact-feedback {
+      margin-top: 12px;
+      color: var(--touch);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .footer {
+      padding-block: 28px;
+      border-top: 1px solid var(--border);
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      color: var(--muted-foreground);
+      font-size: 12px;
+    }
+
+    @media (max-width: 960px) {
+      .hero,
+      .scenario-layout,
+      .case-study,
+      .contact-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .scenario-question {
+        position: static;
+      }
+
+      .outcome-strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .outcome-item:nth-child(3) {
+        border-left: 0;
+        border-top: 1px solid var(--border);
+      }
+
+      .outcome-item:nth-child(4) {
+        border-top: 1px solid var(--border);
+      }
+
+      .case-study:nth-child(even) .case-media {
+        order: 0;
+      }
+
+      .case-media {
+        min-height: 320px;
+      }
+
+      .workflow {
+        grid-template-columns: 1fr;
+        gap: 28px;
+      }
+
+      .workflow-step + .workflow-step {
+        margin-left: 0;
+      }
+
+      .workflow-step + .workflow-step::before {
+        content: "↓";
+        top: -29px;
+        left: 50%;
+        width: auto;
+        transform: translateX(-50%);
+      }
+
+      .handoff-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .handoff-arrow {
+        transform: rotate(90deg);
+      }
+
+      .contact-panel .cta-actions {
+        margin-top: 0;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .shell {
+        width: min(100% - 32px, var(--container));
+      }
+
+      .topbar-inner {
+        grid-template-columns: 1fr auto;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .preview-note {
+        text-align: left;
+      }
+
+      .hero {
+        gap: 28px;
+        padding-block: 40px 32px;
+      }
+
+      .hero-lead {
+        font-size: 16px;
+      }
+
+      .hero-media {
+        aspect-ratio: 4 / 3;
+      }
+
+      .outcome-strip,
+      .canvas-caption {
+        grid-template-columns: 1fr;
+      }
+
+      .outcome-item + .outcome-item,
+      .outcome-item:nth-child(3),
+      .outcome-item:nth-child(4),
+      .canvas-caption div + div {
+        border-top: 1px solid var(--border);
+        border-left: 0;
+      }
+
+      .section {
+        padding-block: 48px;
+      }
+
+      .canvas-frame {
+        overflow: visible;
+      }
+
+      .canvas-frame img {
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      }
+
+      .case-media {
+        min-height: 240px;
+      }
+
+      .case-body,
+      .contact-panel {
+        padding: 24px;
+      }
+
+      .hero-actions,
+      .cta-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .button {
+        width: 100%;
+      }
+
+      .footer-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
 </head>
 <body>
+  <a class="skip-link" href="#main">跳到主要內容</a>
 
-<header class="topbar">
-  <div class="shell topbar-inner">
-    <a class="brand" href="#top">
-      <span class="brand-mark">A</span>
-      <span>案神<small>使用說明</small></span>
-    </a>
-    <nav class="topnav" aria-label="頁面導覽">
-      <a href="#outcomes">你會拿到什麼</a>
-      <a href="#cases">先看案例</a>
-      <a href="#workflow">怎麼進行</a>
-      <a href="#contact">下一步</a>
-    </nav>
-    <button class="theme-inline" type="button" onclick="toggleTheme()">深色模式</button>
-  </div>
-</header>
-
-<main>
-  <section class="shell hero" id="top">
-    <div>
-      <p class="kicker">談需求、提案、報價，都可以先交給案神整理</p>
-      <h1>把模糊需求，整理成能報價、能執行的方案。</h1>
-      <p class="hero-lead">只要雙方需要對齊認知，後面可能收費，就把對話、筆記與文件放進來。案神會整理重點，也會把還沒問清楚的地方留下來給人確認。</p>
-      <div class="hero-actions">
-        <a class="button button-primary" href="#contact">與我們聯繫</a>
-        <a class="button button-secondary" href="https://github.com/fishtvlvoe/Awesome-Anson" target="_blank" rel="noreferrer">查看 GitHub</a>
-      </div>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="brand" href="#top" aria-label="回到頁首">
+        <span class="brand-mark" aria-hidden="true">案</span>
+        <span class="brand-copy">案神<small>使用說明</small></span>
+      </a>
+      <nav class="nav-links" aria-label="頁面導覽">
+        <a href="#outcomes">你會拿到什麼</a>
+        <a href="#cases">真實案例</a>
+        <a href="#workflow">怎麼進行</a>
+        <a href="#contact">下一步</a>
+      </nav>
+      <button class="theme-toggle" type="button" aria-label="切換深淺色模式">深色模式</button>
     </div>
-  </section>
+  </header>
 
-  <section class="section" id="outcomes">
-    <div class="shell">
+  <div class="preview-note">本機視覺方向稿。先確認品牌風格與閱讀方式，尚未發布。</div>
+
+  <main id="main">
+    <section class="shell hero" id="top" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="kicker">談需求、提案、報價，都可以先交給案神整理</p>
+        <h1 id="hero-title">把模糊需求，整理成能報價、能執行的方案。</h1>
+        <p class="hero-lead">只要雙方需要對齊認知，後面可能收費，就把對話、筆記與文件放進來。案神會整理重點，也會把還沒問清楚的地方留下來給人確認。</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#contact">與我們聯繫</a>
+          <a class="button button-secondary" href="https://github.com/fishtvlvoe/Awesome-Anson" target="_blank" rel="noreferrer">查看 GitHub</a>
+        </div>
+      </div>
+      <figure class="hero-media">
+        <img src="assets/god-manual-prototype/anson-manual-hero.png" alt="一位顧問在電腦前整理訪談內容、問題與待確認事項" width="1672" height="941">
+        <figcaption>先把話說清楚，再決定要不要做、怎麼報價。</figcaption>
+      </figure>
+    </section>
+
+    <section class="shell" id="outcomes" aria-labelledby="outcomes-title">
       <header class="section-head">
-        <h2>整理完，最後可以拿到這三種成果</h2>
-        <p>不是只給你一張流程圖。你確認過的需求，會變成能拿去提案、報價或讓客戶點看看的東西。</p>
+        <h2 id="outcomes-title">整理完，最後可以拿到這四種成果</h2>
+        <p>不是只給你一張漂亮流程圖。確認過的需求會繼續變成真正能拿去提案、報價或開工的文件。</p>
       </header>
-      <div class="outcome-strip" aria-label="案神最後交出的三樣東西">
+      <div class="outcome-strip" aria-label="案神可協助整理的四種成果">
         <article class="outcome-item">
           <span class="output-key">PPT</span>
-          <div><strong>簡報檔</strong><span>拿去跟客戶對方案</span></div>
+          <div><strong>簡報檔</strong><span>提案、內訓或交接簡報</span></div>
         </article>
         <article class="outcome-item">
           <span class="output-key">WEB</span>
-          <div><strong>網站／Demo</strong><span>讓客戶當場點給你看</span></div>
+          <div><strong>網頁</strong><span>說明頁、提案頁或 Demo</span></div>
+        </article>
+        <article class="outcome-item">
+          <span class="output-key">CODE</span>
+          <div><strong>程式代碼</strong><span>確認範圍後再進入開發</span></div>
         </article>
         <article class="outcome-item">
           <span class="output-key">QUOTE</span>
-          <div><strong>服務報價說明書</strong><span>範圍、錢、下一步寫清楚</span></div>
+          <div><strong>服務報價說明書</strong><span>方案、範圍與付款條件</span></div>
         </article>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="section" id="when">
-    <div class="shell scenario-layout">
-      <div>
-        <h2>什麼時候適合用案神？</h2>
-        <p class="hero-lead" style="margin-top:12px;">這段討論如果沒弄清楚，後面就可能做錯、報錯或收不到錢，就該先整理。</p>
-      </div>
-      <div>
-        <article class="scenario-item">
-          <span class="scenario-number">01</span>
-          <div>
-            <h3>客戶只說「我想做網站」</h3>
-            <p>把目的、誰要用、要做哪些事、預算跟時間拆開問，不直接猜客戶要哪一種網站。</p>
-          </div>
-        </article>
-        <article class="scenario-item">
-          <span class="scenario-number">02</span>
-          <div>
-            <h3>一場會議同時冒出很多需求</h3>
-            <p>把已經確定的、還要再問的、目前只是猜測的分開，避免散會後每人記得的版本不一樣。</p>
-          </div>
-        </article>
-        <article class="scenario-item">
-          <span class="scenario-number">03</span>
-          <div>
-            <h3>準備提出付費服務</h3>
-            <p>先寫清楚做什麼、不做什麼、要交什麼，再出提案或報價，避免邊做邊吵範圍。</p>
-          </div>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="cases">
-    <div class="shell">
-      <header class="section-head">
-        <h2>客戶只說：「我想做一個網站。」案神會怎麼接住？</h2>
-        <p>下面是同一個匿名案子的四個步驟，不是兩個不同客戶。按格子看同一句話怎麼變成可以討論的方案。</p>
-      </header>
-
-      <div class="case-shell" data-case-demo>
-        <div class="case-tabs" role="tablist" aria-label="案神案例步驟">
-          <button class="case-tab" type="button" role="tab" aria-selected="true" data-case-step="0"><strong>1．先聽懂</strong>記下客戶原話</button>
-          <button class="case-tab" type="button" role="tab" aria-selected="false" data-case-step="1"><strong>2．找出缺口</strong>分清楚事實與猜測</button>
-          <button class="case-tab" type="button" role="tab" aria-selected="false" data-case-step="2"><strong>3．問對問題</strong>補齊報價需要的答案</button>
-          <button class="case-tab" type="button" role="tab" aria-selected="false" data-case-step="3"><strong>4．交付方案</strong>確認後才往下做</button>
+    <section class="section" aria-labelledby="scenario-title">
+      <div class="shell scenario-layout">
+        <div class="scenario-question">
+          <h2 id="scenario-title">什麼時候適合用案神？</h2>
+          <p>判斷方式很簡單：這段討論如果沒弄清楚，後面就可能做錯、報錯或收不到錢，就該先整理。</p>
         </div>
-        <div class="case-body">
-          <div class="case-quote">
-            <div class="case-label">客戶在會議上說</div>
-            <blockquote id="case-quote-text">「我們想做一個網站，讓客人可以直接預約，最好也能自動提醒。」</blockquote>
-          </div>
-          <div class="case-response" aria-live="polite">
-            <div class="case-kicker" id="case-kicker">第一步｜先不急著報價</div>
-            <h3 id="case-title">把客戶的話完整留下來</h3>
-            <p id="case-copy">案神先記住客戶真的說了什麼，不急著把「想要網站」講成某套做法。同一句話，可能是預約、收款或會員，範圍差很多。</p>
-            <div class="case-output">
-              <span>這一步你會拿到</span>
-              <strong id="case-output-title">一份不加戲的對談重點</strong>
-              <p id="case-output-copy">已確認：客戶想讓客人預約，也希望有提醒。還沒確認：誰管、要不要收款、預算多少。</p>
+        <div class="scenario-list">
+          <article class="scenario-item">
+            <span class="scenario-number">01</span>
+            <div><h3>客戶只說「我想做網站」</h3><p>把目的、使用者、功能、預算與時間拆開問，不直接猜客戶要哪一種網站。</p></div>
+          </article>
+          <article class="scenario-item">
+            <span class="scenario-number">02</span>
+            <div><h3>一場會議同時冒出很多需求</h3><p>把已確認、待確認與推測分開，避免大家會後記得的是不同版本。</p></div>
+          </article>
+          <article class="scenario-item">
+            <span class="scenario-number">03</span>
+            <div><h3>準備提出付費服務</h3><p>先整理做什麼、不做什麼、要交什麼，再產出提案或報價，避免邊做邊吵範圍。</p></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="canvas-title">
+      <div class="shell">
+        <header class="section-head">
+          <h2 id="canvas-title">用一張無限畫布，看懂整個案子</h2>
+          <p>這裡是視覺示意圖，不需要真的拖拉。重點是把散在對話、文件與腦中的資訊放到同一張圖，再一路連到可以交付的成果。</p>
+        </header>
+        <figure class="canvas-frame">
+          <img src="assets/god-manual-prototype/anson-infinite-canvas-brand.png" alt="案神無限畫布示意圖：把會議、錄音、對話、文件與筆記整理後，經人工確認，產出簡報、網站、程式與報價說明書" width="1672" height="941">
+          <figcaption class="canvas-caption">
+            <div><strong>把資料放進來</strong><span>會議、錄音、訊息、文件、筆記</span></div>
+            <div><strong>案神先整理</strong><span>需求、問題、假設、風險與範圍</span></div>
+            <div><strong>人負責確認</strong><span>重要決定不能交給 AI 自己猜</span></div>
+            <div><strong>接著做成果</strong><span>簡報、網頁、代碼、報價說明書</span></div>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section" id="cases" aria-labelledby="cases-title">
+      <div class="shell">
+        <header class="section-head">
+          <h2 id="cases-title">兩個真的做過的案例</h2>
+          <p>客戶名稱與敏感數字已拿掉，只保留原本遇到的問題、怎麼整理，以及實際做出的文件。</p>
+        </header>
+        <div class="case-stack">
+          <article class="case-study">
+            <figure class="case-media">
+              <img src="assets/god-manual-prototype/anson-handoff-case.png" alt="顧問與團隊一起確認網站與簡報提案內容" width="1536" height="1024">
+            </figure>
+            <div class="case-body">
+              <p class="case-label">案例一｜一家 5 人公關活動公司</p>
+              <h3>五個需求混在一場對話裡，先整理成兩個能選的服務方案</h3>
+              <p class="case-summary">對方想改善提案、結案報告、社群內容、團隊知識庫與資料分析。每一項都能做，但如果全部一起報價，範圍一定會失控。</p>
+              <div class="case-details">
+                <div><strong>案神怎麼整理</strong><p>先把逐字稿拆成已確認、待確認與推測，再把關鍵問題收斂，最後確認成一天企業內訓與三個月陪跑兩個方向。</p></div>
+                <div><strong>實際產出</strong><p>提案簡報架構、講師簡報交接包、一天內訓課綱，以及兩個方案的範圍說明。</p></div>
+              </div>
+              <p class="case-note">這裡只描述已完成的規劃與文件，不代表客戶已購買或專案已執行。</p>
             </div>
+          </article>
+
+          <article class="case-study">
+            <figure class="case-media">
+              <img src="assets/god-manual-prototype/anson-manual-hero.png" alt="顧問在電腦前盤點多套分散工具與系統需求" width="1672" height="941">
+            </figure>
+            <div class="case-body">
+              <p class="case-label">案例二｜一個有四套分散工具的 SaaS 專案</p>
+              <h3>四套工具分散在三個平台，先說清楚要租、要買，還是只需要整合</h3>
+              <p class="case-summary">原本的工具沒有共用會員、登入與收款。真正要處理的不是多加一顆按鈕，而是系統歸屬、代碼權利與後續由誰維護。</p>
+              <div class="case-details">
+                <div><strong>案神怎麼整理</strong><p>盤點現有功能與缺口，拆出租用與買斷兩條路，另外說清楚主機、代碼授權、登入與整合服務的責任邊界。</p></div>
+                <div><strong>實際產出</strong><p>兩種方案比較、正式 HTML 報價說明書、功能清單、時程，以及技術整合的包含與排除範圍。</p></div>
+              </div>
+              <p class="case-note">這份工作交付的是對焦與報價文件，不包含四套工具的實際程式開發與部署。</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="workflow" aria-labelledby="workflow-title">
+      <div class="shell">
+        <header class="section-head">
+          <h2 id="workflow-title">一般會怎麼進行？</h2>
+          <p>案例是做過的事，這裡才是每個新案子都能照著走的流程。</p>
+        </header>
+        <div class="workflow" aria-label="案神五段流程">
+          <article class="workflow-step"><b>01</b><strong>收下原始資料</strong><p>對話、會議、筆記與舊文件先保留，不急著改寫。</p><small>INPUT</small></article>
+          <article class="workflow-step"><b>02</b><strong>拆開事實與猜測</strong><p>把已確認、待確認與推測分開，找出真正缺的答案。</p><small>AWESOME-ANSON</small></article>
+          <article class="workflow-step"><b>03</b><strong>由人確認決定</strong><p>範圍、價格與責任邊界由人拍板，AI 不代替承諾。</p><small>HUMAN REVIEW</small></article>
+          <article class="workflow-step"><b>04</b><strong>產出可用文件</strong><p>依目的做成簡報、網頁、代碼或報價說明書。</p><small>DELIVERABLES</small></article>
+          <article class="workflow-step"><b>05</b><strong>交棒下一個系統</strong><p>可進 GitHub 自己用，也能接後續付費服務與開發。</p><small>HANDOFF</small></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="handoff-title">
+      <div class="shell">
+        <header class="section-head">
+          <h2 id="handoff-title">案神不是最後一站，它負責把事情交代清楚</h2>
+          <p>同一份已確認的內容可以繼續交給其他工具，不用每到下一站又重新解釋一次。</p>
+        </header>
+        <div class="handoff-grid" aria-label="案神串接關係">
+          <article class="handoff-card"><h3>客戶的原始需求</h3><p>談話、提案想法、參考資料與限制條件。</p><span class="technical-name">SOURCE INPUTS</span></article>
+          <span class="handoff-arrow" aria-hidden="true">→</span>
+          <article class="handoff-card"><h3>案神整理與人工確認</h3><p>留下證據、問題、範圍與決策，形成同一份認知。</p><span class="technical-name">AWESOME-ANSON + HUMAN REVIEW</span></article>
+          <span class="handoff-arrow" aria-hidden="true">→</span>
+          <article class="handoff-card"><h3>成果與後續執行</h3><p>交給簡報、網頁、程式、報價或其他神系列繼續處理。</p><span class="technical-name">PPT / WEB / CODE / QUOTE / AGENTS</span></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="contact" aria-labelledby="contact-title">
+      <div class="shell contact-panel">
+        <div>
+          <h2 id="contact-title">手上有一個談不清楚、又準備收費的案子？</h2>
+          <p>先把資料交給案神整理。我們會先確認現在卡在哪裡，再決定適合自己從 GitHub 開始，或由我們接著協助。</p>
+          <div class="contact-meta">
+            <span>開源版本：GitHub</span>
+            <span class="planned">付費系統入口規劃中</span>
           </div>
+          <p class="contact-feedback" id="contact-feedback" hidden aria-live="polite">正式版會接 StartKiter 聯絡入口；這份本機稿先確認視覺方向。</p>
         </div>
-        <p class="case-note">客戶名稱與敏感數字不會出現在這頁。成交後要寫程式，才交給蓋神，不是案神這一步的成果。</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="workflow">
-    <div class="shell">
-      <header class="section-head">
-        <h2>一般會怎麼進行？</h2>
-        <p>案例是示範。每個新案子大致走這五步。案神不直接跟你的客戶說話。</p>
-      </header>
-      <div class="workflow" aria-label="案神五段流程">
-        <article class="workflow-step"><b>01</b><strong>客戶說</strong><p>口頭、訊息、會議記錄或既有文件。</p></article>
-        <article class="workflow-step"><b>02</b><strong>案神整理</strong><p>分成已經確定、還要再問、目前只是猜測。</p></article>
-        <article class="workflow-step"><b>03</b><strong>你做確認</strong><p>範圍、價格、能不能答應，都由人拍板。</p></article>
-        <article class="workflow-step"><b>04</b><strong>拿方案回談</strong><p>簡報、示範頁或報價說明書，依你的決定交付。</p></article>
-        <article class="workflow-step"><b>05</b><strong>成交再交棒</strong><p>客戶點頭或付訂金後，才把確認好的需求交給蓋神。</p></article>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="handoff">
-    <div class="shell">
-      <header class="section-head">
-        <h2>案神不是最後一站，它負責把事情交代清楚</h2>
-        <p>同一份你確認過的內容，可以接著做簡報、示範頁或報價。成交後才進開發，不用每到下一站又重講一次。</p>
-      </header>
-      <div class="handoff-grid" aria-label="案神串接關係">
-        <article class="handoff-card"><h3>客戶帶來的東西</h3><p>談話、想法、參考資料與限制。</p></article>
-        <span class="handoff-arrow" aria-hidden="true">→</span>
-        <article class="handoff-card"><h3>案神整理，你確認</h3><p>留下證據、問題、範圍與決定。</p></article>
-        <span class="handoff-arrow" aria-hidden="true">→</span>
-        <article class="handoff-card"><h3>成果與後續</h3><p>簡報、網站／Demo、報價；成交後交給蓋神寫程式。</p></article>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="versions">
-    <div class="shell">
-      <header class="section-head">
-        <h2>目前版本</h2>
-        <p>以後有新功能會寫在這裡。離線開這份檔案時，若讀不到更新檔，就看頁面上這段。</p>
-      </header>
-      <div class="version-head">
-        <span class="version-badge" id="current-version">v2</span>
-        <span id="sync-note">讀取中…</span>
-      </div>
-      <div id="timeline">
-        <div class="timeline-item">
-          <div class="timeline-date">2026-08-24</div>
-          <div class="timeline-topic">可以邊開會邊記重點</div>
-          <p class="timeline-summary">確認後能做出客戶能點的示範頁。手機從公開網址收音還沒好。</p>
+        <div class="cta-actions">
+          <button class="button button-primary" id="contact-action" type="button">與我們聯繫</button>
+          <a class="button button-secondary" href="https://github.com/fishtvlvoe/Awesome-Anson" target="_blank" rel="noreferrer">GitHub</a>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </main>
 
-  <section class="section" id="contact">
-    <div class="shell contact-panel">
-      <div>
-        <h2>手上有一個談不清楚、又準備收費的案子？</h2>
-        <p>先把資料交給案神整理。現在入口在 GitHub。以後也許會有付費版，現在還沒有登入畫面可以點。</p>
-        <div class="contact-meta">
-          <span>開源版本：GitHub</span>
-          <span>付費入口規劃中</span>
-        </div>
-      </div>
-      <div class="cta-actions">
-        <a class="button button-primary" href="https://github.com/fishtvlvoe/Awesome-Anson" rel="noopener noreferrer" target="_blank">與我們聯繫 · GitHub</a>
-      </div>
+  <footer class="footer">
+    <div class="shell footer-inner">
+      <strong>案神使用說明｜品牌統一方向稿</strong>
+      <span>本機原型，尚未發布。GitHub：fishtvlvoe/Awesome-Anson</span>
     </div>
-  </section>
-
-  <footer class="shell">
-    <p>案神 Awesome-Anson · 這份說明書是一份網頁檔案，沒有另外的伺服器或資料庫 · 授權見 repo 內 THIRD-PARTY-NOTICES.md</p>
   </footer>
-</main>
 
-<script>
-(function(){
-  function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var themeButton = document.querySelector('.theme-toggle');
+      var contactButton = document.getElementById('contact-action');
+      var contactFeedback = document.getElementById('contact-feedback');
 
-  var THEME_KEY = 'anson-manual-theme';
-
-  function applyTheme(mode){
-    var html = document.documentElement;
-    html.classList.remove('light-mode', 'dark-mode');
-    html.removeAttribute('data-theme');
-    if (mode === 'light') { html.classList.add('light-mode'); html.setAttribute('data-theme','light'); }
-    else if (mode === 'dark') { html.classList.add('dark-mode'); html.setAttribute('data-theme','dark'); }
-    var btn = document.querySelector('.theme-inline');
-    if (btn) btn.textContent = mode === 'dark' ? '淺色模式' : '深色模式';
-  }
-
-  function initTheme(){
-    var saved = null;
-    try { saved = localStorage.getItem(THEME_KEY); } catch(e) {}
-    applyTheme(saved || 'auto');
-  }
-
-  window.toggleTheme = function(){
-    var current = 'auto';
-    try { current = localStorage.getItem(THEME_KEY) || 'auto'; } catch(e) {}
-    var next = current === 'dark' ? 'light' : (current === 'light' ? 'auto' : 'dark');
-    try { localStorage.setItem(THEME_KEY, next); } catch(e) {}
-    applyTheme(next);
-  };
-
-  function initCaseDemo(){
-    var root = document.querySelector('[data-case-demo]');
-    if (!root) return;
-    var steps = [
-      {
-        quote: '「我們想做一個網站，讓客人可以直接預約，最好也能自動提醒。」',
-        kicker: '第一步｜先不急著報價',
-        title: '把客戶的話完整留下來',
-        copy: '案神先記住客戶真的說了什麼，不急著把「想要網站」講成某套做法。同一句話，可能是預約、收款或會員，範圍差很多。',
-        outputTitle: '一份不加戲的對談重點',
-        outputCopy: '已確認：客戶想讓客人預約，也希望有提醒。還沒確認：誰管、要不要收款、預算多少。'
-      },
-      {
-        quote: '「我們現在都是用電話記，常常忘記回覆；如果能看到客人預約就好了。」',
-        kicker: '第二步｜把已知和未知分開',
-        title: '找出真正要解決的麻煩',
-        copy: '這時候「網站」只是表面。真正的麻煩是預約容易漏掉、回覆對不齊。案神會把客戶已經說過的事，和還不能確定的推測分開。',
-        outputTitle: '一張需求清單',
-        outputCopy: '已確認：現在靠電話、容易漏回覆、想看到預約。待確認：誰接單、要不要付款、要不要串 LINE。'
-      },
-      {
-        quote: '「預算先抓十萬內，最好下個月可以用；但我們沒有專人管理。」',
-        kicker: '第三步｜只問會影響結果的問題',
-        title: '補齊報價真正需要的答案',
-        copy: '案神不會一次丟一大串問卷，而是一次問一題。先問最會改變範圍與價格的事，例如誰管預約、需不需要付款、下個月是試用還是正式上線。',
-        outputTitle: '下一個最值得問的問題',
-        outputCopy: '「如果客人取消預約，你希望通知誰？」答案會影響提醒規則、管理畫面和後面怎麼報價。'
-      },
-      {
-        quote: '「對，先做預約和提醒；付款跟會員先不要，這樣下個月試用就好。」',
-        kicker: '第四步｜確認後才交給下一位',
-        title: '把客戶點頭的範圍變成方案',
-        copy: '到這裡，需求才從一段聊天變成可以拿去算價錢的範圍。你確認過後，才去算價錢、做簡報或示範頁。',
-        outputTitle: '一份可以拿回去談的方案',
-        outputCopy: '本次先做：預約、提醒、試用版。這次不做：付款、會員。每個決定都有來源，也知道下一步要找誰確認。'
+      function renderThemeLabel() {
+        var isDark = root.dataset.theme === 'dark';
+        themeButton.textContent = isDark ? '淺色模式' : '深色模式';
+        themeButton.setAttribute('aria-label', isDark ? '切換成淺色模式' : '切換成深色模式');
       }
-    ];
-    var quote = document.getElementById('case-quote-text');
-    var kicker = document.getElementById('case-kicker');
-    var title = document.getElementById('case-title');
-    var copy = document.getElementById('case-copy');
-    var outputTitle = document.getElementById('case-output-title');
-    var outputCopy = document.getElementById('case-output-copy');
-    root.querySelectorAll('[data-case-step]').forEach(function(button){
-      button.addEventListener('click', function(){
-        var index = Number(button.getAttribute('data-case-step'));
-        var step = steps[index];
-        if (!step) return;
-        root.querySelectorAll('[data-case-step]').forEach(function(item){
-          item.setAttribute('aria-selected', item === button ? 'true' : 'false');
-        });
-        quote.textContent = step.quote;
-        kicker.textContent = step.kicker;
-        title.textContent = step.title;
-        copy.textContent = step.copy;
-        outputTitle.textContent = step.outputTitle;
-        outputCopy.textContent = step.outputCopy;
+
+      themeButton.addEventListener('click', function () {
+        root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+        renderThemeLabel();
+        try {
+          localStorage.setItem('startkiter-brand-preview-theme', root.dataset.theme);
+        } catch (error) {
+          /* 本次瀏覽仍可切換。 */
+        }
       });
-    });
-  }
 
-  initCaseDemo();
-  initTheme();
-
-  fetch('state.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(state){
-    if(!state) return;
-    var v = document.getElementById('current-version');
-    var s = document.getElementById('sync-note');
-    if(state.current_version) v.textContent = state.current_version;
-    if(state.updated_at) s.textContent = '最後更新 ' + state.updated_at;
-  }).catch(function(){
-    var s = document.getElementById('sync-note');
-    if(s) s.textContent = '離線時看不到最新更新檔，先看頁面上這段。';
-  });
-
-  fetch('entries/manifest.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(manifest){
-    if(!manifest || !manifest.entries || !manifest.entries.length) return;
-    return Promise.all(manifest.entries.map(function(e){
-      return fetch('entries/' + e.file).then(function(r){ return r.ok ? r.json() : null; });
-    })).then(function(full){
-      var list = document.getElementById('timeline');
-      list.innerHTML = '';
-      full.filter(Boolean).reverse().forEach(function(entry){
-        var div = document.createElement('div');
-        var added = (entry.added || []).map(function(a){ return '<li>' + esc(a) + '</li>'; }).join('');
-        div.className = 'timeline-item';
-        div.innerHTML =
-          '<div class="timeline-date">' + esc(entry.date || '') + '</div>' +
-          '<div class="timeline-topic">' + esc(entry.topic || '') + '</div>' +
-          '<p class="timeline-summary">' + esc(entry.summary || '') + '</p>' +
-          (added ? '<ul class="timeline-added">' + added + '</ul>' : '');
-        list.appendChild(div);
+      contactButton.addEventListener('click', function () {
+        contactFeedback.hidden = false;
+        contactButton.textContent = '已顯示下一步';
       });
-    });
-  }).catch(function(){ /* 保留頁面內建內容 */ });
 
-  var sections = document.querySelectorAll('section[id]');
-  var links = document.querySelectorAll('.topnav a');
-  function onScroll(){
-    var current = sections[0] && sections[0].id;
-    sections.forEach(function(sec){
-      if (sec.getBoundingClientRect().top <= 90) current = sec.id;
-    });
-    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 8) {
-      current = sections[sections.length - 1].id;
-    }
-    links.forEach(function(a){
-      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
-    });
-  }
-  window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
-})();
-</script>
-
+      renderThemeLabel();
+    })();
+  </script>
 </body>
 </html>
+
