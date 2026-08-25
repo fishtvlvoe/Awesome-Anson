@@ -162,9 +162,9 @@ bash scripts/start-realtime-voice.sh
 - 錄音逐字稿：`tools/realtime-voice/output/`
 - FunASR 模型快取：`~/.cache/modelscope/`
 
-Mac 使用者可以把 profile 放到 iCloud Drive；Windows 使用者不需要 iCloud，可以使用 OneDrive、Google Drive、Dropbox 或 USB。但目前 repo 只支援用 `ANSON_VOICE_PROFILE_DIR` 指定資料夾，**尚未提供自動加密匯出／匯入與雲端同步介面**。不要把原始聲音或 `profile.json` 直接提交 GitHub，也不要把未加密的 profile 放進公開共享資料夾。
+Mac 使用者安裝後會優先偵測 iCloud Drive；Windows 使用者會偵測 Google Drive for Desktop，兩者都使用英文資料夾 `Awesome-Anson/voice-profile/`。找不到同步服務時才退回本機保存。也可以用 `ANSON_VOICE_PROFILE_DIR` 指定資料夾；目前同步是使用者已登入的本機同步資料夾，不是案神直接呼叫雲端 API。不要把原始聲音或 `profile.json` 直接提交 GitHub，也不要把未加密的 profile 放進公開共享資料夾。
 
-換電腦目前的安全做法：重新錄製一次聲音身份。跨平台免重錄版本要補上「加密匯出 → 雲端／USB 搬移 → 另一台加密匯入」，這會是獨立功能，不會偷偷把聲音資料上傳。
+第一次偵測到同步資料夾時，案神會把既有本機 profile 複製、驗證 checksum，再切換到同步位置；原始本機 profile 會保留。如果兩邊 profile 不同，案神會停止並提示衝突，不會自動覆蓋。這是跨裝置同步，不是完整備份或加密保管。
 
 要同步程式更新：
 

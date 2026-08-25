@@ -37,9 +37,7 @@ bash ../../scripts/start-realtime-voice.sh
 ## 建立聲音身份
 
 工作台的「聲音身份」頁可以直接用瀏覽器錄一段目前使用者的聲音，播放確認後按「建立聲音身份」。
-原始樣本與 profile 只保存於本機，預設位置是 `~/.config/anson/voice-profile/`；可以用
-`ANSON_VOICE_PROFILE_DIR` 指定另一個本機目錄。`profile.json` 只保存樣本 metadata、雜湊與
-speaker embedding，不保存到 Git，也不送到雲端。
+原始樣本與 profile 預設會使用平台同步資料夾：macOS 優先使用 iCloud Drive，Windows 優先使用 Google Drive for Desktop，資料夾名稱固定為 `Awesome-Anson/voice-profile/`。找不到同步服務時才使用 `~/.config/anson/voice-profile/`。也可以用 `ANSON_VOICE_PROFILE_DIR` 指定另一個目錄；`profile.json` 只保存樣本 metadata、雜湊與 speaker embedding，不保存到 Git，也不由案神直接送到雲端。
 
 建立 profile 後，server 會嘗試載入 FunASR ERes2NetV2 speaker model。模型可用時，符合 profile
 的片段回傳 `operator`／`pm`；其他穩定 speaker key 可映射成匿名 `client-1`、`client-2`。
@@ -47,13 +45,13 @@ speaker embedding，不保存到 Git，也不送到雲端。
 
 ### 使用 Google Drive 跨電腦保存 profile
 
-可以使用 Google Drive for Desktop，但目前是「Google Drive 同步資料夾」，不是案神直接呼叫 Google Drive API。先在每台電腦安裝並登入 Google Drive for Desktop，建立同一個資料夾，例如：
+可以使用 Google Drive for Desktop；案神使用的是它提供的本機同步資料夾，不直接呼叫 Google Drive API。先在每台電腦安裝並登入 Google Drive for Desktop，建立同一個資料夾，例如：
 
 ```text
 Google Drive/Awesome-Anson/voice-profile/
 ```
 
-啟動服務前，把 `ANSON_VOICE_PROFILE_DIR` 指到這個資料夾。Mac 範例（實際 Google Drive 路徑依帳號不同）：
+如果自動偵測不到，才需要手動指定 `ANSON_VOICE_PROFILE_DIR`。Mac 範例（實際 Google Drive 路徑依帳號不同）：
 
 ```bash
 export ANSON_VOICE_PROFILE_DIR="$HOME/Library/CloudStorage/GoogleDrive-你的帳號/My Drive/Awesome-Anson/voice-profile"

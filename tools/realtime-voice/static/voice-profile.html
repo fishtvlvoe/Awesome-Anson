@@ -47,7 +47,7 @@
           <div class="recorder"><button class="mic-button" id="record-button" type="button" aria-label="開始錄音">開始</button><strong id="record-title">按一下開始錄音</strong><p id="record-copy">建議錄 15 至 30 秒，講完整幾句話。</p><div class="timer" id="timer">00:00</div></div>
           <div class="recording-actions"><button class="button" id="stop-button" type="button" disabled>停止錄音</button><button class="button" id="reset-button" type="button" disabled>重新錄音</button><button class="button button-primary" id="build-profile" type="button" disabled>建立聲音身份</button></div>
           <div class="samples" id="samples" aria-live="polite"></div><div class="result" id="result" role="status"></div>
-          <p class="note">錄音與聲音特徵只留在這台裝置，不會把原始聲音寫進 Git。</p>
+          <p class="note" id="sync-note">聲音身份同步狀態載入中；不會把原始聲音寫進 Git。</p>
         </div>
       </article>
       <aside class="side">
@@ -60,7 +60,11 @@
     (() => {
       const recordButton = document.getElementById('record-button'); const stopButton = document.getElementById('stop-button'); const resetButton = document.getElementById('reset-button'); const buildButton = document.getElementById('build-profile'); const title = document.getElementById('record-title'); const copy = document.getElementById('record-copy'); const timer = document.getElementById('timer'); const samples = document.getElementById('samples'); const result = document.getElementById('result'); const profileStatus = document.getElementById('profile-status'); const identityName = document.getElementById('identity-name'); const identityCopy = document.getElementById('identity-copy');
       const onboarding = new URLSearchParams(window.location.search).get('onboarding') === '1';
+      const syncConflict = new URLSearchParams(window.location.search).get('sync') === 'conflict';
       if (onboarding) { document.getElementById('page-title').textContent = '先建立聲音身份，再開始使用案神'; document.getElementById('page-lead').textContent = '這是第一次設定。錄 15 至 30 秒你的聲音，案神才能把你的話放在右邊，其他說話人放在左邊。'; }
+      if (syncConflict) { document.getElementById('page-title').textContent = '需要處理聲音身份同步衝突'; document.getElementById('page-lead').textContent = '本機與同步資料夾裡有不同的聲音身份，案神沒有自動覆蓋任何一份。請先確認要保留哪一份。'; }
+      const syncCopy = { synced_icloud: '聲音身份已使用 iCloud Drive 同步。', synced_google_drive: '聲音身份已使用 Google Drive 同步。', local_only: '目前只保存在這台裝置，尚未同步到 iCloud 或 Google Drive。', sync_provider_not_found: '找不到同步服務，目前只保存在這台裝置。', profile_sync_conflict: '同步衝突：本機與同步資料夾的聲音身份不同，未自動覆蓋。', explicit: '使用自訂 profile 路徑。' };
+      fetch('/voice-profile').then((response) => response.json()).then((payload) => { const note = syncCopy[payload.sync_status] || payload.sync_message || '聲音身份同步狀態未知。'; document.getElementById('sync-note').textContent = note; if (payload.status === 'ready') { profileStatus.textContent = '已建立'; profileStatus.classList.add('ready'); identityName.textContent = '我的聲音身份'; identityCopy.textContent = '已找到現有聲音身份，不需要重新錄音。'; } }).catch(() => { document.getElementById('sync-note').textContent = '無法讀取同步狀態，請確認本機服務正在執行。'; });
       const MIN_RECORDING_SECONDS = 2;
       let recorder = null; let stream = null; let chunks = []; let audioUrl = null; let startedAt = 0; let timerId = null;
       const formatTime = (seconds) => `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`; const updateTimer = () => { timer.textContent = formatTime(Math.floor((Date.now() - startedAt) / 1000)); }; const showResult = (message) => { result.textContent = message; result.classList.add('is-visible'); }; const stopTracks = () => { if (stream) stream.getTracks().forEach((track) => track.stop()); stream = null; };

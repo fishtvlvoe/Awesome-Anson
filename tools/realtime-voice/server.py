@@ -25,6 +25,7 @@ from voice_identity import (
     VoiceProfileError,
     VoiceProfileStore,
 )
+from voice_profile_sync import resolve_profile_storage
 
 PORT = 8420
 STATIC_DIR = Path(__file__).parent / "static"
@@ -189,6 +190,8 @@ def append_session_event(session_id: str, event: dict[str, object]) -> None:
 
 
 async def handle_index(request: web.Request) -> web.Response:
+    if request.app["profile_storage"].status == "profile_sync_conflict":
+        raise web.HTTPFound("/static/voice-profile.html?onboarding=1&sync=conflict")
     try:
         profile = request.app["voice_profile_store"].load_profile()
     except VoiceProfileError:
@@ -269,6 +272,11 @@ async def handle_events(request: web.Request) -> web.Response:
 async def handle_voice_profile(request: web.Request) -> web.Response:
     """讀取或建立目前操作者的本機聲音 profile。"""
     store = request.app["voice_profile_store"]
+    storage = request.app["profile_storage"]
+    if storage.status == "profile_sync_conflict":
+        return web.json_response(
+            {"status": "profile_sync_conflict", "message": storage.message}, status=409
+        )
     if request.method == "GET":
         try:
             profile = store.load_profile()
@@ -277,7 +285,14 @@ async def handle_voice_profile(request: web.Request) -> web.Response:
                 {"status": "profile_error", "message": str(exc)}, status=500
             )
         if profile is None:
-            return web.json_response({"status": "not_ready"})
+            return web.json_response(
+                {
+                    "status": "not_ready",
+                    "sync_status": storage.status,
+                    "sync_provider": storage.provider,
+                    "sync_message": storage.message,
+                }
+            )
         return web.json_response(
             {
                 "status": profile["status"],
@@ -285,6 +300,9 @@ async def handle_voice_profile(request: web.Request) -> web.Response:
                 "created_at": profile["created_at"],
                 "model": profile["model"],
                 "sample_count": len(profile.get("samples", [])),
+                "sync_status": storage.status,
+                "sync_provider": storage.provider,
+                "sync_message": storage.message,
             }
         )
 
@@ -336,6 +354,9 @@ async def handle_voice_profile(request: web.Request) -> web.Response:
             "sample_count": len(profile["samples"]),
             "speaker_model": speaker_model_status,
             "message": speaker_model_message,
+            "sync_status": storage.status,
+            "sync_provider": storage.provider,
+            "sync_message": storage.message,
         },
         status=201,
     )
@@ -377,7 +398,9 @@ def build_app(model, converter, session_id: str) -> web.Application:
     app["model"] = model
     app["converter"] = converter
     app["session_id"] = session_id
-    app["voice_profile_store"] = VoiceProfileStore()
+    storage = resolve_profile_storage()
+    app["profile_storage"] = storage
+    app["voice_profile_store"] = VoiceProfileStore(storage.profile_dir)
     app["speaker_provider"] = None
     app["speaker_matcher"] = None
     app.router.add_get("/", handle_index)

@@ -106,7 +106,7 @@ cat <<EOF
 日後啟動：bash "$ROOT_DIR/scripts/start-realtime-voice.sh"
 本機網址：http://localhost:8420
 
-注意：聲音 profile、逐字稿與模型快取只留在本機，不會同步到 GitHub。
+注意：聲音 profile 會依平台優先使用 iCloud／Google Drive 的本機同步資料夾；找不到同步服務時才留在本機。逐字稿與模型快取仍留在本機，不會同步到 GitHub。
 EOF
 
 if [[ "$AUTO_LAUNCH" == "true" ]]; then
