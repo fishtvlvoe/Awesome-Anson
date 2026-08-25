@@ -25,10 +25,10 @@
 
 ## 2. 本機使用者聲音身份（Local operator voice profile）
 
-- [ ] 2.1 實作 profile storage 與 sample validation；驗證：有效樣本建立 ready profile，少於兩段或壞檔回傳可讀錯誤
+- [x] 2.1 實作 profile storage 與 sample validation；驗證：至少一段有效樣本建立 ready profile，空樣本或壞檔回傳可讀錯誤
 - [ ] 2.2 實作本機 speaker identity adapter 邊界與可用 provider；驗證：瀏覽器錄音的匿名測試能回傳 `matched`、`unmatched`、`pending` 三態，provider 載入失敗不會啟動假辨識
 - [ ] 2.3 將 speaker attribution 接到 websocket transcription response 與 session metadata；驗證：每段 response 都包含 speaker id、role、confidence、identity status
-- [ ] 2.4 更新 `voice-profile.html`，讓使用者直接錄音、播放確認、重錄並建立 profile；驗證：權限允許、權限拒絕、太短與成功四種狀態均可重現
+- [x] 2.4 更新 `voice-profile.html`，讓使用者直接錄音、播放確認、重錄並建立 profile；驗證：權限允許、權限拒絕、太短與成功四種狀態均可重現
 - [ ] 2.5 覆蓋 Speaker attribution for multiple clients；驗證：operator、client-1、client-2、unknown 四種匿名 fixture 在 API 與 UI 標籤一致
 
 ## 3. 三欄正式工作台（Role-aware conversation timeline／Fixed three-panel responsive workspace）

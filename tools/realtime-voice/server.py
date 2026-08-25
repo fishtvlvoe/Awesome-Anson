@@ -16,6 +16,8 @@ from pathlib import Path
 
 from aiohttp import web
 
+from voice_identity import VoiceProfileError, VoiceProfileStore
+
 PORT = 8420
 STATIC_DIR = Path(__file__).parent / "static"
 OUTPUT_DIR = Path(__file__).parent / "output"
@@ -140,6 +142,56 @@ async def handle_analysis(request: web.Request) -> web.Response:
     return web.json_response(payload)
 
 
+async def handle_voice_profile(request: web.Request) -> web.Response:
+    """讀取或建立目前操作者的本機聲音 profile。"""
+    store = request.app["voice_profile_store"]
+    if request.method == "GET":
+        try:
+            profile = store.load_profile()
+        except VoiceProfileError as exc:
+            return web.json_response(
+                {"status": "profile_error", "message": str(exc)}, status=500
+            )
+        if profile is None:
+            return web.json_response({"status": "not_ready"})
+        return web.json_response(
+            {
+                "status": profile["status"],
+                "profile_id": profile["profile_id"],
+                "created_at": profile["created_at"],
+                "model": profile["model"],
+                "sample_count": len(profile.get("samples", [])),
+            }
+        )
+
+    sample = await request.read()
+    if not sample:
+        return web.json_response(
+            {"status": "invalid_sample", "message": "聲音樣本是空的"}, status=400
+        )
+    if len(sample) > 20 * 1024 * 1024:
+        return web.json_response(
+            {"status": "invalid_sample", "message": "聲音樣本不可超過 20 MB"},
+            status=413,
+        )
+    try:
+        profile = store.create_profile([sample])
+    except VoiceProfileError as exc:
+        return web.json_response(
+            {"status": "invalid_sample", "message": str(exc)}, status=400
+        )
+    return web.json_response(
+        {
+            "status": profile["status"],
+            "profile_id": profile["profile_id"],
+            "created_at": profile["created_at"],
+            "model": profile["model"],
+            "sample_count": len(profile["samples"]),
+        },
+        status=201,
+    )
+
+
 async def handle_stream(request: web.Request) -> web.WebSocketResponse:
     ws = web.WebSocketResponse(max_msg_size=20 * 1024 * 1024)
     await ws.prepare(request)
@@ -171,9 +223,12 @@ def build_app(model, converter, session_id: str) -> web.Application:
     app["model"] = model
     app["converter"] = converter
     app["session_id"] = session_id
+    app["voice_profile_store"] = VoiceProfileStore()
     app.router.add_get("/", handle_index)
     app.router.add_get("/stream", handle_stream)
     app.router.add_get("/analysis/{session_id}", handle_analysis)
+    app.router.add_get("/voice-profile", handle_voice_profile)
+    app.router.add_post("/voice-profile", handle_voice_profile)
     app.router.add_static("/static/", STATIC_DIR)
     return app
 

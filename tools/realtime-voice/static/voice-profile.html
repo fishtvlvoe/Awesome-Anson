@@ -59,6 +59,7 @@
   <script>
     (() => {
       const recordButton = document.getElementById('record-button'); const stopButton = document.getElementById('stop-button'); const resetButton = document.getElementById('reset-button'); const buildButton = document.getElementById('build-profile'); const title = document.getElementById('record-title'); const copy = document.getElementById('record-copy'); const timer = document.getElementById('timer'); const samples = document.getElementById('samples'); const result = document.getElementById('result'); const profileStatus = document.getElementById('profile-status'); const identityName = document.getElementById('identity-name'); const identityCopy = document.getElementById('identity-copy');
+      const MIN_RECORDING_SECONDS = 2;
       let recorder = null; let stream = null; let chunks = []; let audioUrl = null; let startedAt = 0; let timerId = null;
       const formatTime = (seconds) => `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`; const updateTimer = () => { timer.textContent = formatTime(Math.floor((Date.now() - startedAt) / 1000)); }; const showResult = (message) => { result.textContent = message; result.classList.add('is-visible'); }; const stopTracks = () => { if (stream) stream.getTracks().forEach((track) => track.stop()); stream = null; };
       const resetAudio = () => { if (audioUrl) URL.revokeObjectURL(audioUrl); audioUrl = null; chunks = []; samples.innerHTML = ''; buildButton.disabled = true; resetButton.disabled = true; };
@@ -67,13 +68,27 @@
         resetAudio(); result.classList.remove('is-visible');
         try {
           stream = await navigator.mediaDevices.getUserMedia({ audio: true }); recorder = new MediaRecorder(stream); chunks = []; startedAt = Date.now(); timerId = window.setInterval(updateTimer, 250);
-          recorder.addEventListener('dataavailable', (event) => { if (event.data.size) chunks.push(event.data); }); recorder.addEventListener('stop', () => { window.clearInterval(timerId); updateTimer(); stopTracks(); if (!chunks.length) { showResult('沒有收到聲音，請再錄一次。'); return; } audioUrl = URL.createObjectURL(new Blob(chunks, { type: recorder.mimeType || 'audio/webm' })); samples.innerHTML = `<div class="sample"><div><strong>我的聲音樣本</strong><span>剛剛錄製 · ${timer.textContent}</span></div><audio controls src="${audioUrl}"></audio></div>`; title.textContent = '聲音樣本已準備好'; copy.textContent = '先播放確認，沒問題就建立聲音身份。'; buildButton.disabled = false; resetButton.disabled = false; });
+          recorder.addEventListener('dataavailable', (event) => { if (event.data.size) chunks.push(event.data); }); recorder.addEventListener('stop', () => { window.clearInterval(timerId); updateTimer(); stopTracks(); const duration = (Date.now() - startedAt) / 1000; if (!chunks.length || duration < MIN_RECORDING_SECONDS) { resetAudio(); showResult(`錄音太短，至少要 ${MIN_RECORDING_SECONDS} 秒，請再錄一次。`); return; } audioUrl = URL.createObjectURL(new Blob(chunks, { type: recorder.mimeType || 'audio/webm' })); samples.innerHTML = `<div class="sample"><div><strong>我的聲音樣本</strong><span>剛剛錄製 · ${timer.textContent}</span></div><audio controls src="${audioUrl}"></audio></div>`; title.textContent = '聲音樣本已準備好'; copy.textContent = '先播放確認，沒問題就建立聲音身份。'; buildButton.disabled = false; resetButton.disabled = false; });
           recorder.start(); recordButton.classList.add('is-recording'); recordButton.textContent = '錄音中'; recordButton.setAttribute('aria-label', '錄音中'); stopButton.disabled = false; recordButton.disabled = true; title.textContent = '正在錄音'; copy.textContent = '講幾句你平常會對客戶說的話。';
         } catch (error) { stopTracks(); showResult(error.name === 'NotAllowedError' ? '需要允許麥克風權限，才能建立聲音身份。' : `無法開始錄音：${error.message}`); }
       });
       stopButton.addEventListener('click', () => { if (recorder?.state === 'recording') recorder.stop(); recordButton.classList.remove('is-recording'); recordButton.textContent = '開始'; recordButton.disabled = false; stopButton.disabled = true; });
       resetButton.addEventListener('click', () => { resetAudio(); timer.textContent = '00:00'; title.textContent = '按一下開始錄音'; copy.textContent = '建議錄 15 至 30 秒，講完整幾句話。'; result.classList.remove('is-visible'); });
-      buildButton.addEventListener('click', () => { profileStatus.textContent = '已建立'; profileStatus.classList.add('ready'); identityName.textContent = '我的聲音身份'; identityCopy.textContent = '之後符合這個聲音的片段會標示為「我／專案經理」，其他聲音會分到客戶側。'; showResult('聲音樣本已準備完成。正式接入 speaker model 後，錄音工作台會使用這個身份判別角色。'); buildButton.disabled = true; });
+      buildButton.addEventListener('click', async () => {
+        if (!chunks.length) { showResult('請先錄一段聲音，再建立身份。'); return; }
+        const sample = new Blob(chunks, { type: recorder?.mimeType || 'audio/webm' });
+        if (location.protocol === 'file:') {
+          profileStatus.textContent = '預覽完成'; profileStatus.classList.add('ready'); identityName.textContent = '我的聲音身份（預覽）'; identityCopy.textContent = '目前是 file:// 預覽，樣本尚未寫入本機服務。從 server 網址開啟後，按這裡才會保存 profile。'; showResult('預覽模式：錄音可以播放，但沒有伺服器可保存聲音身份。'); return;
+        }
+        buildButton.disabled = true; buildButton.textContent = '保存中…';
+        try {
+          const response = await fetch('/voice-profile', { method: 'POST', headers: { 'Content-Type': sample.type }, body: sample });
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.message || '聲音身份建立失敗');
+          profileStatus.textContent = '已建立'; profileStatus.classList.add('ready'); identityName.textContent = '我的聲音身份'; identityCopy.textContent = '之後符合這個聲音的片段會標示為「我／專案經理」，其他聲音會分到客戶側。'; showResult('聲音身份已保存到本機。speaker model 可用時，工作台會使用這個 profile 判別角色。');
+        } catch (error) { showResult(`無法保存聲音身份：${error.message}`); }
+        buildButton.disabled = false; buildButton.textContent = '建立聲音身份';
+      });
       document.getElementById('theme-toggle').addEventListener('click', () => { const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'; document.documentElement.dataset.theme = next; localStorage.setItem('anson-realtime-theme', next); });
     })();
   </script>
