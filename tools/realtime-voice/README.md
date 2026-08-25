@@ -4,6 +4,14 @@
 
 ## 一次性安裝（只需要做一次，預估 10-15 分鐘，取決於網速）
 
+從 repo 根目錄也可以直接執行跨電腦安裝腳本：
+
+```bash
+bash scripts/setup-realtime-voice.sh --with-system-deps
+```
+
+腳本會建立 `venv`、安裝 `requirements.txt`，並檢查 ffmpeg。`--with-system-deps` 在 macOS 且已有 Homebrew 時會自動安裝 ffmpeg；Linux 或其他系統請依腳本輸出的指令安裝。
+
 ```bash
 cd tools/realtime-voice
 python3 -m venv venv

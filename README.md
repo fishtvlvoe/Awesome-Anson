@@ -126,7 +126,21 @@ node scripts/anson-sync.js install-login --config ~/.config/anson-sync/config.js
 
 ### 對談中即時需求捕捉與 Demo
 
-除了事後整理逐字稿，案神也有一條人啟動的即時路徑：`tools/realtime-voice/` 在本機收音、用 FunASR 轉成繁體逐字稿，再由目前的 Agent session 監看新增內容，依停頓或時間上限觸發 `realtime-need-capture`。它會回報客戶反應、目前需求拆解與唯一一個下一步建議；沒有監看器時，收音與逐字稿仍可單獨使用。
+除了事後整理逐字稿，案神也有一條人啟動的即時路徑：`tools/realtime-voice/` 在本機收音、用 FunASR 轉成繁體逐字稿，再由目前的 Agent session 監看新增內容，依停頓或時間上限觸發 `realtime-need-capture`。它會回報客戶反應、目前需求拆解、心智模型與 1–3 個下一步回應選項；沒有監看器時，收音與逐字稿仍可單獨使用。
+
+#### 換電腦安裝與同步
+
+程式碼、介面與安裝流程放在 GitHub；本機的 Python 虛擬環境、聲音 profile、逐字稿與模型快取不放進 Git。換另一臺電腦時：
+
+```bash
+git clone https://github.com/fishtvlvoe/Awesome-Anson.git
+cd Awesome-Anson
+bash scripts/setup-realtime-voice.sh --with-system-deps
+cd tools/realtime-voice
+venv/bin/python server.py
+```
+
+瀏覽器開啟 `http://localhost:8420`。聲音 profile 預設保存於 `~/.config/anson/voice-profile/`；要同步程式更新，執行 `git pull --ff-only origin main` 後重新跑安裝腳本。公開 UI 示範頁是 [awesome-anson.pages.dev](https://awesome-anson.pages.dev/)，真實麥克風與 FunASR 辨識仍需本機服務。
 
 需求確認後，可以叫 `demo-generation-deploy` 把已確認資料包與確認過的 mockup 變成 Cloudflare Pages Production Demo。需要登入才配置 D1；缺少的第三方服務、圖片或影片會標成示意。這條路和只產出離線 HTML 的 `case-page` 分開，公開 HTTPS 收音目前仍是待做項目。
 
