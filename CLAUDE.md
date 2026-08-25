@@ -1,3 +1,5 @@
+<!-- SPECTRA:START v1.0.2 -->
+
 # Spectra Instructions
 
 This project uses Spectra for Spec-Driven Development(SDD). Specs live in `openspec/specs/`, change proposals in `openspec/changes/`.
@@ -10,6 +12,7 @@ This project uses Spectra for Spec-Driven Development(SDD). Specs live in `opens
 - There's an in-progress change to continue → `/spectra-ingest`
 - User asks about specs or how something works → `/spectra-ask`
 - Implementation is done → `/spectra-archive`
+- Commit only files related to a specific change → `/spectra-commit`
 
 ## Workflow
 
@@ -17,6 +20,22 @@ discuss? → propose → apply ⇄ ingest → archive
 
 - `discuss` is optional — skip if requirements are clear
 - Requirements change mid-work? Plan mode → `ingest` → resume `apply`
+
+## Parked Changes
+
+Changes can be parked（暫存）— temporarily moved out of `openspec/changes/`. Parked changes won't appear in `spectra list` but can be found with `spectra list --parked`. To restore: `spectra unpark <name>`. The `/spectra-apply` and `/spectra-ingest` skills handle parked changes automatically.
+
+<!-- SPECTRA:END -->
+
+## Claude Code Spectra 斜線指令（硬規則）
+
+在 Claude Code 打斜線指令必須用冒號：`/spectra:apply`、`/spectra:propose`、`/spectra:ingest`。
+
+禁止打連字號斜線指令 `/spectra-apply`（CC 選單不會出現，會誤以為指令不見了）。
+
+Skill 工具／skill 目錄名仍用連字號 `spectra-apply`（這跟斜線指令是兩套命名）。
+
+全域踩坑紀錄：`~/.claude/lessons-spectra.md` L066。
 
 # PM專案師
 
@@ -55,3 +74,13 @@ discuss? → propose → apply ⇄ ingest → archive
 讀逐字稿全文、多份既有文件、做結構化摘要，屬於 `~/.claude/rules/routing.md` 定義的「3+ 檔案讀取 / 結構化摘要」類任務，一律派 Haiku 子代理處理，不可在主對話（不論當時是 Opus 或 Sonnet）自己用 Read/Bash grep 直接讀完再整理。
 
 起因：2026-08-13 Vista IMC 案，主對話（Sonnet）自己用 Bash grep + Read 讀完整份逐字稿找人數資訊，被 Fish 指出違反自己訂的 routing.md，之後才改派 Haiku 子代理處理剩餘逐字稿掃描。
+
+## graphify
+
+This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
+
+Rules:
+- ALWAYS read graphify-out/GRAPH_REPORT.md before reading any source files, running grep/glob searches, or answering codebase questions. The graph is your primary map of the codebase.
+- IF graphify-out/wiki/index.md EXISTS, navigate it instead of reading raw files
+- For cross-module "how does X relate to Y" questions, prefer `graphify query "<question>"`, `graphify path "<A>" "<B>"`, or `graphify explain "<concept>"` over grep — these traverse the graph's EXTRACTED + INFERRED edges instead of scanning files
+- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).

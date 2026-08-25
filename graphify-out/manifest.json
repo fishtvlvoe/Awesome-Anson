@@ -1,0 +1,502 @@
+{
+  "/Users/fishtv/Development/Awesome-Anson/tools/realtime-voice/server.py": {
+    "mtime": 1787541541.7254684,
+    "hash": "cdbf2431f120c307e9345177646cb766"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/tools/realtime-voice/monitor_transcript.py": {
+    "mtime": 1787541541.725083,
+    "hash": "0d961116b78a6486aea593561fb15665"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/tests/test-unsupported-third-party-shows-placeholder.js": {
+    "mtime": 1787380265.7000294,
+    "hash": "dfbeb9c6e1669b7c065324d3c431f597"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/tests/test-deploy-failure-preserves-previous-url.js": {
+    "mtime": 1787381625.9292965,
+    "hash": "1b18e8edc93a9f6c44f1300746eaae9e"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/tests/assert.js": {
+    "mtime": 1787380214.1524093,
+    "hash": "e89d07c687cb34f78906a1a807bcbb1d"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/tests/test-quote-specialist-reads-extended-pack.js": {
+    "mtime": 1787380581.457445,
+    "hash": "04f7141b3f4c4e9e436994ef65a43623"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/tests/run.js": {
+    "mtime": 1787380217.0163915,
+    "hash": "d2813c348dd0f77bd8277961458926ff"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/tests/test-deploy-failure-surfaces-reason.js": {
+    "mtime": 1787380249.5369918,
+    "hash": "55150d0f79e7b5b23fa14ca1adeeceee"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/tests/test-realtime-voice-s2tw-conversion.js": {
+    "mtime": 1787394193.3822136,
+    "hash": "fd54132e8e6a8b3f009e3333559a4c78"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/tests/test-low-confidence-flagged.js": {
+    "mtime": 1787380556.1953416,
+    "hash": "e9c79b9f5852411f0175dd058bdc1e3d"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/tests/test-realtime-voice-writes-to-inbox.js": {
+    "mtime": 1787394207.908712,
+    "hash": "17b71452389dd9621bcdd15e2affb396"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/tests/test-service-type-4x4-breakdown.js": {
+    "mtime": 1787380564.4068224,
+    "hash": "ecc94bc0842008b3f10a85f058ed0399"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/tests/test-assumed-guess-never-auto-confirmed.js": {
+    "mtime": 1787380572.355856,
+    "hash": "c720de118e33742bc9b5e49fd138007a"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/tests/test-media-generation-failure-shows-notice.js": {
+    "mtime": 1787380270.8673062,
+    "hash": "b4faa3ed92fa76b25c654ca65e4cac02"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/tests/test-command-doc-no-pricing-logic.js": {
+    "mtime": 1787380281.5668252,
+    "hash": "50a5bc7fee05515fed31b280957e1d50"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/tests/test-no-d1-when-no-login-needed.js": {
+    "mtime": 1787380260.4199753,
+    "hash": "f2ef730119a3039a4fda680c3a00dcd4"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/tests/test-case-page-offline-still-works.js": {
+    "mtime": 1787380587.5120237,
+    "hash": "489793b5ab4bca8854fb7629c0d4a0d2"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/lib/deployment-analyzer.js": {
+    "mtime": 1787381639.0452957,
+    "hash": "360a98c8506bbf5e11a63f8b905ac5a6"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/lib/integration-template-generator.js": {
+    "mtime": 1787381590.2231371,
+    "hash": "21d567c5651ec921ceb6fbc3dc995453"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/lib/deployment-versioning.js": {
+    "mtime": 1787381574.5022988,
+    "hash": "68bab267076eaf87a638ae182d1cf8fb"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/lib/deployment-engine.js": {
+    "mtime": 1787381580.3346016,
+    "hash": "f102f38c4c6af02d11d92147c26d400d"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/lib/media-generation.js": {
+    "mtime": 1787381613.5597143,
+    "hash": "48ecbaf8059645a6c3edf08cfda14e10"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/THIRD-PARTY-NOTICES.md": {
+    "mtime": 1786817613.6801305,
+    "hash": "aa46cbe167f7663f6672b0d2ed7a3eaa"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/README.md": {
+    "mtime": 1787542703.887374,
+    "hash": "b2eee77c831c01341ffb2085a1f27c58"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/GEMINI.md": {
+    "mtime": 1787541541.8914876,
+    "hash": "20f3c786b3c8394e71979b7f9f828e87"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/AGENTS.md": {
+    "mtime": 1787541541.8913436,
+    "hash": "a9c5d12e26a5bcb4b519451bf8ab19b9"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/CLAUDE.md": {
+    "mtime": 1787541541.8262415,
+    "hash": "a73c936b01f6a2b977204fc5b888a06e"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/tools/realtime-voice/requirements.txt": {
+    "mtime": 1787393896.249018,
+    "hash": "cbee458fb57fcbd87b3f043c81646a8e"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/tools/realtime-voice/README.md": {
+    "mtime": 1787541541.724743,
+    "hash": "8527cb4608d78bb51422d55ac3893a74"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/tools/realtime-voice/output/20260822-185218.md": {
+    "mtime": 1787396068.7474992,
+    "hash": "d34ff117a89b345bdf4bf5f452de29c6"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/tools/realtime-voice/output/20260822-182623.md": {
+    "mtime": 1787394401.638595,
+    "hash": "ccc84192442c688dafb9a570e754f97e"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/tools/realtime-voice/output/20260822-185501.md": {
+    "mtime": 1787396863.3893616,
+    "hash": "0e8fb76ddac8680e1f569c8a15a4cd17"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/tools/realtime-voice/static/index.html": {
+    "mtime": 1787541541.7259207,
+    "hash": "cffbe28875ec15bc0f5cb922665d95cc"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/contracts/PRESENTATION-HANDOFF-PACK.md": {
+    "mtime": 1786815570.791705,
+    "hash": "138772230b5fe7dc3f6ce130637f972a"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/contracts/PM-TO-QUOTE-DATA-PACK.md": {
+    "mtime": 1785065260.7752998,
+    "hash": "00d385fab3ae795970c245ed8d07dc07"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/contracts/ANSON-TO-QUOTEMASTER-COMMAND.md": {
+    "mtime": 1787381671.9251604,
+    "hash": "6c212e7ba0d52a48a924ae4e08fa0799"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/tests/fixtures/audio-samples/accuracy-check-transcript.txt": {
+    "mtime": 1787382263.1484387,
+    "hash": "52b2429f014f1952aa43a59a4280f955"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/tests/fixtures/audio-samples/elevenlabs-upgrade-decision.md": {
+    "mtime": 1787382275.145621,
+    "hash": "26ee991fea65bd0d414791ef64026609"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/tests/fixtures/demo-test-site/index.html": {
+    "mtime": 1787382334.1720462,
+    "hash": "c3998e76e6d67b539900748a61b2b7f1"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/cases/README.md": {
+    "mtime": 1785065293.8638031,
+    "hash": "b27589caccc4e19075a92eb640437243"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/cases/vista-imc/CONTEXT.md": {
+    "mtime": 1786951567.4408028,
+    "hash": "bcfff05d2fbe8c20587ea2eec7cbc66e"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/cases/vista-imc/pm-to-quote.yaml": {
+    "mtime": 1786951477.3956227,
+    "hash": "5dbac912b075264ebd5da9a0c5e0ae71"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/cases/vista-imc/client-profile.yaml": {
+    "mtime": 1786603967.2736506,
+    "hash": "aca6198f630d97129fd46b739ee83a6f"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/cases/vista-imc/OPEN-QUESTIONS.md": {
+    "mtime": 1786951479.9036365,
+    "hash": "096a00b0950ff1d75b84f25ca4b703d0"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/cases/vista-imc/docs/research/2026-08-13-meeting-transcript.md": {
+    "mtime": 1786596083.1991904,
+    "hash": "f9e34ca6d78a020d4a9d4ae3a227e7bc"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/cases/vista-imc/docs/research/company-info.md": {
+    "mtime": 1786596087.541529,
+    "hash": "8e130adff08598809cc625cf2805c114"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/cases/vista-imc/deliverables/preview.html": {
+    "mtime": 1786952517.6420076,
+    "hash": "c01a882e32933884a65ddc3257f5142a"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/cases/vista-imc/deliverables/\u4e00\u5929\u5167\u8a13\u8ab2\u7db1-\u8349\u7a3f.md": {
+    "mtime": 1786614162.636581,
+    "hash": "8b96f99d15cadb10bc7765878dd08e77"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/cases/vista-imc/deliverables/ppt-master-handoff/02-ppt-master-\u4ea4\u63a5\u5305.md": {
+    "mtime": 1786951499.1655173,
+    "hash": "938365dde0b3689eea68b0ec7186269e"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/cases/vista-imc/deliverables/ppt-master-handoff/01-\u4e2d\u7e7c-markdown-SSOT.md": {
+    "mtime": 1786951565.3967624,
+    "hash": "123c5181796002a1afdafd7474600f70"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/docs/realtime-voice-architecture.html": {
+    "mtime": 1787391205.0429292,
+    "hash": "2038f2c9da12213177afce1896da74ab"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/dashboard/index.html": {
+    "mtime": 1787542703.8884706,
+    "hash": "0e99a82f2ab518090d000f7202e56fd0"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/presentations/bni-ai-project-partner/PRESENTATION-HANDOFF-PACK.md": {
+    "mtime": 1786669511.6758578,
+    "hash": "014d185370a864d717b4e78be0dbc7cf"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/presentations/bni-ai-project-partner/intermediate.md": {
+    "mtime": 1786670020.6058004,
+    "hash": "09f2edccbfa2e52c6ea687d6905f060a"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/templates/quote-data-pack.yaml": {
+    "mtime": 1785065260.7755659,
+    "hash": "ac2dab58822b2c634e006d89e46525c7"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/config.yaml": {
+    "mtime": 1787381698.2431219,
+    "hash": "4678ff6631748eb0ac8fb03b4c652159"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/specs/realtime-voice-transcription/spec.md": {
+    "mtime": 1787397405.9273338,
+    "hash": "8e26d8b7a9071db3ff043a79331ccc06"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/specs/presentation-manager/spec.md": {
+    "mtime": 1787119104.8132555,
+    "hash": "2ef19e57bf462bda3606bf16487763f3"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/specs/case-page/spec.md": {
+    "mtime": 1787115075.3037624,
+    "hash": "8cb12310d39beba92c6bd78db2ba34f1"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/specs/realtime-need-capture/spec.md": {
+    "mtime": 1787541541.7244413,
+    "hash": "2710a59ac5d3d7675911fcf9f0b58823"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/specs/demo-generation-deploy/spec.md": {
+    "mtime": 1787541541.723991,
+    "hash": "958d6b79c7df4a4c2146f2863a325aec"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/specs/agent-operating-system/spec.md": {
+    "mtime": 1787119099.2913275,
+    "hash": "dac63d2bb365c1495ca2a08f80c7b3f2"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/realtime-need-capture-auto-trigger/tasks.md": {
+    "mtime": 1787541541.723587,
+    "hash": "db73555a3d27413aa29a829f28fad7a9"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/realtime-need-capture-auto-trigger/design.md": {
+    "mtime": 1787398046.4728358,
+    "hash": "9c35476df2b2fff7dc50179eab0d3fa4"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/realtime-need-capture-auto-trigger/proposal.md": {
+    "mtime": 1787397971.715542,
+    "hash": "02da863517a7bee7b5a5104969bf5772"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/realtime-need-capture-auto-trigger/specs/realtime-need-capture-auto-trigger/spec.md": {
+    "mtime": 1787398070.299539,
+    "hash": "3068153beb1940d01410d73e382c4cdb"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/archive/2026-08-19-agent-operating-system/tasks.md": {
+    "mtime": 1785065397.1421447,
+    "hash": "f9f165e2a312f64e7f97272a5e09bfc3"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/archive/2026-08-19-agent-operating-system/design.md": {
+    "mtime": 1785065260.7767742,
+    "hash": "564d51a6e2e36898724c292f33d9604d"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/archive/2026-08-19-agent-operating-system/proposal.md": {
+    "mtime": 1785065260.7766447,
+    "hash": "995ac874cda99e80c8b2439554a8543f"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/archive/2026-08-19-agent-operating-system/specs/agent-operating-system/spec.md": {
+    "mtime": 1785065260.7770298,
+    "hash": "5aae7049207e0781bf737eeb5f7bd252"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/archive/2026-08-19-case-page/tasks.md": {
+    "mtime": 1787112688.4918132,
+    "hash": "8ddb511f4d30764567334f358ebd9198"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/archive/2026-08-19-case-page/design.md": {
+    "mtime": 1787102627.8249512,
+    "hash": "ce43a44d83f88a4ae5ef195f685eceeb"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/archive/2026-08-19-case-page/proposal.md": {
+    "mtime": 1787102552.0013962,
+    "hash": "ba10a07588ac548fa7e7502992187732"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/archive/2026-08-19-case-page/specs/case-page/spec.md": {
+    "mtime": 1787102651.405505,
+    "hash": "9a0accc1ab2cb74e80f8ef39b334fb54"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/archive/2026-08-22-realtime-demo-generation/tasks.md": {
+    "mtime": 1787382365.7706985,
+    "hash": "8adfdcb66886d7aeb0f125356e81a594"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/archive/2026-08-22-realtime-demo-generation/design.md": {
+    "mtime": 1787378369.6610448,
+    "hash": "6312ed851c40da263e8b4653e5b82a94"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/archive/2026-08-22-realtime-demo-generation/proposal.md": {
+    "mtime": 1787378283.7410147,
+    "hash": "a2ad11cf9e8bdf733c259bac3f62b60f"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/archive/2026-08-22-realtime-demo-generation/specs/realtime-need-capture/spec.md": {
+    "mtime": 1787378388.4624941,
+    "hash": "b57179fca5839ad40e7fd09e7bce7374"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/archive/2026-08-22-realtime-demo-generation/specs/demo-generation-deploy/spec.md": {
+    "mtime": 1787378407.1701858,
+    "hash": "58a05774e8346075fdec6396569f5555"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/archive/2026-08-19-presentation-manager-production-route/tasks.md": {
+    "mtime": 1786815570.793187,
+    "hash": "0e1b261eb504036af85b6e627cd353bf"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/archive/2026-08-19-presentation-manager-production-route/design.md": {
+    "mtime": 1786815570.79213,
+    "hash": "7b3b272be29e3d3c8114ce83b3be53db"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/archive/2026-08-19-presentation-manager-production-route/proposal.md": {
+    "mtime": 1786815570.792709,
+    "hash": "c3b67fa0339fb80ba1ff9b76a6f663ac"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/archive/2026-08-19-presentation-manager-production-route/specs/presentation-manager/spec.md": {
+    "mtime": 1786815570.79301,
+    "hash": "727f3296515f9dfc2190b2ddd49ab59d"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/archive/2026-08-23-demo-generation-style-handoff/tasks.md": {
+    "mtime": 1787541541.722193,
+    "hash": "aaa220a4f5a2a313ebccc7901373c1b7"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/archive/2026-08-23-demo-generation-style-handoff/design.md": {
+    "mtime": 1787541541.7212753,
+    "hash": "03ff6c498328466b29463872a3d9053d"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/archive/2026-08-23-demo-generation-style-handoff/proposal.md": {
+    "mtime": 1787541541.7215433,
+    "hash": "5ed5dfe9c8995f5fc2753f22674983ac"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/archive/2026-08-23-demo-generation-style-handoff/specs/demo-generation-deploy/spec.md": {
+    "mtime": 1787541541.7219245,
+    "hash": "7231739bc2e62f0a10a351437e4c1f1d"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/archive/2026-08-19-presentation-manager-agent/tasks.md": {
+    "mtime": 1785066498.5409687,
+    "hash": "d58eccdc5720163a09838dcc55e7f909"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/archive/2026-08-19-presentation-manager-agent/design.md": {
+    "mtime": 1785066330.873634,
+    "hash": "0b6095b2e655070c5a9bd464828c8297"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/archive/2026-08-19-presentation-manager-agent/proposal.md": {
+    "mtime": 1785066330.873441,
+    "hash": "6402659888ed17514e0529f859565a14"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/archive/2026-08-19-presentation-manager-agent/specs/presentation-manager/spec.md": {
+    "mtime": 1786452041.8683875,
+    "hash": "1f2bfc424a8e437ca843fbb0858cbfce"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/archive/2026-08-23-realtime-need-capture-referral-signal/tasks.md": {
+    "mtime": 1787541541.72323,
+    "hash": "c9c0a634ba3e03a122e20f45ad35188b"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/archive/2026-08-23-realtime-need-capture-referral-signal/proposal.md": {
+    "mtime": 1787541541.7226584,
+    "hash": "ee7e6660ae09ec7e03779c9319359e84"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/archive/2026-08-23-realtime-need-capture-referral-signal/specs/realtime-need-capture/spec.md": {
+    "mtime": 1787541541.7229745,
+    "hash": "e5d3a28038e9a5ae24e7160ec01ac7cc"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/archive/2026-08-22-realtime-voice-transcription/tasks.md": {
+    "mtime": 1787397396.6791935,
+    "hash": "b7023dee3c6b363438242bae16a068e5"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/archive/2026-08-22-realtime-voice-transcription/design.md": {
+    "mtime": 1787392919.527289,
+    "hash": "883bf078b2c18025e947e6093f92d224"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/archive/2026-08-22-realtime-voice-transcription/proposal.md": {
+    "mtime": 1787392839.9106228,
+    "hash": "5f4f118ec05f9302d30b6208ab0e021f"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/archive/2026-08-22-realtime-voice-transcription/specs/realtime-voice-transcription/spec.md": {
+    "mtime": 1787392947.3664632,
+    "hash": "f4a8c5252393d348704ba83b4088f48e"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/openspec/changes/realtime-voice-public-https-url/proposal.md": {
+    "mtime": 1787541541.8981059,
+    "hash": "b353bb62e3e60db11dbb3b416b3c333a"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/cases/vista-imc/deliverables/vista-imc-preview-assets/p11-hybrid-collab.png": {
+    "mtime": 1786952016.7699902,
+    "hash": "e445d4532fca12591f0654f373f2a181"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/cases/vista-imc/deliverables/vista-imc-preview-assets/p08-workflow-team.png": {
+    "mtime": 1786952016.764629,
+    "hash": "5da5f350754beb82f7eb6b1414ac7e99"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/cases/vista-imc/deliverables/vista-imc-preview-assets/p14-kickoff.png": {
+    "mtime": 1786952016.7740457,
+    "hash": "580951d7dc0ee5d1f56e569ba097297c"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/cases/vista-imc/deliverables/vista-imc-preview-slides/06_proposal_skill.svg": {
+    "mtime": 1786952016.7581415,
+    "hash": "f178dfaf7d53e5ec2232dfb1ee8a5221"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/cases/vista-imc/deliverables/vista-imc-preview-slides/14_next_step.svg": {
+    "mtime": 1786952477.7412765,
+    "hash": "4504c1532e548e47e91d6de79e015d8d"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/cases/vista-imc/deliverables/vista-imc-preview-slides/12_b_collaboration.svg": {
+    "mtime": 1786952477.7410274,
+    "hash": "a3446e633d5d6c591d593f15cdc5eae4"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/cases/vista-imc/deliverables/vista-imc-preview-slides/08_investment.svg": {
+    "mtime": 1786952016.7591465,
+    "hash": "151048eed10a15be4a78b3b67a4166d5"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/cases/vista-imc/deliverables/vista-imc-preview-slides/13_b_compare_price.svg": {
+    "mtime": 1786953838.143302,
+    "hash": "e244867780f3b4eb7cf267f651481a7f"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/cases/vista-imc/deliverables/vista-imc-preview-slides/01_cover.svg": {
+    "mtime": 1786952016.7554836,
+    "hash": "fa85b088f4c502527feb3e0948fa4598"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/cases/vista-imc/deliverables/vista-imc-preview-slides/11_b_scope.svg": {
+    "mtime": 1786952243.8753257,
+    "hash": "82b0f05fe45d84f9c15621fb995b8245"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/cases/vista-imc/deliverables/vista-imc-preview-slides/03_offer.svg": {
+    "mtime": 1786952016.7565358,
+    "hash": "428c9d5e8828aa4c429b11cdb1d621e9"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/cases/vista-imc/deliverables/vista-imc-preview-slides/07_execution.svg": {
+    "mtime": 1786952016.7586906,
+    "hash": "108b9d5903e44ca65e62721d66bb2672"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/cases/vista-imc/deliverables/vista-imc-preview-slides/09_b_goal.svg": {
+    "mtime": 1786952477.7406101,
+    "hash": "c518cfed8b066a1bef9cd15e3a75f395"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/cases/vista-imc/deliverables/vista-imc-preview-slides/04_schedule.svg": {
+    "mtime": 1786952016.7571673,
+    "hash": "ffb83ba5d96fdf2f0b9922f7c1b5da4e"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/cases/vista-imc/deliverables/vista-imc-preview-slides/02_gap.svg": {
+    "mtime": 1786952016.7560215,
+    "hash": "36fcd4060a5ada1856389a1ebfcf972e"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/cases/vista-imc/deliverables/vista-imc-preview-slides/05_foundation.svg": {
+    "mtime": 1786952016.7576098,
+    "hash": "78af98e868476570d802c9b0a79f9b3b"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/cases/vista-imc/deliverables/vista-imc-preview-slides/10_b_roadmap.svg": {
+    "mtime": 1786952243.8745172,
+    "hash": "6b276e207bdc7bcac5a4ee51a4e56db4"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/assets/logo.jpg": {
+    "mtime": 1787541541.8931904,
+    "hash": "b66dc68cccee5d7b5f19a118578869f1"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/tests/fixtures/audio-samples/sample-lat-3.wav": {
+    "mtime": 1787382087.0869846,
+    "hash": "9ea31f701fd6069f4a6c76406ba16471"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/tests/fixtures/audio-samples/sample-lat-2.wav": {
+    "mtime": 1787382086.9196107,
+    "hash": "34e7531a47559447a06b78da29859aa7"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/tests/fixtures/audio-samples/sample-lat-0.wav": {
+    "mtime": 1787382086.5874448,
+    "hash": "60c662708c5910c761c57b9e2142d7db"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/tests/fixtures/audio-samples/sample-lat-1.wav": {
+    "mtime": 1787382086.74314,
+    "hash": "a039e8edbf4e62376e4a9d3c5e5fd309"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/tests/fixtures/audio-samples/sample-lat-4.wav": {
+    "mtime": 1787382087.2646568,
+    "hash": "b49d4913e6a321e744d2820970c588d2"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/tests/fixtures/audio-samples/sample-mid.wav": {
+    "mtime": 1787382040.695042,
+    "hash": "f28dbe3922776aff8013b63f4a8921ee"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/tests/fixtures/audio-samples/sample-1.wav": {
+    "mtime": 1787382006.5606565,
+    "hash": "ac52d32e7e506b539fe6ecc8aa01f602"
+  },
+  "/Users/fishtv/Development/Awesome-Anson/tests/fixtures/audio-samples/sample-70.wav": {
+    "mtime": 1787382074.1048741,
+    "hash": "c9c8631d5b1fbed58214bbad79db5165"
+  }
+}
