@@ -283,7 +283,7 @@
       text-underline-offset: 2px;
     }
     .message-bubble button:hover { color: var(--signal-ink); }
-    .speaker-map { display: grid; gap: 9px; margin-bottom: 15px; padding: 11px; background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius); }
+    .speaker-map { display: grid; gap: 9px; margin-bottom: 15px; padding: 11px; background: var(--surface-raised); border: 1px solid var(--border); border-radius: var(--radius); }
     .speaker-map-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     .speaker-map-head .section-kicker { margin: 0; }
     .speaker-map-status { color: var(--success); font-size: 10px; font-weight: 700; }
@@ -320,7 +320,7 @@
     .progress-track span { display: block; width: 68%; height: 100%; background: var(--signal); border-radius: inherit; }
 
     .command-panel { background: #fcfdff; }
-    .command-panel .panel-header { background: #f8fafc; }
+    .command-panel .panel-header { background: var(--surface); }
     .command-body { display: flex; flex-direction: column; padding: 15px 16px 16px; }
     .command-intro { margin: 0 0 12px; color: var(--muted); font-size: 12px; line-height: 1.55; }
     .quick-label { margin: 0 0 7px; color: var(--muted); font-family: var(--font-mono); font-size: 10px; font-weight: 700; }
@@ -384,8 +384,8 @@
     .message-meta { margin-bottom: 4px; }
     .speaker { font-size: 12px; }
     .speaker-map { padding: 13px; }
-    .analysis-panel { background: #f8fafc; }
-    .analysis-panel .panel-header { background: transparent; }
+    .analysis-panel { background: var(--surface); }
+    .analysis-panel .panel-header { background: var(--surface); }
     .command-panel { border: 2px solid var(--text); box-shadow: 5px 5px 0 var(--text); }
     .command-panel .panel-header { background: var(--text); }
     .command-panel .panel-header h2, .command-panel .panel-header .panel-subtitle { color: #ffffff; }
@@ -471,15 +471,15 @@
       --subtle: #757b75;
       --border: #30353d;
       --border-strong: #474d55;
-      --signal: #c99552;
-      --signal-ink: #261b10;
-      --signal-soft: #3b3022;
-      --client-ink: #d6a261;
-      --client-soft: #3b3022;
-      --pm-ink: #8dbbb3;
-      --pm-soft: #263b39;
-      --success: #8fbea8;
-      --success-soft: #20332d;
+      --signal: #3f444c;
+      --signal-ink: #f1f1ef;
+      --signal-soft: #25292f;
+      --client-ink: #c8cbc8;
+      --client-soft: #23262c;
+      --pm-ink: #b9bfbc;
+      --pm-soft: #24282e;
+      --success: #b8bcb8;
+      --success-soft: #24282e;
       --shadow-sm: 0 1px 2px rgba(0, 0, 0, .26);
     }
 
@@ -543,6 +543,19 @@
     html[data-theme="dark"] .speaker-map { background: var(--surface-raised); }
     html[data-theme="dark"] .message.client .message-bubble, html[data-theme="dark"] .transcript-item[data-role="client"] { background: var(--client-soft); border-color: #6b4f2f; }
     html[data-theme="dark"] .message.pm .message-bubble, html[data-theme="dark"] .transcript-item[data-role="pm"] { background: var(--pm-soft); border-color: #456d67; }
+    html[data-theme="dark"] .analysis-panel, html[data-theme="dark"] .analysis-panel .panel-header { background: var(--surface); }
+    html[data-theme="dark"] .analysis-summary, html[data-theme="dark"] .suggestion-card, html[data-theme="dark"] .ai-reply { background: var(--surface-raised); border-color: var(--border-strong); }
+    html[data-theme="dark"] .analysis-summary { border-left-color: var(--border-strong); }
+    html[data-theme="dark"] .suggestion-card p, html[data-theme="dark"] .ai-reply p { color: var(--text-secondary); }
+    html[data-theme="dark"] .tag.confirmed, html[data-theme="dark"] .tag.pending { color: var(--text-secondary); background: var(--surface-raised); border-color: var(--border-strong); }
+    html[data-theme="dark"] .context-strip { color: var(--text-secondary); background: var(--surface-raised); border-color: var(--border-strong); }
+    html[data-theme="dark"] .context-strip strong { color: var(--text); }
+    html[data-theme="dark"] .button-primary { color: var(--text); background: var(--signal); }
+    html[data-theme="dark"] .button-primary:hover { background: #535960; }
+    html[data-theme="dark"] .live-dot, html[data-theme="dark"] .waveform i { background: var(--signal); }
+    html[data-theme="dark"] .live-dot { box-shadow: 0 0 0 4px var(--surface-raised); }
+    html[data-theme="dark"] .brand-mark { color: var(--text); background: var(--signal); }
+    html[data-theme="dark"] .reply-actions button, html[data-theme="dark"] .demo-link { color: var(--text-secondary); }
 
     @media (max-width: 800px) {
       body, .app-shell { overflow: auto; }

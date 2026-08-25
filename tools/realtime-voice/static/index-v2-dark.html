@@ -392,11 +392,13 @@
       --border: #30353d;
       --border-strong: #474d55;
       --signal-soft: #3b3022;
+      --signal: #3f444c;
+      --signal-ink: #f1f1ef;
       --client-soft: #3b3022;
       --pm-soft: #263b39;
       --pm-ink: #8dbbb3;
-      --success: #8fbea8;
-      --success-soft: #20332d;
+      --success: #b8bcb8;
+      --success-soft: #24282e;
     }
     body { background: var(--background); }
     .topbar { background: rgba(17, 19, 24, .92); border-color: var(--border); }
@@ -413,12 +415,12 @@
     .speaker-map { background: var(--surface-raised); border-color: var(--border); }
     .analysis-summary { background: var(--surface-raised); }
     .tag { background: var(--surface); border-color: var(--border-strong); color: var(--text-secondary); }
-    .tag.confirmed { color: #a6d1bf; background: var(--success-soft); border-color: #386451; }
-    .tag.pending { color: #e1bd87; background: var(--signal-soft); border-color: #765a38; }
-    .thread-message.user { color: #e1bd87; background: var(--signal-soft); border-color: #765a38; }
-    .ai-reply { background: var(--success-soft); border-color: #386451; }
-    .ai-reply p { color: #a6d1bf; }
-    .reply-actions button { color: #9bc8b5; }
+    .tag.confirmed { color: var(--text-secondary); background: var(--surface-raised); border-color: var(--border-strong); }
+    .tag.pending { color: var(--text-secondary); background: var(--surface-raised); border-color: var(--border-strong); }
+    .thread-message.user { color: var(--text-secondary); background: var(--surface-raised); border-color: var(--border-strong); }
+    .ai-reply { background: var(--surface-raised); border-color: var(--border-strong); }
+    .ai-reply p { color: var(--text-secondary); }
+    .reply-actions button { color: var(--text-secondary); }
   </style>
 </head>
 <body>

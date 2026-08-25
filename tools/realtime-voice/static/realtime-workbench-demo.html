@@ -48,12 +48,14 @@
       --border: #30353d;
       --border-strong: #474d55;
       --signal-soft: #3b3022;
+      --signal: #3f444c;
+      --signal-ink: #f1f1ef;
       --client-ink: #d6a261;
       --client-soft: #3b3022;
       --manager-ink: #8dbbb3;
       --manager-soft: #263b39;
-      --success: #8fbea8;
-      --success-soft: #20332d;
+      --success: #b8bcb8;
+      --success-soft: #24282e;
       --danger: #ef8e8e;
       --danger-soft: #3b2528;
     }
@@ -208,7 +210,7 @@
     .reply { margin-top: 17px; padding: 14px; background: var(--success-soft); border: 1px solid #a7f3d0; border-radius: var(--radius); }
     .reply p { margin: 0; color: #065f46; font-size: 14px; line-height: 1.7; }
     html[data-theme="dark"] .reply { border-color: #386451; }
-    html[data-theme="dark"] .reply p { color: #a6d1bf; }
+    html[data-theme="dark"] .reply p { color: var(--text-secondary); }
 
     @media (max-width: 1200px) {
       html, body { height: auto; overflow: auto; }
