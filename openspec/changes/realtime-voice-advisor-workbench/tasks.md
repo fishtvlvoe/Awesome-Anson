@@ -48,7 +48,7 @@
 ## 5. 整合與文件
 
 - [ ] 5.1 更新 `tools/realtime-voice/README.md`：聲音資料位置、隱私、profile 建立、角色判別、fallback 與停止方式；驗證：文件命令可對照實際 CLI route
-- [ ] 5.2 執行既有 realtime voice tests 與新增 schema／adapter tests；驗證：所有命令 exit 0
+- [x] 5.2 執行既有 realtime voice tests 與新增 schema／adapter tests；驗證：所有命令 exit 0
 - [ ] 5.3 啟動本機服務完成收音 → 角色化逐字稿 → 分析 → 右側討論 → 採納記錄的 browser smoke；驗證：留存 screenshot 與 session fixture 路徑
 - [ ] 5.4 完成 self-review、更新本 SR tasks，確認只提交本 SR 檔案與實作檔；驗證：`git status --short` 無未預期變更
 - [ ] 5.5 覆蓋 Existing transcription compatibility；驗證：既有逐字稿、簡轉繁、低信心與停止服務測試保持 exit 0

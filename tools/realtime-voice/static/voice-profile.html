@@ -39,7 +39,7 @@
     <nav class="top-actions" aria-label="頁面操作"><a class="button button-quiet" href="index.html">回到工作台</a><button class="button button-quiet" id="theme-toggle" type="button">切換深色</button></nav>
   </header>
   <main class="page">
-    <section class="page-heading"><h1>建立你的聲音身份</h1><p class="lead">直接錄一段你自己的聲音，讓案神知道對話裡哪一邊是你。其他聲音會先標成客戶；不確定的片段會保留給你確認。</p></section>
+    <section class="page-heading"><h1>建立你的聲音身份</h1><p class="lead">直接錄一段你自己的聲音，讓案神知道對話裡哪一邊是你。其他聲音會先標成客戶候選；不確定的片段會保留給你確認。</p></section>
     <section class="layout" aria-label="建立聲音身份">
       <article class="card">
         <header class="card-header"><div><h2>錄一段你的聲音</h2><p>請在安靜環境，用平常跟客戶說話的方式講話。</p></div><span class="status" id="profile-status">尚未建立</span></header>
@@ -51,7 +51,7 @@
         </div>
       </article>
       <aside class="side">
-        <article class="card"><header class="card-header"><div><h2>案神會怎麼判斷</h2><p>先辨認「是不是你」，再分辨其他說話人。</p></div></header><div class="card-body"><ol class="rule-list"><li><b>1</b><span>符合你的聲音特徵 → 顯示「我／專案經理」，對話靠右。</span></li><li><b>2</b><span>不是你的聲音 → 顯示「客戶 1、客戶 2」，對話靠左。</span></li><li><b>3</b><span>信心不足 → 顯示「待確認」，不擅自猜身份。</span></li></ol></div></article>
+        <article class="card"><header class="card-header"><div><h2>案神會怎麼判斷</h2><p>先辨認「是不是你」，再分辨其他說話人。</p></div></header><div class="card-body"><ol class="rule-list"><li><b>1</b><span>符合你的聲音特徵 → 顯示「我／專案經理」，對話靠右。</span></li><li><b>2</b><span>不是你的聲音且有穩定 speaker key → 顯示匿名「客戶 1、客戶 2」，對話靠左。</span></li><li><b>3</b><span>模型不可用或信心不足 → 顯示「待確認」，不擅自猜身份。</span></li></ol></div></article>
         <article class="card"><header class="card-header"><div><h2>目前狀態</h2><p>建立完成後，這裡會顯示本機身份。</p></div></header><div class="card-body"><h3 id="identity-name">尚未建立聲音身份</h3><p id="identity-copy">先錄一段自己的聲音。之後可以在工作台重新錄製或更新。</p></div></article>
       </aside>
     </section>
