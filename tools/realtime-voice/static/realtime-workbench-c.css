@@ -432,3 +432,50 @@
       .workspace { grid-template-columns: minmax(0, 1fr) minmax(300px, .82fr); }
       .conversation-panel { grid-row: span 2; }
     }
+
+    /* Dark theme: same C layout, lower luminance for long recording sessions. */
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --background: #0a0f1e;
+      --surface: #111827;
+      --surface-raised: #1a2236;
+      --surface-warm: #211b0b;
+      --text: #e8eeff;
+      --text-secondary: #c8d5f0;
+      --muted: #8da0c4;
+      --subtle: #63759b;
+      --border: #263653;
+      --border-strong: #405377;
+      --signal-soft: #3b2b0a;
+      --client-ink: #fde68a;
+      --client-soft: #3b2b0a;
+      --pm-ink: #93c5fd;
+      --pm-soft: #172554;
+      --success: #34d399;
+      --success-soft: #052e16;
+      --danger: #ef4444;
+      --danger-soft: #2d0000;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, .38), 0 1px 2px rgba(0, 0, 0, .28);
+    }
+    html[data-theme="dark"] .topbar { background: rgba(10, 15, 30, .94); }
+    html[data-theme="dark"] .analysis-panel { background: var(--surface); }
+    html[data-theme="dark"] .analysis-panel .panel-header { background: transparent; }
+    html[data-theme="dark"] .command-panel { background: #0f172a; }
+    html[data-theme="dark"] .command-panel .panel-header { background: #020617; }
+    html[data-theme="dark"] .message.client .message-bubble,
+    html[data-theme="dark"] .transcript-item[data-role="client"] { background: #211b0b; border-color: #5b4618; }
+    html[data-theme="dark"] .message.pm .message-bubble,
+    html[data-theme="dark"] .transcript-item[data-role="pm"] { background: var(--pm-soft); border-color: #1e40af; }
+    html[data-theme="dark"] .speaker-map { background: #0f172a; }
+    html[data-theme="dark"] .speaker-map.is-confirmed { background: var(--success-soft); }
+    html[data-theme="dark"] .analysis-summary { background: var(--surface-raised); }
+    html[data-theme="dark"] .analysis-summary p,
+    html[data-theme="dark"] .suggestion-card p,
+    html[data-theme="dark"] .transcript-text { color: var(--text-secondary); }
+    html[data-theme="dark"] .suggestion-card { background: var(--surface-warm); border-color: #6b4e15; }
+    html[data-theme="dark"] .tag.confirmed { color: #a7f3d0; background: var(--success-soft); border-color: #166534; }
+    html[data-theme="dark"] .tag.pending { color: #fde68a; background: var(--signal-soft); border-color: #6b4e15; }
+    html[data-theme="dark"] .command-message.user { color: #fde68a; background: var(--signal-soft); border-color: #6b4e15; }
+    html[data-theme="dark"] .ai-reply { background: var(--success-soft); border-color: #166534; }
+    html[data-theme="dark"] .ai-reply p { color: #a7f3d0; }
+    html[data-theme="dark"] .reply-actions button { color: #6ee7b7; }
