@@ -159,6 +159,7 @@
   let stopRequested = false;
   let cleanupTimer = null;
   let demoTimer = null;
+  let demoMode = false;
 
   function showAnalysisStatus(message) {
     analysisStatusEl.textContent = message;
@@ -259,6 +260,7 @@
   }
 
   async function pollAnalysis() {
+    if (demoMode) return;
     if (!sessionId || sessionId === '__REALTIME_' + 'SESSION_ID__') {
       showAnalysisStatus('目前沒有即時分析（可能沒有 agent session 在監看）');
       return;
@@ -460,6 +462,7 @@
   });
 
   simulateDemoButton.addEventListener('click', () => {
+    demoMode = true;
     if (demoTimer) window.clearTimeout(demoTimer);
     if (recording) stop();
     transcriptEl.replaceChildren();
