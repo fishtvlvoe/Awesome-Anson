@@ -39,14 +39,14 @@
 
       <section class="workspace" aria-label="即時錄音三欄工作台">
         <article class="panel conversation-panel">
-          <header class="panel-header"><div class="panel-title"><div><h2>現場對話</h2><p class="panel-subtitle">客戶在左邊，Fish 在右邊，最新內容固定在下面</p></div></div><div class="panel-actions"><span class="tag confirmed" id="transcriptCount">0 段</span></div></header>
+          <header class="panel-header"><div class="panel-title"><div><h2>現場對話</h2><p class="panel-subtitle">客戶在左邊，我在右邊，最新內容固定在下面</p></div></div><div class="panel-actions"><span class="tag confirmed" id="transcriptCount">0 段</span></div></header>
           <div class="panel-body conversation-body">
-            <div class="context-strip"><span><strong>身份辨識：</strong>先用你的聲線辨識 Fish，其餘聲音標為客戶，低信心片段保留待確認</span></div>
+            <div class="context-strip"><span><strong>身份辨識：</strong>先用你的聲音辨識「我」，其他聲音標為客戶，低信心片段保留待確認</span></div>
             <div id="transcript" aria-live="polite"><div class="transcript-empty" id="transcriptEmpty">開始收音後，真實逐字稿會出現在這裡。<br>最新內容會自動停在最下面。</div></div>
             <div class="speaker-map" id="speakerMap" aria-label="說話人身份對應">
               <div class="speaker-map-head"><p class="section-kicker">這場訪談的身份規則</p><div class="panel-actions"><span class="speaker-map-status" id="speakerMapStatus">● 尚待確認</span><button class="button button-small" type="button" id="confirmSpeakers">我已確認</button></div></div>
-              <div class="speaker-roles"><div class="speaker-role"><span class="role-dot client" aria-hidden="true"></span><div><strong>客戶｜其他聲音</strong><span>未註冊聲線 · 左側</span></div></div><div class="speaker-role"><span class="role-dot pm" aria-hidden="true"></span><div><strong>Fish｜已註冊聲線</strong><span>你的聲線 · 右側</span></div></div></div>
-              <p class="speaker-map-note">第一版先用 Fish 的聲線做辨識。無法確定時，片段會停在待確認，不會擅自判斷身份。</p>
+              <div class="speaker-roles"><div class="speaker-role"><span class="role-dot client" aria-hidden="true"></span><div><strong>客戶｜其他聲音</strong><span>未註冊聲音 · 左側</span></div></div><div class="speaker-role"><span class="role-dot pm" aria-hidden="true"></span><div><strong>我｜已註冊聲音</strong><span>你的聲音 · 右側</span></div></div></div>
+              <p class="speaker-map-note">先用目前使用者的聲音做辨識。無法確定時，片段會停在待確認，不會擅自判斷身份。</p>
             </div>
           </div>
         </article>
@@ -235,17 +235,18 @@
   pollAnalysis();
   setInterval(pollAnalysis, ANALYSIS_POLL_INTERVAL_MS);
 
-  function appendTranscript(text) {
+  function appendTranscript(text, speakerData = {}) {
     transcriptEmptyEl.hidden = true;
     const item = document.createElement('article');
     item.className = 'transcript-item';
-    item.dataset.role = 'pending';
+    const role = ['client', 'pm', 'pending'].includes(speakerData.role) ? speakerData.role : 'pending';
+    item.dataset.role = role;
 
     const meta = document.createElement('div');
     meta.className = 'transcript-meta';
     const speaker = document.createElement('span');
     speaker.className = 'transcript-speaker';
-    speaker.textContent = 'Speaker 待確認';
+    speaker.textContent = role === 'client' ? `客戶｜${speakerData.speaker_id || '待命名'}` : role === 'pm' ? '我｜專案經理' : '說話人｜待確認';
     const time = document.createElement('span');
     time.className = 'transcript-time';
     time.textContent = new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -258,14 +259,14 @@
 
     const actions = document.createElement('div');
     actions.className = 'transcript-actions';
-    [['client', '指定為客戶'], ['pm', '指定為 PM']].forEach(([role, label]) => {
+    [['client', '指定為客戶'], ['pm', '指定為我']].forEach(([nextRole, label]) => {
       const button = document.createElement('button');
       button.type = 'button';
-      button.dataset.role = role;
+      button.dataset.role = nextRole;
       button.textContent = label;
       button.addEventListener('click', () => {
-        item.dataset.role = role;
-        speaker.textContent = role === 'client' ? '客戶｜待命名' : 'PM｜我';
+        item.dataset.role = nextRole;
+        speaker.textContent = nextRole === 'client' ? '客戶｜待命名' : '我｜專案經理';
         actions.querySelectorAll('button').forEach((candidate) => candidate.classList.toggle('is-active', candidate === button));
       });
       actions.appendChild(button);
@@ -283,7 +284,7 @@
     ws.binaryType = 'arraybuffer';
     ws.onmessage = (evt) => {
       const data = JSON.parse(evt.data);
-      appendTranscript(data.text);
+      appendTranscript(data.text, data);
       // 按停止時最後一段音檔還在等伺服器辨識回應，收到最後這則才真的收尾關連線，
       // 不然辨識結果來不及送回來就被切斷（這是原本 bug 的根因）
       if (stopRequested) performCleanup();

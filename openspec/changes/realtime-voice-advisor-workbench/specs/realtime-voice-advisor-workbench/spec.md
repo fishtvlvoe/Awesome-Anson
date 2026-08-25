@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Provide a local voice-aware conversation workspace for Anson that distinguishes Fish from multiple clients, keeps the conversation readable in a fixed three-panel layout, and exposes the AI advisor's reasoning as an actionable decision trail.
+Provide a local voice-aware conversation workspace for Anson that distinguishes the current operator from multiple clients, keeps the conversation readable in a fixed three-panel layout, and exposes the AI advisor's reasoning as an actionable decision trail.
 
 ## Requirements
 
@@ -16,10 +16,22 @@ The system SHALL allow any operator to create and inspect a local voice profile 
 - **THEN** the system SHALL persist a profile identifier, sample metadata, model version, and creation timestamp locally
 - **AND** the system SHALL show the profile as ready for speaker attribution
 
+##### Example: Browser recording creates a profile
+
+- **GIVEN** the operator records a 20-second sample and plays it back successfully
+- **WHEN** the operator confirms profile creation
+- **THEN** the local profile status becomes `ready` and stores no raw audio in Git
+
 #### Scenario: Profile samples are insufficient
 
 - **WHEN** the recording is too short, silent, or fails validation
 - **THEN** the system SHALL explain the missing condition and SHALL NOT mark the profile ready
+
+##### Example: Silent recording stays unready
+
+- **GIVEN** the browser returns a silent or zero-length recording
+- **WHEN** the operator confirms profile creation
+- **THEN** the UI shows a validation error and keeps the profile `unready`
 
 #### Scenario: Profile model is unavailable
 
@@ -35,7 +47,7 @@ The system SHALL attach speaker identity metadata to each transcribed segment us
 - **WHEN** a segment matches the operator profile above the configured confidence threshold
 - **THEN** the segment SHALL have `role: pm`, `speaker_id: operator`, and `identity_status: matched`
 
-#### Scenario: Non-Fish voice is detected
+#### Scenario: Non-operator voice is detected
 
 - **WHEN** a segment does not match the operator profile and can be separated as a stable non-operator speaker
 - **THEN** the segment SHALL have `role: client`, a stable anonymous `speaker_id` such as `client-1`, and `identity_status: unmatched`
@@ -48,12 +60,18 @@ The system SHALL attach speaker identity metadata to each transcribed segment us
 
 ### Requirement: Role-aware conversation timeline
 
-The system SHALL render a fixed-height conversation panel with LINE-like left and right message alignment: client messages on the left and Fish messages on the right.
+The system SHALL render a fixed-height conversation panel with LINE-like left and right message alignment: client messages on the left and operator messages on the right.
 
 #### Scenario: New message arrives while following latest
 
 - **WHEN** a new transcript segment arrives and the operator is within the latest-message threshold
 - **THEN** the conversation panel SHALL append the segment and scroll it into view at the bottom
+
+##### Example: New operator message follows the bottom
+
+- **GIVEN** the conversation is within 48 pixels of its bottom
+- **WHEN** an operator segment arrives
+- **THEN** the panel scrolls to show the new segment
 
 #### Scenario: Operator reads older messages
 
@@ -61,11 +79,23 @@ The system SHALL render a fixed-height conversation panel with LINE-like left an
 - **THEN** new segments SHALL NOT move the current scroll position
 - **AND** the UI SHALL show a control to return to the latest message
 
+##### Example: Older message reading is preserved
+
+- **GIVEN** the operator has scrolled 300 pixels above the bottom
+- **WHEN** a client segment arrives
+- **THEN** `scrollTop` remains unchanged and a `回到最新` control appears
+
 #### Scenario: Multiple clients are present
 
-- **WHEN** two or more non-Fish speaker ids occur in one session
+- **WHEN** two or more non-operator speaker ids occur in one session
 - **THEN** each speaker SHALL retain a stable visible label such as `客戶 1` and `客戶 2`
 - **AND** the UI SHALL NOT place all speakers on the same side without role labels
+
+##### Example: Two clients remain distinguishable
+
+- **GIVEN** segments contain `client-1` and `client-2`
+- **WHEN** the timeline renders
+- **THEN** it shows `客戶 1` and `客戶 2` as separate left-side identities
 
 ### Requirement: Fixed three-panel responsive workspace
 
@@ -77,11 +107,23 @@ The system SHALL provide three independently scrollable panels in the desktop wo
 - **THEN** all three panels SHALL be visible without page-level infinite scrolling
 - **AND** each panel SHALL retain its own scroll rail
 
+##### Example: Desktop three-panel layout
+
+- **GIVEN** a 1440px-wide viewport
+- **WHEN** the operator opens the workbench
+- **THEN** conversation, analysis, and advisor panels are visible with independent scroll containers
+
 #### Scenario: Narrow viewport is opened
 
 - **WHEN** the viewport cannot fit three readable columns
 - **THEN** the layout SHALL switch to a readable single-column or tabbed presentation
 - **AND** the page SHALL NOT create horizontal overflow that hides panel content
+
+##### Example: Mobile layout
+
+- **GIVEN** a 320px-wide viewport
+- **WHEN** the operator opens the workbench
+- **THEN** the page has no horizontal scrollbar and panels remain readable in sequence
 
 ### Requirement: Explainable AI analysis
 
@@ -93,22 +135,40 @@ The system SHALL display the latest analysis with the observed situation, mental
 - **THEN** the center panel SHALL render all five reasoning fields
 - **AND** the response options SHALL be actionable controls that can be sent to the advisor chat
 
+##### Example: Two response options
+
+- **GIVEN** the analysis contains two response options
+- **WHEN** the center panel renders
+- **THEN** both options appear as controls and selecting one sends it to the advisor panel
+
 #### Scenario: Analysis is not available
 
 - **WHEN** no active monitor has produced analysis or the payload is malformed
 - **THEN** the center panel SHALL show an explicit waiting or error state
 - **AND** the conversation and advisor panels SHALL remain usable
 
+##### Example: Malformed analysis fallback
+
+- **GIVEN** the analysis endpoint returns invalid JSON
+- **WHEN** the page polls it
+- **THEN** the center panel shows an error while the conversation input remains usable
+
 ### Requirement: Advisor discussion and adoption tracking
 
-The system SHALL let the operator discuss an analysis in the advisor panel and SHALL record whether a suggestion was adopted based on subsequent Fish transcript segments.
+The system SHALL let the operator discuss an analysis in the advisor panel and SHALL record whether a suggestion was adopted based on subsequent operator transcript segments.
 
 #### Scenario: Operator sends a different judgment
 
 - **WHEN** the operator enters a judgment or instruction in the advisor composer
 - **THEN** the advisor panel SHALL append the operator message and the AI response without replacing the analysis history
 
-#### Scenario: Fish communicates the suggested intent
+##### Example: Advisor keeps history
+
+- **GIVEN** the center panel has an active response option
+- **WHEN** the operator enters a different judgment
+- **THEN** the right panel appends both messages and leaves the center analysis visible
+
+#### Scenario: Operator communicates the suggested intent
 
 - **WHEN** a later `pm` segment semantically covers the active suggestion
 - **THEN** the session record SHALL mark the suggestion as `adopted`, `partial`, or `not_adopted` with evidence segment ids
@@ -119,9 +179,15 @@ The system SHALL record a timestamped demo trigger event when the operator confi
 
 #### Scenario: DEMO phrase is detected
 
-- **WHEN** a high-confidence Fish segment matches a configured DEMO-start phrase
+- **WHEN** a high-confidence operator segment matches a configured DEMO-start phrase
 - **THEN** the system SHALL write a `demo_triggered` event containing the confirmed direction and source segment id
 - **AND** the existing demo-generation capability SHALL remain responsible for downstream generation and deployment gates
+
+##### Example: DEMO trigger is an event only
+
+- **GIVEN** a high-confidence operator segment contains the configured DEMO phrase
+- **WHEN** the trigger is detected
+- **THEN** an event is written and the recording server does not spawn a generator
 
 ### Requirement: Existing transcription compatibility
 
@@ -136,3 +202,9 @@ The system SHALL preserve the existing timestamped Traditional Chinese Markdown 
 
 - **WHEN** the operator terminates the server process
 - **THEN** no speaker monitor, model worker, launchd job, or daemon SHALL remain running
+
+##### Example: Manual shutdown
+
+- **GIVEN** the operator presses Ctrl+C
+- **WHEN** the server exits
+- **THEN** no recording or speaker worker remains listening on the port

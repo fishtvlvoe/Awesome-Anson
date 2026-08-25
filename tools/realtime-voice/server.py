@@ -152,7 +152,14 @@ async def handle_stream(request: web.Request) -> web.WebSocketResponse:
         if msg.type == web.WSMsgType.BINARY:
             text = await asyncio.to_thread(transcribe_segment, model, converter, msg.data)
             append_transcript_line(session_id, text)
-            await ws.send_json({"text": text, "ts": datetime.datetime.now().isoformat(timespec="seconds")})
+            await ws.send_json({
+                "text": text,
+                "ts": datetime.datetime.now().isoformat(timespec="seconds"),
+                "speaker_id": "unknown",
+                "role": "pending",
+                "confidence": 0.0,
+                "identity_status": "pending",
+            })
         elif msg.type == web.WSMsgType.ERROR:
             print(f"[stream 連線錯誤] {ws.exception()}", file=sys.stderr)
 
