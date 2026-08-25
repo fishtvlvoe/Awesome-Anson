@@ -83,7 +83,13 @@
         buildButton.disabled = true; buildButton.textContent = '保存中…';
         try {
           const response = await fetch('/voice-profile', { method: 'POST', headers: { 'Content-Type': sample.type }, body: sample });
-          const payload = await response.json();
+          const responseText = await response.text();
+          let payload;
+          try {
+            payload = JSON.parse(responseText);
+          } catch {
+            throw new Error(response.status === 404 ? '本機服務尚未載入聲音身份功能，請重新啟動案神錄音服務。' : `伺服器回應格式錯誤（HTTP ${response.status}）`);
+          }
           if (!response.ok) throw new Error(payload.message || '聲音身份建立失敗');
           profileStatus.textContent = '已建立'; profileStatus.classList.add('ready'); identityName.textContent = '我的聲音身份'; identityCopy.textContent = '之後符合這個聲音的片段會標示為「我／專案經理」，其他聲音會分到客戶側。'; showResult('聲音身份已保存到本機。speaker model 可用時，工作台會使用這個 profile 判別角色。');
         } catch (error) { showResult(`無法保存聲音身份：${error.message}`); }
