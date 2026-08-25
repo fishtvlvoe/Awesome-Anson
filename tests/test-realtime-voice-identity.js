@@ -155,4 +155,37 @@ print('ok')
     const output = execFileSync(PYTHON, ['-c', script], { encoding: 'utf8' }).trim();
     if (output !== 'ok') throw new Error(`unexpected output: ${output}`);
   },
+
+  'session-events-record-selection-without-generation': () => {
+    const script = `
+import json, pathlib, sys, tempfile
+sys.path.insert(0, ${JSON.stringify(SERVER_MODULE_DIR)})
+import server
+
+with tempfile.TemporaryDirectory() as tmp:
+    server.OUTPUT_DIR = pathlib.Path(tmp)
+    server.append_session_event('session-a', {
+        'event_type': 'response_option_selected',
+        'option_index': 1,
+        'option': '先確認第一版成功標準',
+    })
+    server.append_session_event('session-a', {
+        'event_type': 'demo_triggered',
+        'trigger_phrase': '我覺得這個方向可以，那我們開始做 DEMO 好不好？',
+    })
+    rows = [json.loads(line) for line in (pathlib.Path(tmp) / 'session-a.events.jsonl').read_text(encoding='utf-8').splitlines()]
+    assert [row['event_type'] for row in rows] == ['response_option_selected', 'demo_triggered']
+    assert rows[0]['option_index'] == 1
+    assert rows[1]['trigger_phrase'].startswith('我覺得這個方向可以')
+    try:
+        server.append_session_event('session-a', {'event_type': 'run_code'})
+    except ValueError:
+        pass
+    else:
+        raise AssertionError('unknown event must be rejected')
+print('ok')
+`;
+    const output = execFileSync(PYTHON, ['-c', script], { encoding: 'utf8' }).trim();
+    if (output !== 'ok') throw new Error(`unexpected output: ${output}`);
+  },
 };

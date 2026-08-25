@@ -355,7 +355,7 @@
       .panel { min-height: 590px; }
     }
 
-    @media (max-width: 800px) {
+    @media (max-width: 900px) {
       .topbar { align-items: flex-start; gap: 12px; }
       .session-meta { display: none; }
       .topbar-actions .button-quiet { display: none; }
@@ -427,6 +427,10 @@
     .command-send-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; }
     .command-hint { color: var(--subtle); font-size: 10px; }
     .analysis-suggestion-actions { display: flex; gap: 7px; margin-top: 11px; }
+    .response-options { display: grid; gap: 7px; margin-top: 11px; }
+    .response-option { width: 100%; padding: 9px 10px; color: var(--text-secondary); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); text-align: left; font-size: 12px; line-height: 1.5; }
+    .response-option:hover { border-color: var(--border-strong); background: var(--surface-raised); }
+    .back-to-latest { color: var(--text-secondary); background: var(--surface-raised); }
 
     @media (max-width: 1180px) {
       .workspace { grid-template-columns: minmax(0, 1fr) minmax(300px, .82fr); }
@@ -557,7 +561,7 @@
     html[data-theme="dark"] .brand-mark { color: var(--text); background: var(--signal); }
     html[data-theme="dark"] .reply-actions button, html[data-theme="dark"] .demo-link { color: var(--text-secondary); }
 
-    @media (max-width: 800px) {
+    @media (max-width: 900px) {
       body, .app-shell { overflow: auto; }
       .app-shell { height: auto; min-height: 100dvh; }
       .page { height: auto; min-height: calc(100dvh - 56px); }

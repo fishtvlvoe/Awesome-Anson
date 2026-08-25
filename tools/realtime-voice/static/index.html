@@ -16,7 +16,7 @@
     }
   })();
 </script>
-<link rel="stylesheet" href="realtime-workbench-c.css">
+<link rel="stylesheet" href="/static/realtime-workbench-c.css">
 </head>
 <body>
   <div class="app-shell">
@@ -26,7 +26,7 @@
         <div class="brand-copy"><strong>案神 · 即時錄音工作台</strong><span>邊聽、邊整理、邊指揮 AI</span></div>
         <div class="session-meta" aria-label="目前工作階段"><span>需求訪談</span><strong>即時收音</strong></div>
       </div>
-      <div class="topbar-actions"><a class="button button-quiet" href="voice-profile.html">聲音身份</a><button class="button button-quiet" type="button" id="theme-toggle">切換深色</button><button class="button button-quiet" type="button" id="save-session">儲存這次記錄</button><button class="button" type="button">結束訪談</button></div>
+      <div class="topbar-actions"><a class="button button-quiet" href="/static/voice-profile.html">聲音身份</a><button class="button button-quiet" type="button" id="theme-toggle">切換深色</button><button class="button button-quiet" type="button" id="save-session">儲存這次記錄</button><button class="button" type="button">結束訪談</button></div>
     </header>
 
     <main class="page">
@@ -39,7 +39,7 @@
 
       <section class="workspace" aria-label="即時錄音三欄工作台">
         <article class="panel conversation-panel">
-          <header class="panel-header"><div class="panel-title"><div><h2>現場對話</h2><p class="panel-subtitle">客戶在左邊，我在右邊，最新內容固定在下面</p></div></div><div class="panel-actions"><span class="tag confirmed" id="transcriptCount">0 段</span></div></header>
+          <header class="panel-header"><div class="panel-title"><div><h2>現場對話</h2><p class="panel-subtitle">客戶在左邊，我在右邊，最新內容固定在下面</p></div></div><div class="panel-actions"><span class="tag confirmed" id="transcriptCount">0 段</span><button class="button button-small back-to-latest" id="backToLatest" type="button" hidden>回到最新</button></div></header>
           <div class="panel-body conversation-body">
             <div class="context-strip"><span><strong>身份辨識：</strong>先用你的聲音辨識「我」，其他聲音標為客戶，低信心片段保留待確認</span></div>
             <div id="transcript" aria-live="polite"><div class="transcript-empty" id="transcriptEmpty">開始收音後，真實逐字稿會出現在這裡。<br>最新內容會自動停在最下面。</div></div>
@@ -60,7 +60,7 @@
             <section id="analysis-model-section" class="analysis-section" hidden><h3>使用的心智模型</h3><p id="analysis-model" class="analysis-copy">目前還沒有模型判斷。</p></section>
             <section id="analysis-decomposition-section" class="analysis-section" hidden><h3>客戶需求與結果</h3><div id="analysis-decomposition"></div></section>
             <section id="analysis-conclusion-section" class="analysis-section" hidden><h3>我的判斷</h3><p id="analysis-conclusion" class="analysis-copy"></p></section>
-            <section id="analysis-suggestion-section" class="analysis-section" hidden><h3>建議你怎麼回應</h3><div class="suggestion-card"><p id="analysis-suggestion"></p><div class="analysis-suggestion-actions"><button class="button button-primary button-small" type="button" id="use-analysis-suggestion">帶入右邊討論</button></div></div></section>
+            <section id="analysis-suggestion-section" class="analysis-section" hidden><h3>建議你怎麼回應</h3><div class="suggestion-card"><p id="analysis-suggestion"></p><div id="analysis-response-options" class="response-options" aria-label="可直接回應客戶的選項"></div><div class="analysis-suggestion-actions"><button class="button button-primary button-small" type="button" id="use-analysis-suggestion">帶入右邊討論</button></div></div></section>
           </div>
         </article>
 
@@ -97,14 +97,32 @@
   const analysisDecompositionEl = document.getElementById('analysis-decomposition');
   const analysisConclusionEl = document.getElementById('analysis-conclusion');
   const analysisSuggestionEl = document.getElementById('analysis-suggestion');
+  const analysisResponseOptionsEl = document.getElementById('analysis-response-options');
   const analysisSummaryEl = document.getElementById('analysis-summary-text');
   const analysisTagEl = document.getElementById('analysisTag');
   const replyTextEl = document.getElementById('replyText');
   const transcriptEmptyEl = document.getElementById('transcriptEmpty');
   const transcriptCountEl = document.getElementById('transcriptCount');
+  const backToLatestButton = document.getElementById('backToLatest');
   const recordingBar = document.getElementById('recordingBar');
   const recordingLabel = document.getElementById('recordingLabel');
   const liveDot = document.getElementById('liveDot');
+  const commandInput = document.getElementById('commandInput');
+  const commandThread = document.getElementById('commandThread');
+
+  async function recordSessionEvent(event) {
+    if (!sessionId || sessionId === '__REALTIME_' + 'SESSION_ID__') return;
+    try {
+      await fetch(`/events/${encodeURIComponent(sessionId)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(event),
+      });
+    } catch (_) {
+      // 事件紀錄失敗不能影響收音、逐字稿或右側顧問操作。
+    }
+  }
+  window.recordSessionEvent = recordSessionEvent;
 
   const ANALYSIS_POLL_INTERVAL_MS = 4000;
   const DECOMPOSITION_LABELS = {
@@ -146,6 +164,7 @@
     analysisDecompositionSection.hidden = true;
     analysisConclusionSection.hidden = true;
     analysisSuggestionSection.hidden = true;
+    analysisResponseOptionsEl.replaceChildren();
     analysisTagEl.textContent = '等待分析';
     analysisTagEl.className = 'tag pending';
   }
@@ -214,7 +233,25 @@
     });
 
     analysisSuggestionEl.textContent = data.suggestion || '目前沒有下一步建議';
-    replyTextEl.textContent = data.suggestion || '目前沒有可以直接拿來問客戶的句子';
+    const responseOptions = Array.isArray(data.response_options) && data.response_options.length
+      ? data.response_options.slice(0, 3)
+      : [data.suggestion || '目前沒有可以直接拿來問客戶的句子'];
+    analysisResponseOptionsEl.replaceChildren();
+    responseOptions.forEach((option, index) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'response-option';
+      button.textContent = `${index + 1}. ${option}`;
+      button.addEventListener('click', () => {
+        commandInput.value = `我選第 ${index + 1} 個回應：「${option}」請幫我確認語氣與下一步。`;
+        commandInput.focus();
+        replyTextEl.textContent = option;
+        window.dispatchEvent(new CustomEvent('advisor-option-selected', { detail: { index, option } }));
+        window.recordSessionEvent({ event_type: 'response_option_selected', option_index: index, option });
+      });
+      analysisResponseOptionsEl.appendChild(button);
+    });
+    replyTextEl.textContent = responseOptions[0];
   }
 
   async function pollAnalysis() {
@@ -236,6 +273,7 @@
   setInterval(pollAnalysis, ANALYSIS_POLL_INTERVAL_MS);
 
   function appendTranscript(text, speakerData = {}) {
+    const wasNearBottom = transcriptEl.scrollHeight - transcriptEl.scrollTop - transcriptEl.clientHeight < 48;
     transcriptEmptyEl.hidden = true;
     const item = document.createElement('article');
     item.className = 'transcript-item';
@@ -275,8 +313,22 @@
     item.append(meta, body, actions);
     transcriptEl.appendChild(item);
     transcriptCountEl.textContent = `${transcriptEl.querySelectorAll('.transcript-item').length} 段`;
-    transcriptEl.scrollTop = transcriptEl.scrollHeight;
+    if (wasNearBottom) {
+      transcriptEl.scrollTop = transcriptEl.scrollHeight;
+      backToLatestButton.hidden = true;
+    } else {
+      backToLatestButton.hidden = false;
+    }
   }
+
+  transcriptEl.addEventListener('scroll', () => {
+    const atBottom = transcriptEl.scrollHeight - transcriptEl.scrollTop - transcriptEl.clientHeight < 48;
+    if (atBottom) backToLatestButton.hidden = true;
+  });
+  backToLatestButton.addEventListener('click', () => {
+    transcriptEl.scrollTo({ top: transcriptEl.scrollHeight, behavior: 'smooth' });
+    backToLatestButton.hidden = true;
+  });
 
   function connectSocket() {
     const proto = location.protocol === 'https:' ? 'wss' : 'ws';
@@ -406,8 +458,6 @@
 </script>
 <script>
 (() => {
-  const commandInput = document.getElementById('commandInput');
-  const commandThread = document.getElementById('commandThread');
   const replyText = document.getElementById('replyText');
   const saveButton = document.getElementById('save-session');
   const themeToggle = document.getElementById('theme-toggle');
@@ -468,6 +518,10 @@
       return;
     }
     addCommandMessage(command);
+    const normalized = command.replace(/[\s，。！？!?]/g, '');
+    if (normalized.includes('開始做DEMO') || normalized.includes('開始做demo')) {
+      window.recordSessionEvent({ event_type: 'demo_triggered', trigger_phrase: command });
+    }
     commandInput.value = '';
   };
 
@@ -478,6 +532,11 @@
     });
   });
   document.getElementById('sendCommand').addEventListener('click', sendCommand);
+  window.addEventListener('advisor-option-selected', (event) => {
+    const option = event.detail?.option;
+    if (!option) return;
+    addCommandMessage(`我選這個回應：「${option}」請幫我確認語氣與下一步。`);
+  });
   commandInput.addEventListener('keydown', (event) => {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();

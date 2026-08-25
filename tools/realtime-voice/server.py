@@ -12,6 +12,7 @@ import socket
 import subprocess
 import sys
 import tempfile
+import uuid
 from pathlib import Path
 
 from aiohttp import web
@@ -158,6 +159,30 @@ def append_segment_metadata(
         f.write(json.dumps(payload, ensure_ascii=False) + "\n")
 
 
+def session_events_path(session_id: str) -> Path | None:
+    if not SESSION_ID_RE.fullmatch(session_id):
+        return None
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    return OUTPUT_DIR / f"{session_id}.events.jsonl"
+
+
+def append_session_event(session_id: str, event: dict[str, object]) -> None:
+    """Write an auditable UI event; this endpoint never runs generation/deploy code."""
+    output_path = session_events_path(session_id)
+    if output_path is None:
+        raise ValueError("invalid session id")
+    event_type = event.get("event_type")
+    if event_type not in {"response_option_selected", "adoption_updated", "demo_triggered"}:
+        raise ValueError("unsupported event type")
+    payload = {
+        "event_id": f"evt-{uuid.uuid4().hex}",
+        "ts": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
+        **event,
+    }
+    with open(output_path, "a", encoding="utf-8") as f:
+        f.write(json.dumps(payload, ensure_ascii=False) + "\n")
+
+
 async def handle_index(request: web.Request) -> web.Response:
     html = (STATIC_DIR / "index.html").read_text(encoding="utf-8")
     html = html.replace("__REALTIME_SESSION_ID__", request.app["session_id"])
@@ -211,6 +236,23 @@ async def handle_segments(request: web.Request) -> web.Response:
     except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError):
         return web.json_response({"status": "segments_error", "segments": []})
     return web.json_response({"status": "ready", "segments": segments})
+
+
+async def handle_events(request: web.Request) -> web.Response:
+    session_id = request.match_info["session_id"]
+    if session_events_path(session_id) is None:
+        return web.json_response({"status": "invalid_session_id"}, status=400)
+    try:
+        payload = await request.json()
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        return web.json_response({"status": "invalid_event", "message": "事件必須是 JSON"}, status=400)
+    if not isinstance(payload, dict):
+        return web.json_response({"status": "invalid_event", "message": "事件必須是物件"}, status=400)
+    try:
+        append_session_event(session_id, payload)
+    except ValueError as exc:
+        return web.json_response({"status": "invalid_event", "message": str(exc)}, status=400)
+    return web.json_response({"status": "recorded", "event_type": payload["event_type"]}, status=201)
 
 
 async def handle_voice_profile(request: web.Request) -> web.Response:
@@ -331,6 +373,7 @@ def build_app(model, converter, session_id: str) -> web.Application:
     app.router.add_get("/stream", handle_stream)
     app.router.add_get("/analysis/{session_id}", handle_analysis)
     app.router.add_get("/segments/{session_id}", handle_segments)
+    app.router.add_post("/events/{session_id}", handle_events)
     app.router.add_get("/voice-profile", handle_voice_profile)
     app.router.add_post("/voice-profile", handle_voice_profile)
     app.router.add_static("/static/", STATIC_DIR)
