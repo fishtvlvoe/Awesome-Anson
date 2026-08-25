@@ -4,7 +4,7 @@
 
 不想先讀 Agent、Skill 或資料契約，先開 [案神使用說明書](https://anson-manual.pages.dev/)。裡面用「客戶說想做網站」的案例，示範案神怎麼把模糊想法整理成可確認的需求、報價、簡報或 Demo，也畫出成交後怎麼交給蓋神。
 
-**這不是常駐系統，不是 Agent OS。** 沒有背景排程、沒有狀態機一直在跑——你打指令或呼叫 Agent 它才動，不叫它就完全靜止，像精靈一樣呼之即來、揮之即去。它是一組「丟案件資料進去、吐結構化產出出來」的接案分析架構：集中管理可重複使用的 Agent 身份、Skills 依賴、案件資料契約與流程入口。
+**這不是常駐 Agent 系統，也不是 Agent OS。** 案神分析仍然是你打指令或呼叫 Agent 才執行；另外提供一個可選的 macOS 登入同步工具，只負責更新程式碼、檢查外部案件庫與回報同步狀態，不會自行分析案件或啟動 Agent。
 
 ## 這個 repo 裝了什麼，別人裝了會拿到什麼
 
@@ -70,6 +70,41 @@
    這步驟需要電腦上已經有 Python；只用 Kimi 路徑（複製提詞貼去 Kimi 網站）的話可以跳過，不用裝 Python 環境。
 
 **差異**：Claude Code 認得 `.claude/agents/*.md` 和 `.claude/commands/*.md` 這套格式，會自動抓到，`/client-quote` 這種指令也是原生支援，裝好立刻能打；其他 AI 工具沒有這種「自動認格式」的機制，需要你明確叫它先讀過 README 跟 Agent 說明檔，之後用口語描述（「用 PM 助理幫我分析這份逐字稿」）達到一樣效果，不能打 `/client-quote` 這種斜線指令。
+
+## 兩臺電腦同步
+
+程式碼與客戶案件資料分開同步：
+
+- private GitHub repo：保存案神程式碼、Agent、Skill、模板與匿名測試資料。
+- 外部加密案件庫：保存真實逐字稿、談判紀錄、報價單、簡報與 Demo。它必須在兩臺電腦上呈現為本機可讀的資料夾，不能放進 Git。
+- Anson Sync：登入時可以自動更新乾淨的程式碼 checkout，並檢查案件根目錄與產出物版本。
+
+本機設定檔放在 `~/.config/anson-sync/config.json`，每臺電腦各自設定自己的路徑：
+
+```json
+{
+  "repoPath": "/Users/你的帳號/Development/Awesome-Anson",
+  "branch": "main",
+  "caseRoot": "/Users/你的帳號/Anson-private-cases",
+  "syncOnLogin": true,
+  "installDependenciesOnLockfileChange": false
+}
+```
+
+手動檢查或測試同步：
+
+```bash
+node scripts/anson-sync.js login --config ~/.config/anson-sync/config.json
+node scripts/anson-sync.js status --config ~/.config/anson-sync/config.json
+```
+
+要安裝登入觸發器：
+
+```bash
+node scripts/anson-sync.js install-login --config ~/.config/anson-sync/config.json
+```
+
+同步工具只會在工作樹乾淨且可以 fast-forward 時更新程式碼。筆電有本機修改、分支分叉、GitHub 無法連線、案件庫尚未掛載或產出物衝突時，會保留原檔案並回報原因，不會自動 reset、stash、合併或刪除。
 
 ## 新手怎麼用（不懂技術也看得懂，以 Claude Code 為例）
 
