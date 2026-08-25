@@ -120,16 +120,23 @@
     .role-chip.manager::before { background: var(--manager-ink); }
     .message-list { display: grid; gap: 15px; }
     .message-list::after { display: block; height: 1px; content: ""; }
-    .message { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 12px; }
+    .message { display: flex; align-items: flex-start; gap: 10px; }
+    .message > div:not(.avatar) { width: min(84%, 640px); }
+    .message.client { justify-content: flex-start; }
+    .message.manager { justify-content: flex-end; }
+    .message.manager > div:not(.avatar) { order: 1; }
+    .message.manager .avatar { order: 2; }
     .avatar { display: grid; width: 44px; height: 44px; place-items: center; border-radius: 10px; font-size: 12px; font-weight: 800; }
     .message.client .avatar { color: var(--client-ink); background: var(--client-soft); border: 1px solid #fde68a; }
     .message.manager .avatar { color: var(--manager-ink); background: var(--manager-soft); border: 1px solid #bfdbfe; }
     .message-meta { display: flex; align-items: center; gap: 8px; margin: 1px 0 6px; }
+    .message.manager .message-meta { justify-content: flex-end; }
     .speaker { font-size: 13px; font-weight: 800; }
     .time { color: var(--subtle); font: 11px var(--font-mono); }
-    .bubble { padding: 13px 15px; color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius); font-size: 15px; line-height: 1.7; }
-    .message.client .bubble { background: #fffdf5; border-color: #fef3c7; }
-    .message.manager .bubble { background: var(--manager-soft); border-color: #dbeafe; }
+    .bubble { width: fit-content; max-width: 100%; padding: 13px 15px; color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius); font-size: 15px; line-height: 1.7; }
+    .message.client .bubble { background: #fffdf5; border-color: #fef3c7; border-radius: 5px 14px 14px 14px; }
+    .message.manager .bubble { margin-left: auto; background: var(--manager-soft); border-color: #dbeafe; border-radius: 14px 5px 14px 14px; }
+    .message.manager .bubble button { margin-left: auto; }
     html[data-theme="dark"] .message.client .bubble { background: #211b0b; border-color: #5b4618; }
     html[data-theme="dark"] .message.manager .bubble { background: var(--manager-soft); border-color: #1e40af; }
     .bubble button { display: block; margin-top: 9px; padding: 0; color: var(--muted); background: transparent; border: 0; font-size: 11px; text-decoration: underline; text-underline-offset: 3px; }
@@ -139,6 +146,27 @@
     .summary { margin-bottom: 19px; padding: 15px; background: var(--surface-raised); border-left: 4px solid var(--signal); border-radius: 0 var(--radius) var(--radius) 0; }
     .label { margin: 0 0 8px; color: var(--muted); font-size: 12px; font-weight: 800; }
     .summary p { margin: 0; color: var(--text-secondary); font-size: 15px; line-height: 1.7; }
+    .context-note { margin-bottom: 14px; padding: 12px 14px; background: var(--surface-raised); border-left: 4px solid var(--border-strong); border-radius: 0 var(--radius) var(--radius) 0; }
+    .context-note time { display: block; margin-bottom: 5px; color: var(--subtle); font: 11px var(--font-mono); }
+    .context-note p { margin: 0; color: var(--text-secondary); font-size: 13px; line-height: 1.65; }
+    .model-card { margin-top: 14px; padding: 14px; background: var(--surface-raised); border: 1px solid var(--border); border-radius: var(--radius); }
+    .model-card strong { display: block; margin-bottom: 6px; font-size: 15px; }
+    .model-card > p:not(.label) { margin: 0; color: var(--text-secondary); font-size: 13px; line-height: 1.65; }
+    .model-steps { display: grid; gap: 7px; margin-top: 12px; }
+    .model-step { padding: 8px 10px; color: var(--text-secondary); background: var(--surface); border: 1px solid var(--border); border-radius: 6px; font-size: 12px; line-height: 1.5; }
+    .reason-list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+    .reason-list li { display: grid; grid-template-columns: 8px 1fr; gap: 9px; color: var(--text-secondary); font-size: 13px; line-height: 1.6; }
+    .reason-list li::before { width: 6px; height: 6px; margin-top: 7px; background: var(--manager-ink); border-radius: 50%; content: ""; }
+    .verdict { margin-top: 13px; padding: 13px 14px; background: var(--manager-soft); border-left: 4px solid var(--manager-ink); border-radius: 0 var(--radius) var(--radius) 0; }
+    .verdict p { margin: 0; color: var(--text-secondary); font-size: 13px; line-height: 1.7; }
+    .verdict strong { color: var(--text); }
+    .response-intro { margin: 0 0 12px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+    .response-options { display: grid; gap: 9px; }
+    .response-option { width: 100%; padding: 12px 13px; text-align: left; color: var(--text-secondary); background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius); transition: border-color 160ms ease, background 160ms ease, transform 160ms ease; }
+    .response-option:hover, .response-option.is-selected { background: var(--signal-soft); border-color: var(--signal); transform: translateY(-1px); }
+    .response-option strong, .response-option small { display: block; }
+    .response-option strong { margin-bottom: 4px; color: var(--text); font-size: 13px; }
+    .response-option small { color: var(--muted); font-size: 12px; line-height: 1.55; }
     .analysis-section { padding: 17px 0; border-top: 1px solid var(--border); }
     .analysis-section h3 { margin: 0 0 11px; font-size: 15px; }
     .tags { display: flex; flex-wrap: wrap; gap: 7px; }
@@ -159,17 +187,20 @@
     .analysis-update { padding: 11px 12px; color: var(--text-secondary); background: var(--surface-raised); border-left: 3px solid var(--success); border-radius: 0 var(--radius) var(--radius) 0; font-size: 13px; line-height: 1.6; }
     .analysis-update time { display: block; margin-bottom: 3px; color: var(--subtle); font: 11px var(--font-mono); }
 
-    .ai-control .panel-body { padding: 19px 20px 20px; }
+    .ai-control .panel-body { display: flex; flex-direction: column; overflow: hidden; padding: 19px 20px 20px; }
     .ai-control .explain { color: #c8d5f0; }
     .quick-label { margin: 0 0 9px; color: var(--muted); font-size: 12px; font-weight: 800; }
     .quick-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 19px; }
     .quick-action { padding: 8px 10px; color: var(--text-secondary); background: var(--surface); border: 1px solid var(--border-strong); border-radius: 6px; font-size: 12px; }
     .quick-action:hover { background: var(--signal-soft); border-color: #fde68a; }
-    .chat { display: grid; gap: 12px; min-height: 190px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+    .chat { display: grid; flex: 1 1 auto; gap: 12px; min-height: 120px; margin-bottom: 13px; overflow-y: auto; overscroll-behavior: contain; padding: 0 8px 16px 0; border-bottom: 1px solid var(--border); scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+    .chat::-webkit-scrollbar { width: 8px; }
+    .chat::-webkit-scrollbar-track { background: transparent; }
+    .chat::-webkit-scrollbar-thumb { background: var(--border-strong); border: 2px solid transparent; border-radius: 999px; background-clip: padding-box; }
     .chat-message { max-width: 92%; padding: 12px 13px; border-radius: var(--radius); color: var(--text-secondary); background: var(--surface); border: 1px solid var(--border); font-size: 14px; line-height: 1.65; }
     .chat-message.you { justify-self: end; color: var(--signal-ink); background: var(--signal-soft); border-color: #fde68a; }
     .chat-author { display: block; margin-bottom: 5px; color: var(--muted); font-size: 11px; font-weight: 800; }
-    .composer { margin-top: auto; }
+    .composer { margin-top: 0; }
     textarea { display: block; width: 100%; min-height: 112px; resize: vertical; padding: 13px; color: var(--text); background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius); font-size: 14px; line-height: 1.65; }
     textarea::placeholder { color: var(--subtle); }
     .composer-row { justify-content: space-between; gap: 10px; margin-top: 9px; }
@@ -240,10 +271,13 @@
         <div class="panel-body" id="analysisBody">
           <div class="status-line">AI 正在整理這一段對話</div>
           <div class="summary"><p class="label">一句話摘要</p><p>客戶想先做預約、提醒和試用版，第一版希望簡單，付款與會員暫時不做。</p></div>
+          <section class="analysis-section"><h3>這一段發生了什麼</h3><div class="context-note"><time>12:47:05 · 客戶剛說完</time><p>「預約跟提醒是最重要的。試用版也想一起看看，但預算和什麼時候上線，我們還要再討論。」</p></div><div class="model-card"><p class="label">我使用的心智模型</p><strong>需求成熟度 × 決策風險</strong><p>先把客戶的「想達到的結果」和「還不敢決定的條件」分開，避免把有方向誤判成已經做完決策。</p><div class="model-steps"><div class="model-step"><strong>想達到的結果</strong> 預約、提醒、簡單可用，最好三個月看到第一版。</div><div class="model-step"><strong>還沒決定</strong> 預算、正式上線時間、試用版要做到多深。</div><div class="model-step"><strong>對話訊號</strong> 客戶願意往下談，但會先控制範圍和承諾。</div></div></div></section>
+          <section class="analysis-section"><h3>為什麼這樣判斷</h3><ul class="reason-list"><li>客戶已經說出最重要的功能，代表需求方向不是空白。</li><li>客戶把預算和時程留到後面，代表他還在評估投入風險。</li><li>「不要太複雜」和「三個月」是限制條件，不是單純偏好。</li></ul><div class="verdict"><p class="label">PM 判斷</p><p><strong>客戶現在是「方向明確、決策保守」的探索狀態。</strong> 他不是不知道自己要什麼，而是還沒有把功能、預算、時程排成可以承諾的方案。這時候先幫他縮小選擇，比直接逼問預算更容易得到真答案。</p></div></section>
           <section class="analysis-section"><h3>目前已經確認</h3><div class="tags"><span class="tag confirmed">預約流程</span><span class="tag confirmed">前一天提醒</span><span class="tag confirmed">第一版要簡單</span><span class="tag confirmed">三個月內看到第一版</span><span class="tag confirmed">付款先不做</span><span class="tag confirmed">會員先不做</span></div></section>
           <section class="analysis-section"><h3>還需要問清楚</h3><ul class="question-list"><li>預算大約落在哪個區間？</li><li>試用版是必要功能，還是想先看看？</li><li>三個月是希望上線，還是先看到可操作版本？</li></ul></section>
           <section class="analysis-section"><h3>AI 建議你下一句</h3><div class="suggestion"><p id="suggestionText">如果第一版先不做付款和會員，你們希望預算大約落在哪個範圍？</p><div class="button-row"><button class="button button-primary button-small" type="button" id="useSuggestion">帶到右邊</button><button class="button button-small" type="button" id="dismissSuggestion">先不要</button></div></div></section>
           <section class="analysis-section"><h3>最新整理</h3><div class="analysis-update-list" id="analysisUpdates" aria-live="polite"><div class="analysis-update"><time>12:49:13</time>客戶補充：手機上也要能看，使用情境不只在辦公室。</div><div class="analysis-update"><time>12:49:13</time>需求範圍新增「手機可查看」，先列為第一版需要確認的項目。</div></div></section>
+          <section class="analysis-section"><h3>建議你怎麼跟客戶溝通</h3><p class="response-intro">依照目前判斷，先降低客戶的決策壓力，再把需求收斂成可以報價的選擇。</p><div class="response-options"><button class="response-option" type="button" data-response="如果第一版先讓客人完成預約並收到提醒，這樣就已經達到你們想要的效果嗎？" data-command="請用確認客戶核心結果的方式，幫我自然地問下一句。"><strong>選項一｜先確認核心結果</strong><small>適合確認客戶真正想買的是什麼，不急著談功能細節。</small></button><button class="response-option" type="button" data-response="如果三個月先做可操作版本，付款和會員放第二階段，這樣的安排你們能接受嗎？" data-command="請用縮小第一版範圍的方式，幫我跟客戶確認方案。"><strong>選項二｜先降低第一版範圍</strong><small>適合把模糊的期待變成客戶可以選擇的方案。</small></button><button class="response-option" type="button" data-response="在預約、提醒、手機查看這三個功能裡，哪一個是這一階段不能拿掉的？我再依優先順序估算。" data-command="請幫我用功能優先順序取代直接問預算，設計下一句。"><strong>選項三｜先問不可犧牲的功能</strong><small>適合客戶還不想談預算，但你需要開始建立報價依據。</small></button></div></section>
         </div>
       </article>
 
@@ -319,6 +353,7 @@
       document.querySelectorAll('.hand-off').forEach((button) => button.addEventListener('click', () => { commandInput.value = '請整理這段對話：' + button.dataset.context; commandInput.focus(); }));
       document.getElementById('useSuggestion').addEventListener('click', () => { commandInput.value = '把這句變成自然的追問：' + document.getElementById('suggestionText').textContent; commandInput.focus(); });
       document.getElementById('dismissSuggestion').addEventListener('click', (event) => { event.currentTarget.textContent = '已略過'; event.currentTarget.disabled = true; });
+      document.querySelectorAll('.response-option').forEach((button) => button.addEventListener('click', () => { document.querySelectorAll('.response-option').forEach((option) => option.classList.remove('is-selected')); button.classList.add('is-selected'); commandInput.value = button.dataset.command; replyText.textContent = button.dataset.response; commandInput.focus(); }));
       document.getElementById('pauseButton').addEventListener('click', (event) => { const bar = document.getElementById('recordingBar'); const paused = bar.classList.toggle('is-paused'); document.getElementById('liveDot').classList.toggle('paused', paused); document.getElementById('recordingLabel').textContent = paused ? '錄音已暫停' : '正在錄音'; document.getElementById('recordingStatus').textContent = paused ? '準備好後可以繼續錄音' : '麥克風已連線，AI 正在同步整理'; event.currentTarget.textContent = paused ? '繼續錄音' : '暫停錄音'; });
       document.getElementById('saveButton').addEventListener('click', (event) => { event.currentTarget.textContent = '已儲存'; setTimeout(() => { event.currentTarget.textContent = '儲存記錄'; }, 1400); });
       document.getElementById('endButton').addEventListener('click', () => { document.getElementById('recordingStatus').textContent = '示範訪談已結束，可以檢視這次整理結果'; document.getElementById('recordingLabel').textContent = '訪談已結束'; document.getElementById('recordingBar').classList.add('is-paused'); document.getElementById('pauseButton').disabled = true; });
