@@ -33,7 +33,7 @@
       <section class="recording-bar" id="recordingBar" aria-label="錄音控制">
         <div class="live-meta"><span class="live-dot" id="liveDot" aria-hidden="true"></span><div class="live-copy"><strong id="recordingLabel">尚未開始</strong><span id="status">等待你允許麥克風後開始收音</span></div></div>
         <div class="waveform" aria-label="音量波形"><i style="--bar: 11px"></i><i style="--bar: 22px"></i><i style="--bar: 16px"></i><i style="--bar: 28px"></i><i style="--bar: 13px"></i><i style="--bar: 25px"></i><i style="--bar: 19px"></i><i style="--bar: 31px"></i><i style="--bar: 15px"></i><i style="--bar: 24px"></i><i style="--bar: 12px"></i><i style="--bar: 27px"></i><i style="--bar: 18px"></i><i style="--bar: 29px"></i><i style="--bar: 14px"></i><i style="--bar: 22px"></i><i style="--bar: 10px"></i><i style="--bar: 25px"></i><i style="--bar: 16px"></i><i style="--bar: 30px"></i></div>
-        <div class="live-meta" style="justify-content:flex-end"><span class="timer" id="sessionTimer">--:--</span><button class="button button-primary button-small" id="toggle" type="button">開始收音</button></div>
+        <div class="live-meta" style="justify-content:flex-end"><span class="timer" id="sessionTimer">--:--</span><button class="button button-small" id="simulateDemo" type="button">播放示範對談</button><button class="button button-primary button-small" id="toggle" type="button">開始收音</button></div>
       </section>
       <div id="permission-notice">需要允許麥克風權限才能開始收音。這個頁面不會在沒有權限時假裝已錄音。</div>
 
@@ -82,6 +82,7 @@
 <script>
 (() => {
   const toggleBtn = document.getElementById('toggle');
+  const simulateDemoButton = document.getElementById('simulateDemo');
   const statusEl = document.getElementById('status');
   const permNotice = document.getElementById('permission-notice');
   const transcriptEl = document.getElementById('transcript');
@@ -157,6 +158,7 @@
   let vadTimer = null;
   let stopRequested = false;
   let cleanupTimer = null;
+  let demoTimer = null;
 
   function showAnalysisStatus(message) {
     analysisStatusEl.textContent = message;
@@ -455,6 +457,39 @@
 
   toggleBtn.addEventListener('click', () => {
     if (recording) stop(); else start();
+  });
+
+  simulateDemoButton.addEventListener('click', () => {
+    if (demoTimer) window.clearTimeout(demoTimer);
+    if (recording) stop();
+    transcriptEl.replaceChildren();
+    transcriptCountEl.textContent = '0 段';
+    transcriptEmptyEl.hidden = true;
+    recordingLabel.textContent = '示範對談';
+    statusEl.textContent = '示範模式：依序展示客戶、我、AI 判斷與回應選項';
+    liveDot.classList.remove('paused');
+    const demoSegments = [
+      ['客戶希望第一版先解決預約與提醒。', { speaker_id: 'client-1', role: 'client', confidence: 0.91, identity_status: 'unmatched' }],
+      ['我理解，你們最在意的是讓客戶能預約，並且不要漏掉提醒，對嗎？', { speaker_id: 'operator', role: 'pm', confidence: 0.96, identity_status: 'matched' }],
+      ['對，付款和會員可以先放到後面。', { speaker_id: 'client-1', role: 'client', confidence: 0.89, identity_status: 'unmatched' }],
+    ];
+    demoSegments.forEach(([text, identity], index) => {
+      demoTimer = window.setTimeout(() => appendTranscript(text, identity), index * 650);
+    });
+    demoTimer = window.setTimeout(() => {
+      renderAnalysis({
+        generated_at: new Date().toISOString(),
+        client_response: ['客戶明確把預約與提醒列為第一版核心結果。'],
+        mental_model: '核心結果 × 可延後範圍 × 決策風險：先確認最不能少的結果，再把付款與會員延後。',
+        evidence: ['客戶說第一版先解決預約與提醒', '客戶同意付款和會員放到後面'],
+        evidence_segment_ids: ['seg-0001', 'seg-0003'],
+        decomposition: { need: { value: '預約與提醒', state: 'confirmed' }, solution: { value: '第一版先做預約流程', state: 'confirmed' } },
+        conclusion: '客戶需求已收斂，現在適合確認第一版成功標準。',
+        suggestion: '先請客戶確認預約完成與提醒送達，就是第一版的成功標準。',
+        response_options: ['第一版先做預約與提醒，這樣就是你們最想先解決的結果嗎？', '付款與會員先放第二階段，可以嗎？'],
+      });
+      analysisStatusEl.textContent = '示範分析已完成';
+    }, demoSegments.length * 650 + 300);
   });
 })();
 </script>
