@@ -507,6 +507,20 @@
       return;
     }
     aiMessage.append(aiAuthor, document.createTextNode(response));
+    const adoption = document.createElement('div');
+    adoption.className = 'adoption-actions';
+    adoption.setAttribute('aria-label', '記錄這次建議是否採用');
+    [['adopted', '已採用'], ['partial', '部分採用'], ['not_adopted', '未採用']].forEach(([status, label]) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = label;
+      button.addEventListener('click', () => {
+        adoption.querySelectorAll('button').forEach((candidate) => candidate.classList.toggle('is-active', candidate === button));
+        window.recordSessionEvent({ event_type: 'adoption_updated', status, evidence_segment_ids: [] });
+      });
+      adoption.appendChild(button);
+    });
+    aiMessage.appendChild(adoption);
     commandThread.appendChild(aiMessage);
     commandThread.scrollTop = commandThread.scrollHeight;
   };
@@ -519,7 +533,7 @@
     }
     addCommandMessage(command);
     const normalized = command.replace(/[\s，。！？!?]/g, '');
-    if (normalized.includes('開始做DEMO') || normalized.includes('開始做demo')) {
+    if (/開始.*做DEMO/i.test(normalized) || /開始.*DEMO/i.test(normalized)) {
       window.recordSessionEvent({ event_type: 'demo_triggered', trigger_phrase: command });
     }
     commandInput.value = '';

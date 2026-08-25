@@ -422,6 +422,9 @@
     .command-message { max-width: 92%; padding: 10px 11px; border-radius: var(--radius); color: var(--text-secondary); background: var(--surface); border: 1px solid var(--border); font-size: 12px; line-height: 1.55; }
     .command-message.user { justify-self: end; color: var(--signal-ink); background: var(--signal-soft); border-color: #fde68a; }
     .command-author { display: block; margin-bottom: 4px; color: var(--muted); font: 700 9px var(--font-mono); text-transform: uppercase; }
+    .adoption-actions { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 9px; }
+    .adoption-actions button { padding: 4px 7px; color: var(--muted); background: transparent; border: 1px solid var(--border); border-radius: 5px; font-size: 10px; }
+    .adoption-actions button:hover, .adoption-actions button.is-active { color: var(--text-secondary); background: var(--surface-raised); border-color: var(--border-strong); }
     .command-input { display: block; width: 100%; min-height: 88px; resize: vertical; padding: 11px; color: var(--text); background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius); font-size: 12px; line-height: 1.6; }
     .command-input::placeholder { color: var(--subtle); }
     .command-send-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; }

@@ -26,10 +26,10 @@
 ## 2. 本機使用者聲音身份（Local operator voice profile）
 
 - [x] 2.1 實作 profile storage 與 sample validation；驗證：至少一段有效樣本建立 ready profile，空樣本或壞檔回傳可讀錯誤
-- [ ] 2.2 實作本機 speaker identity adapter 邊界與可用 provider；驗證：瀏覽器錄音的匿名測試能回傳 `matched`、`unmatched`、`pending` 三態，provider 載入失敗不會啟動假辨識
+- [x] 2.2 實作本機 speaker identity adapter 邊界與可用 provider；驗證：瀏覽器錄音的匿名測試能回傳 `matched`、`unmatched`、`pending` 三態，provider 載入失敗不會啟動假辨識
 - [x] 2.3 將 speaker attribution 接到 websocket transcription response 與 session metadata；驗證：每段 response 都包含 speaker id、role、confidence、identity status
 - [x] 2.4 更新 `voice-profile.html`，讓使用者直接錄音、播放確認、重錄並建立 profile；驗證：權限允許、權限拒絕、太短與成功四種狀態均可重現
-- [ ] 2.5 覆蓋 Speaker attribution for multiple clients；驗證：operator、client-1、client-2、unknown 四種匿名 fixture 在 API 與 UI 標籤一致
+- [x] 2.5 覆蓋 Speaker attribution for multiple clients；驗證：operator、client-1、client-2、unknown 四種匿名 fixture 在 API 與 UI 標籤一致
 
 ## 3. 三欄正式工作台（Role-aware conversation timeline／Fixed three-panel responsive workspace）
 
@@ -51,4 +51,4 @@
 - [x] 5.2 執行既有 realtime voice tests 與新增 schema／adapter tests；驗證：所有命令 exit 0
 - [ ] 5.3 啟動本機服務完成收音 → 角色化逐字稿 → 分析 → 右側討論 → 採納記錄的 browser smoke；驗證：留存 screenshot 與 session fixture 路徑
 - [ ] 5.4 完成 self-review、更新本 SR tasks，確認只提交本 SR 檔案與實作檔；驗證：`git status --short` 無未預期變更
-- [ ] 5.5 覆蓋 Existing transcription compatibility；驗證：既有逐字稿、簡轉繁、低信心與停止服務測試保持 exit 0
+- [x] 5.5 覆蓋 Existing transcription compatibility；驗證：既有逐字稿、簡轉繁、低信心與停止服務測試保持 exit 0
