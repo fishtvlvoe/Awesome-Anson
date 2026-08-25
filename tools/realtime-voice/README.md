@@ -26,6 +26,21 @@ venv/bin/python server.py
 
 用電腦或手機瀏覽器打開對應網址，按「開始」開始收音，講話同時畫面會即時顯示辨識出的繁體文字。文字同時持續寫進 `output/<session-id>.md`。
 
+## 建立聲音身份
+
+工作台的「聲音身份」頁可以直接用瀏覽器錄一段目前使用者的聲音，播放確認後按「建立聲音身份」。
+原始樣本與 profile 只保存於本機，預設位置是 `~/.config/anson/voice-profile/`；可以用
+`ANSON_VOICE_PROFILE_DIR` 指定另一個本機目錄。`profile.json` 只保存樣本 metadata、雜湊與
+speaker embedding，不保存到 Git，也不送到雲端。
+
+建立 profile 後，server 會嘗試載入 FunASR ERes2NetV2 speaker model。模型可用時，符合 profile
+的片段回傳 `operator`／`pm`；其他穩定 speaker key 可映射成匿名 `client-1`、`client-2`。
+模型未安裝、音檔轉換失敗或信心不足時，一律回傳 `unknown`／`pending`，不把未知聲音假裝辨識成功。
+
+每段即時回應都包含 `speaker_id`、`role`、`confidence`、`identity_status`。舊的 Markdown 逐字稿
+格式保持不變，結構化身份資料另存為 `output/<session-id>.segments.jsonl`，也可由
+`GET /segments/<session-id>` 讀取。
+
 ## 對談中啟用即時分析
 
 即時分析不是 `server.py` 的背景服務。開始收音後，請由目前的 agent session
