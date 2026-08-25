@@ -60,7 +60,7 @@
 
     * { box-sizing: border-box; }
     html, body { height: 100%; }
-    body { display: flex; min-width: 320px; min-height: 100dvh; margin: 0; overflow: hidden; color: var(--text); background: var(--background); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+    body { display: flex; min-width: 320px; min-height: 100dvh; flex-direction: column; margin: 0; overflow: hidden; color: var(--text); background: var(--background); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
     button, textarea { font: inherit; }
     button { cursor: pointer; }
     button:focus-visible, textarea:focus-visible { outline: 3px solid rgba(245, 158, 11, .38); outline-offset: 2px; }
@@ -251,9 +251,9 @@
         <header class="panel-heading"><div><h2>我告訴 AI</h2><p>你可以隨時改變 AI 現在要做的事</p></div><div class="panel-heading-actions"><span class="tag pending">你說了算</span></div></header>
         <div class="panel-body">
           <p class="explain">不用等訪談結束。你可以叫 AI 先整理、幫你追問，或暫時不要替你回答。</p>
+          <div class="chat" id="chat"><div class="chat-message you"><span class="chat-author">我剛才告訴 AI</span>先不要幫我回答，先找出會影響報價的問題。</div><div class="chat-message"><span class="chat-author">AI 回應</span>收到。我會先整理預算、時程和功能範圍，不會替你直接回答客戶。</div></div>
           <p class="quick-label">常用方式</p>
           <div class="quick-actions"><button class="quick-action" type="button" data-command="先不要幫我回答，找出會影響報價的問題。">先找報價問題</button><button class="quick-action" type="button" data-command="把客戶剛才說的內容整理成三個重點。">整理三個重點</button><button class="quick-action" type="button" data-command="幫我把下一句改得自然一點，像我平常說話。">改成自然語氣</button></div>
-          <div class="chat" id="chat"><div class="chat-message you"><span class="chat-author">我剛才告訴 AI</span>先不要幫我回答，先找出會影響報價的問題。</div><div class="chat-message"><span class="chat-author">AI 回應</span>收到。我會先整理預算、時程和功能範圍，不會替你直接回答客戶。</div></div>
           <div class="composer"><textarea id="commandInput" placeholder="直接告訴 AI：這一段你希望它怎麼幫你？"></textarea><div class="composer-row"><span class="hint">按 Enter 送出，Shift + Enter 換行</span><button class="button button-primary button-small" type="button" id="sendCommand">送出給 AI</button></div></div>
           <div class="reply"><p class="label">目前可以直接問客戶</p><p id="replyText">如果第一版先不做付款和會員，你們希望預算大約落在哪個範圍？</p></div>
         </div>
