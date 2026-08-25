@@ -1,7 +1,9 @@
 const { execFileSync } = require('child_process');
+const fs = require('fs');
 const path = require('path');
 
-const PYTHON = path.join(__dirname, '../tools/realtime-voice/venv/bin/python');
+const VENV_PYTHON = path.join(__dirname, '../tools/realtime-voice/venv/bin/python');
+const PYTHON = fs.existsSync(VENV_PYTHON) ? VENV_PYTHON : 'python3';
 
 module.exports = {
   'sensevoice-simplified-output-converted-to-traditional': () => {

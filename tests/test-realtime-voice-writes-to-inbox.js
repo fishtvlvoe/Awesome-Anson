@@ -1,7 +1,9 @@
 const { execFileSync } = require('child_process');
 const path = require('path');
 
-const PYTHON = path.join(__dirname, '../tools/realtime-voice/venv/bin/python');
+const fs = require('fs');
+const VENV_PYTHON = path.join(__dirname, '../tools/realtime-voice/venv/bin/python');
+const PYTHON = fs.existsSync(VENV_PYTHON) ? VENV_PYTHON : 'python3';
 const SERVER_MODULE_DIR = path.join(__dirname, '../tools/realtime-voice');
 
 module.exports = {

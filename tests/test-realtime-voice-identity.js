@@ -55,10 +55,9 @@ from voice_identity import SpeakerAttributor
 
 attributor = SpeakerAttributor(operator_threshold=0.8)
 assert attributor.from_evidence('operator', 0.95).role == 'pm'
-assert attributor.from_evidence('speaker-a', 0.20).role == 'pending'
-assert attributor.from_evidence('speaker-a', 0.90).speaker_id == 'client-1'
+assert attributor.from_evidence(None, 0.20).role == 'pending'
+assert attributor.from_evidence('speaker-a', 0.20).speaker_id == 'client-1'
 assert attributor.from_evidence('speaker-b', 0.90).speaker_id == 'client-2'
-assert attributor.from_evidence(None, 0.90).role == 'pending'
 print('ok')
 `;
     const output = execFileSync(PYTHON, ['-c', script], { encoding: 'utf8' }).trim();
@@ -80,6 +79,77 @@ with tempfile.TemporaryDirectory() as tmp:
     audio.write_bytes(b'audio')
     embedding = ERes2NetV2EmbeddingProvider(FakeModel()).extract(audio)
     assert embedding == [0.25, 0.5, 0.75]
+print('ok')
+`;
+    const output = execFileSync(PYTHON, ['-c', script], { encoding: 'utf8' }).trim();
+    if (output !== 'ok') throw new Error(`unexpected output: ${output}`);
+  },
+
+  'profile-matcher-returns-operator-client-and-pending': () => {
+    const script = `
+import pathlib, sys, tempfile
+sys.path.insert(0, ${JSON.stringify(SERVER_MODULE_DIR)})
+from voice_identity import ProfileSpeakerMatcher
+
+class FakeProvider:
+    def __init__(self, values): self.values = values
+    def extract(self, path): return self.values[path.name]
+
+with tempfile.TemporaryDirectory() as tmp:
+    root = pathlib.Path(tmp)
+    operator = root / 'operator.wav'; client = root / 'client.wav'; unknown = root / 'unknown.wav'
+    for path in (operator, client, unknown): path.write_bytes(b'audio')
+    provider = FakeProvider({operator.name: [1, 0], client.name: [0, 1], unknown.name: [0, 0]})
+    matcher = ProfileSpeakerMatcher([1, 0], provider, operator_threshold=0.8)
+    assert matcher.classify(operator).role == 'pm'
+    assert matcher.classify(client, speaker_key='speaker-a').speaker_id == 'client-1'
+    assert matcher.classify(unknown).role == 'pending'
+print('ok')
+`;
+    const output = execFileSync(PYTHON, ['-c', script], { encoding: 'utf8' }).trim();
+    if (output !== 'ok') throw new Error(`unexpected output: ${output}`);
+  },
+
+  'speaker-model-failure-never-fakes-a-role': () => {
+    const script = `
+import pathlib, sys, tempfile
+sys.path.insert(0, ${JSON.stringify(SERVER_MODULE_DIR)})
+from voice_identity import ProfileSpeakerMatcher, SpeakerModelError
+
+class BrokenProvider:
+    def extract(self, path): raise SpeakerModelError('model unavailable')
+
+with tempfile.TemporaryDirectory() as tmp:
+    audio = pathlib.Path(tmp) / 'sample.wav'
+    audio.write_bytes(b'audio')
+    result = ProfileSpeakerMatcher([1, 0], BrokenProvider()).classify(audio, speaker_key='speaker-a')
+    assert result.role == 'pending'
+    assert result.identity_status == 'pending'
+print('ok')
+`;
+    const output = execFileSync(PYTHON, ['-c', script], { encoding: 'utf8' }).trim();
+    if (output !== 'ok') throw new Error(`unexpected output: ${output}`);
+  },
+
+  'segment-metadata-keeps-markdown-compatibility': () => {
+    const script = `
+import json, pathlib, sys, tempfile
+sys.path.insert(0, ${JSON.stringify(SERVER_MODULE_DIR)})
+import server
+from voice_identity import SpeakerIdentity
+
+with tempfile.TemporaryDirectory() as tmp:
+    server.OUTPUT_DIR = pathlib.Path(tmp)
+    identity = SpeakerIdentity('client-1', 'client', 0.42, 'unmatched')
+    server.append_transcript_line('session-a', '客戶想先看預約流程')
+    server.append_segment_metadata('session-a', '客戶想先看預約流程', identity, timestamp='2026-08-25T12:00:00+00:00')
+    markdown = (pathlib.Path(tmp) / 'session-a.md').read_text(encoding='utf-8')
+    segment = json.loads((pathlib.Path(tmp) / 'session-a.segments.jsonl').read_text(encoding='utf-8'))
+    assert markdown.endswith('客戶想先看預約流程\\n')
+    assert segment['speaker_id'] == 'client-1'
+    assert segment['role'] == 'client'
+    assert segment['confidence'] == 0.42
+    assert segment['identity_status'] == 'unmatched'
 print('ok')
 `;
     const output = execFileSync(PYTHON, ['-c', script], { encoding: 'utf8' }).trim();

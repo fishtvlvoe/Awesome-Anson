@@ -119,6 +119,22 @@ class VoiceProfileStore:
             raise VoiceProfileError("聲音身份資料格式不完整")
         return profile
 
+    def set_operator_embedding(
+        self, embedding: Sequence[float], *, model_name: str
+    ) -> dict[str, object]:
+        profile = self.load_profile()
+        if profile is None:
+            raise VoiceProfileError("尚未建立聲音樣本")
+        if not embedding:
+            raise VoiceProfileError("聲音 embedding 是空的")
+        profile["operator_embedding"] = [float(value) for value in embedding]
+        profile["model"] = model_name
+        self.profile_path.write_text(
+            json.dumps(profile, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        return profile
+
 
 class SpeakerAttributor:
     """把模型輸出的 speaker evidence 轉成穩定的 UI/API 角色。
@@ -137,15 +153,47 @@ class SpeakerAttributor:
         operator_confidence: float,
     ) -> SpeakerIdentity:
         confidence = max(0.0, min(1.0, float(operator_confidence)))
-        if not speaker_key or confidence < self.operator_threshold:
+        if not speaker_key:
             return SpeakerIdentity("unknown", "pending", confidence, "pending")
         if speaker_key == "operator":
+            if confidence < self.operator_threshold:
+                return SpeakerIdentity("unknown", "pending", confidence, "pending")
             return SpeakerIdentity("operator", "pm", confidence, "matched")
 
         client_id = self._clients.setdefault(
             speaker_key, f"client-{len(self._clients) + 1}"
         )
         return SpeakerIdentity(client_id, "client", confidence, "unmatched")
+
+
+class ProfileSpeakerMatcher:
+    """用 operator profile embedding 對單段音訊做本機比對。"""
+
+    def __init__(
+        self,
+        operator_embedding: Sequence[float] | None,
+        provider: ERes2NetV2EmbeddingProvider,
+        *,
+        operator_threshold: float = 0.72,
+    ) -> None:
+        self.operator_embedding = list(operator_embedding or [])
+        self.provider = provider
+        self.attributor = SpeakerAttributor(operator_threshold=operator_threshold)
+
+    def classify(
+        self, audio_path: Path, *, speaker_key: str | None = None
+    ) -> SpeakerIdentity:
+        if not self.operator_embedding:
+            return SpeakerIdentity("unknown", "pending", 0.0, "pending")
+        try:
+            segment_embedding = self.provider.extract(audio_path)
+            confidence = cosine_similarity(self.operator_embedding, segment_embedding)
+        except (SpeakerModelError, ValueError):
+            return SpeakerIdentity("unknown", "pending", 0.0, "pending")
+
+        if confidence >= self.attributor.operator_threshold:
+            return self.attributor.from_evidence("operator", confidence)
+        return self.attributor.from_evidence(speaker_key, confidence)
 
 
 class ERes2NetV2EmbeddingProvider:

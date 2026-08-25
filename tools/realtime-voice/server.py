@@ -16,7 +16,14 @@ from pathlib import Path
 
 from aiohttp import web
 
-from voice_identity import VoiceProfileError, VoiceProfileStore
+from voice_identity import (
+    ERes2NetV2EmbeddingProvider,
+    ProfileSpeakerMatcher,
+    SpeakerIdentity,
+    SpeakerModelError,
+    VoiceProfileError,
+    VoiceProfileStore,
+)
 
 PORT = 8420
 STATIC_DIR = Path(__file__).parent / "static"
@@ -65,35 +72,50 @@ def webm_bytes_to_wav_path(webm_bytes: bytes) -> str:
         src.write(webm_bytes)
         src_path = src.name
     wav_path = src_path.replace(".webm", ".wav")
-    subprocess.run(
-        ["ffmpeg", "-y", "-i", src_path, "-ar", "16000", "-ac", "1", wav_path],
-        capture_output=True,
-        check=True,
-    )
+    try:
+        subprocess.run(
+            ["ffmpeg", "-y", "-i", src_path, "-ar", "16000", "-ac", "1", wav_path],
+            capture_output=True,
+            check=True,
+        )
+    finally:
+        Path(src_path).unlink(missing_ok=True)
     return wav_path
 
 
-def transcribe_segment(model, converter, webm_bytes: bytes) -> str:
+def transcribe_segment_details(
+    model, converter, webm_bytes: bytes, speaker_matcher=None
+) -> tuple[str, SpeakerIdentity]:
     """把一段音訊轉成繁體文字。音訊太短/太安靜/辨識信心太低時標記 [聽不清楚]，不能靜默丟棄或亂猜。"""
     if len(webm_bytes) < 2000:
-        return LOW_CONFIDENCE_MARK
+        return LOW_CONFIDENCE_MARK, SpeakerIdentity("unknown", "pending", 0.0, "pending")
 
     wav_path = webm_bytes_to_wav_path(webm_bytes)
     try:
         result = model.generate(input=wav_path, language="zh", use_itn=True)
+        identity = (
+            speaker_matcher.classify(Path(wav_path))
+            if speaker_matcher is not None
+            else SpeakerIdentity("unknown", "pending", 0.0, "pending")
+        )
     finally:
         Path(wav_path).unlink(missing_ok=True)
 
     if not result:
-        return LOW_CONFIDENCE_MARK
+        return LOW_CONFIDENCE_MARK, identity
 
     raw_text = result[0].get("text", "")
     # SenseVoice 輸出帶著 <|zh|><|NEUTRAL|><|Speech|><|withitn|> 這類標記，取最後一段真正的文字內容
     text = raw_text.split("|>")[-1].strip()
     if not text:
-        return LOW_CONFIDENCE_MARK
+        return LOW_CONFIDENCE_MARK, identity
 
-    return converter.convert(text)
+    return converter.convert(text), identity
+
+
+def transcribe_segment(model, converter, webm_bytes: bytes) -> str:
+    """保留舊呼叫介面，供既有測試與逐字稿 consumer 使用。"""
+    return transcribe_segment_details(model, converter, webm_bytes)[0]
 
 
 def session_output_path(session_id: str) -> Path:
@@ -106,6 +128,34 @@ def append_transcript_line(session_id: str, text: str) -> None:
     line = f"- [{ts}] {text}\n"
     with open(session_output_path(session_id), "a", encoding="utf-8") as f:
         f.write(line)
+
+
+def session_segments_path(session_id: str) -> Path | None:
+    """Resolve structured segment metadata beside the legacy markdown transcript."""
+    if not SESSION_ID_RE.fullmatch(session_id):
+        return None
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    return OUTPUT_DIR / f"{session_id}.segments.jsonl"
+
+
+def append_segment_metadata(
+    session_id: str,
+    text: str,
+    identity: SpeakerIdentity,
+    *,
+    timestamp: str | None = None,
+) -> None:
+    """Persist speaker metadata without changing the existing `.md` contract."""
+    output_path = session_segments_path(session_id)
+    if output_path is None:
+        raise ValueError("invalid session id")
+    payload = {
+        "text": text,
+        "ts": timestamp or datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
+        **identity.to_dict(),
+    }
+    with open(output_path, "a", encoding="utf-8") as f:
+        f.write(json.dumps(payload, ensure_ascii=False) + "\n")
 
 
 async def handle_index(request: web.Request) -> web.Response:
@@ -140,6 +190,27 @@ async def handle_analysis(request: web.Request) -> web.Response:
     if not isinstance(payload, dict):
         return web.json_response({"status": "analysis_error"})
     return web.json_response(payload)
+
+
+async def handle_segments(request: web.Request) -> web.Response:
+    """Return structured speaker segments; legacy markdown remains the source for old consumers."""
+    output_path = session_segments_path(request.match_info["session_id"])
+    if output_path is None:
+        return web.json_response({"status": "invalid_session_id"}, status=400)
+    if not output_path.exists():
+        return web.json_response({"status": "not_yet_transcribed", "segments": []})
+
+    segments = []
+    try:
+        for line in output_path.read_text(encoding="utf-8").splitlines():
+            if line:
+                payload = json.loads(line)
+                if not isinstance(payload, dict):
+                    raise ValueError("segment must be an object")
+                segments.append(payload)
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError):
+        return web.json_response({"status": "segments_error", "segments": []})
+    return web.json_response({"status": "ready", "segments": segments})
 
 
 async def handle_voice_profile(request: web.Request) -> web.Response:
@@ -180,6 +251,29 @@ async def handle_voice_profile(request: web.Request) -> web.Response:
         return web.json_response(
             {"status": "invalid_sample", "message": str(exc)}, status=400
         )
+    speaker_model_status = "pending"
+    speaker_model_message = "聲音樣本已保存，speaker model 尚未建立"
+    wav_path = None
+    try:
+        provider = request.app.get("speaker_provider")
+        if provider is None:
+            provider = ERes2NetV2EmbeddingProvider(device="cpu")
+            request.app["speaker_provider"] = provider
+        wav_path = webm_bytes_to_wav_path(sample)
+        embedding = await asyncio.to_thread(provider.extract, Path(wav_path))
+        profile = store.set_operator_embedding(
+            embedding, model_name=provider.MODEL_NAME
+        )
+        request.app["speaker_matcher"] = ProfileSpeakerMatcher(
+            embedding, provider
+        )
+        speaker_model_status = "ready"
+        speaker_model_message = "speaker model 已建立"
+    except (SpeakerModelError, OSError, subprocess.CalledProcessError) as exc:
+        print(f"[聲音身份] speaker model 尚未可用：{exc}", file=sys.stderr)
+    finally:
+        if wav_path:
+            Path(wav_path).unlink(missing_ok=True)
     return web.json_response(
         {
             "status": profile["status"],
@@ -187,6 +281,8 @@ async def handle_voice_profile(request: web.Request) -> web.Response:
             "created_at": profile["created_at"],
             "model": profile["model"],
             "sample_count": len(profile["samples"]),
+            "speaker_model": speaker_model_status,
+            "message": speaker_model_message,
         },
         status=201,
     )
@@ -202,15 +298,20 @@ async def handle_stream(request: web.Request) -> web.WebSocketResponse:
 
     async for msg in ws:
         if msg.type == web.WSMsgType.BINARY:
-            text = await asyncio.to_thread(transcribe_segment, model, converter, msg.data)
+            text, identity = await asyncio.to_thread(
+                transcribe_segment_details,
+                model,
+                converter,
+                msg.data,
+                request.app.get("speaker_matcher"),
+            )
             append_transcript_line(session_id, text)
+            timestamp = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds")
+            append_segment_metadata(session_id, text, identity, timestamp=timestamp)
             await ws.send_json({
                 "text": text,
-                "ts": datetime.datetime.now().isoformat(timespec="seconds"),
-                "speaker_id": "unknown",
-                "role": "pending",
-                "confidence": 0.0,
-                "identity_status": "pending",
+                "ts": timestamp,
+                **identity.to_dict(),
             })
         elif msg.type == web.WSMsgType.ERROR:
             print(f"[stream 連線錯誤] {ws.exception()}", file=sys.stderr)
@@ -224,9 +325,12 @@ def build_app(model, converter, session_id: str) -> web.Application:
     app["converter"] = converter
     app["session_id"] = session_id
     app["voice_profile_store"] = VoiceProfileStore()
+    app["speaker_provider"] = None
+    app["speaker_matcher"] = None
     app.router.add_get("/", handle_index)
     app.router.add_get("/stream", handle_stream)
     app.router.add_get("/analysis/{session_id}", handle_analysis)
+    app.router.add_get("/segments/{session_id}", handle_segments)
     app.router.add_get("/voice-profile", handle_voice_profile)
     app.router.add_post("/voice-profile", handle_voice_profile)
     app.router.add_static("/static/", STATIC_DIR)
