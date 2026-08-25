@@ -30,11 +30,6 @@
     </header>
 
     <main class="page">
-      <section class="intro" aria-labelledby="page-title">
-        <div><p class="eyebrow">Conversation first · runtime</p><h1 id="page-title">先分清楚誰說的，再決定怎麼問。</h1><p class="intro-copy">左邊保留客戶與 PM 的原話，中間接收真實 AI 分析，右邊讓你直接改變 AI 現在要做的事。</p></div>
-        <div class="prototype-note">C 版 · 已接真實收音</div>
-      </section>
-
       <section class="recording-bar" id="recordingBar" aria-label="錄音控制">
         <div class="live-meta"><span class="live-dot" id="liveDot" aria-hidden="true"></span><div class="live-copy"><strong id="recordingLabel">尚未開始</strong><span id="status">等待你允許麥克風後開始收音</span></div></div>
         <div class="waveform" aria-label="音量波形"><i style="--bar: 11px"></i><i style="--bar: 22px"></i><i style="--bar: 16px"></i><i style="--bar: 28px"></i><i style="--bar: 13px"></i><i style="--bar: 25px"></i><i style="--bar: 19px"></i><i style="--bar: 31px"></i><i style="--bar: 15px"></i><i style="--bar: 24px"></i><i style="--bar: 12px"></i><i style="--bar: 27px"></i><i style="--bar: 18px"></i><i style="--bar: 29px"></i><i style="--bar: 14px"></i><i style="--bar: 22px"></i><i style="--bar: 10px"></i><i style="--bar: 25px"></i><i style="--bar: 16px"></i><i style="--bar: 30px"></i></div>
@@ -44,33 +39,35 @@
 
       <section class="workspace" aria-label="即時錄音三欄工作台">
         <article class="panel conversation-panel">
-          <header class="panel-header"><div class="panel-title"><span class="panel-index">01</span><div><h2>客戶 ↔ PM 的對話</h2><p class="panel-subtitle">每一段都有角色、姓名與固定顏色</p></div></div><div class="panel-actions"><span class="tag confirmed" id="transcriptCount">0 段</span></div></header>
+          <header class="panel-header"><div class="panel-title"><div><h2>現場對話</h2><p class="panel-subtitle">客戶在左邊，Fish 在右邊，最新內容固定在下面</p></div></div><div class="panel-actions"><span class="tag confirmed" id="transcriptCount">0 段</span></div></header>
           <div class="panel-body conversation-body">
-            <div class="context-strip"><span><strong>收音規則：</strong>新片段先標成「待確認」，確認後才歸到客戶或 PM</span><span aria-hidden="true">↘</span></div>
+            <div class="context-strip"><span><strong>身份辨識：</strong>先用你的聲線辨識 Fish，其餘聲音標為客戶，低信心片段保留待確認</span></div>
+            <div id="transcript" aria-live="polite"><div class="transcript-empty" id="transcriptEmpty">開始收音後，真實逐字稿會出現在這裡。<br>最新內容會自動停在最下面。</div></div>
             <div class="speaker-map" id="speakerMap" aria-label="說話人身份對應">
-              <div class="speaker-map-head"><p class="section-kicker">這場訪談的身份</p><div class="panel-actions"><span class="speaker-map-status" id="speakerMapStatus">● 尚待確認</span><button class="button button-small" type="button" id="confirmSpeakers">我已確認</button></div></div>
-              <div class="speaker-roles"><div class="speaker-role"><span class="role-dot client" aria-hidden="true"></span><div><strong>客戶｜待命名</strong><span>Speaker 1 · 橘色</span></div></div><div class="speaker-role"><span class="role-dot pm" aria-hidden="true"></span><div><strong>PM｜我</strong><span>Speaker 2 · 藍色</span></div></div></div>
-              <p class="speaker-map-note">單一麥克風無法可靠判斷身份；每段先由你確認，未確認內容不會冒充客戶或 PM。</p>
+              <div class="speaker-map-head"><p class="section-kicker">這場訪談的身份規則</p><div class="panel-actions"><span class="speaker-map-status" id="speakerMapStatus">● 尚待確認</span><button class="button button-small" type="button" id="confirmSpeakers">我已確認</button></div></div>
+              <div class="speaker-roles"><div class="speaker-role"><span class="role-dot client" aria-hidden="true"></span><div><strong>客戶｜其他聲音</strong><span>未註冊聲線 · 左側</span></div></div><div class="speaker-role"><span class="role-dot pm" aria-hidden="true"></span><div><strong>Fish｜已註冊聲線</strong><span>你的聲線 · 右側</span></div></div></div>
+              <p class="speaker-map-note">第一版先用 Fish 的聲線做辨識。無法確定時，片段會停在待確認，不會擅自判斷身份。</p>
             </div>
-            <div id="transcript" aria-live="polite"><div class="transcript-empty" id="transcriptEmpty">開始收音後，真實逐字稿會出現在這裡。<br>每段旁邊都可以指定「客戶」或「PM」。</div></div>
           </div>
         </article>
 
         <article class="panel analysis-panel">
-          <header class="panel-header"><div class="panel-title"><span class="panel-index">02</span><div><h2>AI 即時分析</h2><p class="panel-subtitle">讀取真實分析結果，不替你擅自決定</p></div></div><div class="panel-actions"><span class="tag pending">等待分析</span></div></header>
+          <header class="panel-header"><div class="panel-title"><div><h2>目前判斷</h2><p class="panel-subtitle">只留下 AI 看見的事、判斷依據與下一步</p></div></div><div class="panel-actions"><span class="tag pending" id="analysisTag">等待分析</span></div></header>
           <div class="panel-body analysis-body" aria-live="polite">
             <div class="analysis-status" id="analysis-status">目前沒有即時分析（可能沒有 agent session 在監看）</div>
-            <section class="analysis-summary"><p class="section-kicker">分析狀態</p><p id="analysis-summary-text">開始收音並有分析結果後，這裡會顯示一句話摘要。</p></section>
-            <section id="analysis-client-section" class="analysis-section" hidden><h3>客戶反應了什麼</h3><ul id="analysis-client-response" class="status-list"></ul></section>
-            <section id="analysis-decomposition-section" class="analysis-section" hidden><h3>目前拆解狀態</h3><div id="analysis-decomposition"></div></section>
-            <section id="analysis-suggestion-section" class="analysis-section" hidden><h3>AI 建議你下一句</h3><div class="suggestion-card"><p id="analysis-suggestion"></p><div class="analysis-suggestion-actions"><button class="button button-primary button-small" type="button" id="use-analysis-suggestion">帶入右邊指令</button></div></div></section>
+            <section class="analysis-summary"><p class="section-kicker">我看到了什麼</p><p id="analysis-summary-text">開始收音並有分析結果後，這裡會顯示目前看到的情境。</p></section>
+            <section id="analysis-client-section" class="analysis-section" hidden><h3>判斷依據</h3><ul id="analysis-client-response" class="status-list"></ul></section>
+            <section id="analysis-model-section" class="analysis-section" hidden><h3>使用的心智模型</h3><p id="analysis-model" class="analysis-copy">目前還沒有模型判斷。</p></section>
+            <section id="analysis-decomposition-section" class="analysis-section" hidden><h3>客戶需求與結果</h3><div id="analysis-decomposition"></div></section>
+            <section id="analysis-conclusion-section" class="analysis-section" hidden><h3>我的判斷</h3><p id="analysis-conclusion" class="analysis-copy"></p></section>
+            <section id="analysis-suggestion-section" class="analysis-section" hidden><h3>建議你怎麼回應</h3><div class="suggestion-card"><p id="analysis-suggestion"></p><div class="analysis-suggestion-actions"><button class="button button-primary button-small" type="button" id="use-analysis-suggestion">帶入右邊討論</button></div></div></section>
           </div>
         </article>
 
         <article class="panel command-panel">
-          <header class="panel-header"><div class="panel-title"><span class="panel-index">03</span><div><h2>直接指揮 AI</h2><p class="panel-subtitle">你可以隨時改變 AI 現在要做的事</p></div></div><div class="panel-actions"><span class="tag pending">你說了算</span></div></header>
+          <header class="panel-header"><div class="panel-title"><div><h2>AI 顧問</h2><p class="panel-subtitle">你看到判斷後，才需要在這裡跟我討論</p></div></div><div class="panel-actions"><span class="tag pending">持續觀察</span></div></header>
           <div class="panel-body command-body">
-            <p class="command-intro">不要等訪談結束。直接告訴 AI 你要整理、追問、改寫，還是先不要打斷。</p>
+            <p class="command-intro">左邊的對話會持續更新，中間只保留目前判斷。你可以在這裡告訴我你想採取的方式。</p>
             <p class="quick-label">快速指令</p>
             <div class="quick-actions"><button class="quick-action" type="button" data-command="幫我找出目前還沒問清楚、會影響報價的問題。">找出報價缺口</button><button class="quick-action" type="button" data-command="先不要建議我回覆，只整理客戶真正想要的功能。">先只整理</button><button class="quick-action" type="button" data-command="把剛才的內容整理成我可以直接問客戶的下一句話。">幫我追問</button></div>
             <div class="command-thread" id="commandThread" aria-live="polite"><div class="command-message ai"><span class="command-author">AI · 工作方式</span>你可以直接告訴我現在要怎麼分析，我會依照你的指令調整。</div></div>
@@ -91,12 +88,17 @@
   const sessionId = document.querySelector('meta[name="realtime-session-id"]')?.content || '';
   const analysisStatusEl = document.getElementById('analysis-status');
   const analysisClientSection = document.getElementById('analysis-client-section');
+  const analysisModelSection = document.getElementById('analysis-model-section');
   const analysisDecompositionSection = document.getElementById('analysis-decomposition-section');
+  const analysisConclusionSection = document.getElementById('analysis-conclusion-section');
   const analysisSuggestionSection = document.getElementById('analysis-suggestion-section');
   const analysisClientResponseEl = document.getElementById('analysis-client-response');
+  const analysisModelEl = document.getElementById('analysis-model');
   const analysisDecompositionEl = document.getElementById('analysis-decomposition');
+  const analysisConclusionEl = document.getElementById('analysis-conclusion');
   const analysisSuggestionEl = document.getElementById('analysis-suggestion');
   const analysisSummaryEl = document.getElementById('analysis-summary-text');
+  const analysisTagEl = document.getElementById('analysisTag');
   const replyTextEl = document.getElementById('replyText');
   const transcriptEmptyEl = document.getElementById('transcriptEmpty');
   const transcriptCountEl = document.getElementById('transcriptCount');
@@ -140,8 +142,12 @@
   function showAnalysisStatus(message) {
     analysisStatusEl.textContent = message;
     analysisClientSection.hidden = true;
+    analysisModelSection.hidden = true;
     analysisDecompositionSection.hidden = true;
+    analysisConclusionSection.hidden = true;
     analysisSuggestionSection.hidden = true;
+    analysisTagEl.textContent = '等待分析';
+    analysisTagEl.className = 'tag pending';
   }
 
   function stateClass(state) {
@@ -163,22 +169,31 @@
     analysisStatusEl.textContent = data.generated_at
       ? `分析更新於 ${data.generated_at}`
       : '分析已更新';
+    analysisTagEl.textContent = '判斷已更新';
+    analysisTagEl.className = 'tag confirmed';
     analysisSummaryEl.textContent = Array.isArray(data.client_response) && data.client_response.length
       ? data.client_response[0]
       : '分析已更新，請看下方拆解狀態與下一步建議。';
     analysisClientSection.hidden = false;
+    analysisModelSection.hidden = false;
     analysisDecompositionSection.hidden = false;
+    analysisConclusionSection.hidden = false;
     analysisSuggestionSection.hidden = false;
 
     analysisClientResponseEl.replaceChildren();
     const clientResponse = Array.isArray(data.client_response) && data.client_response.length
       ? data.client_response
       : ['客戶還沒回應，這段都是你自己在講'];
-    clientResponse.forEach((response) => {
+    const evidence = Array.isArray(data.evidence) && data.evidence.length ? data.evidence : clientResponse;
+    analysisClientResponseEl.replaceChildren();
+    evidence.forEach((response) => {
       const item = document.createElement('li');
       item.textContent = response;
       analysisClientResponseEl.appendChild(item);
     });
+
+    analysisModelEl.textContent = data.mental_model || data.model || '核心結果 × 可延後範圍：先分辨客戶現在要確認的是結果，還是功能清單。';
+    analysisConclusionEl.textContent = data.conclusion || data.judgment || '先確認客戶最不能少的結果，再把其他功能分到後續階段。';
 
     analysisDecompositionEl.replaceChildren();
     Object.entries(data.decomposition || {}).forEach(([field, detail]) => {
@@ -422,8 +437,25 @@
     aiMessage.className = 'command-message ai';
     const aiAuthor = document.createElement('span');
     aiAuthor.className = 'command-author';
-    aiAuthor.textContent = 'AI · 指令已記下';
-    aiMessage.append(aiAuthor, document.createTextNode('收到。這個 UI 已準備好接入 AI 指令 API；目前先保留你的工作方式，不會假裝已經送到後端。'));
+    aiAuthor.textContent = 'AI 顧問 · 目前判斷';
+    let response = '我會把這個方向記在目前討論裡。先看中間的判斷，再決定要不要改變回應策略。';
+    if (command.includes('預約') && command.includes('提醒') && (command.includes('之後') || command.includes('再補'))) {
+      response = '不建議把預約與提醒延後。客戶已明確把這兩項視為核心結果；付款、會員和進階功能可以放到第二階段。';
+      replyText.textContent = '「第一版先做預約、提醒和手機查看，付款與會員留到第二階段，這樣可以嗎？」';
+    } else if (command.toLowerCase().includes('demo') || command.includes('架構')) {
+      response = '我會依照目前確認的核心結果，產出預約、提醒與手機查看的第一版 DEMO。先用互動版本驗證流程，再決定後端整合。';
+      const openDemo = document.createElement('a');
+      openDemo.className = 'demo-link';
+      openDemo.href = 'realtime-workbench-autonomous-demo.html?manual=1';
+      openDemo.target = '_blank';
+      openDemo.rel = 'noopener';
+      openDemo.textContent = '開啟預約 DEMO';
+      aiMessage.append(aiAuthor, document.createTextNode(response), openDemo);
+      commandThread.appendChild(aiMessage);
+      commandThread.scrollTop = commandThread.scrollHeight;
+      return;
+    }
+    aiMessage.append(aiAuthor, document.createTextNode(response));
     commandThread.appendChild(aiMessage);
     commandThread.scrollTop = commandThread.scrollHeight;
   };

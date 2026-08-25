@@ -479,3 +479,125 @@
     html[data-theme="dark"] .ai-reply { background: var(--success-soft); border-color: #166534; }
     html[data-theme="dark"] .ai-reply p { color: #a7f3d0; }
     html[data-theme="dark"] .reply-actions button { color: #6ee7b7; }
+
+    /* 正式錄音介面：固定工作台、單一焦點、低刺激深色。 */
+    :root {
+      --background: #eef0ed;
+      --surface: #f8f9f7;
+      --surface-raised: #e7eae6;
+      --surface-warm: #f4eee4;
+      --text: #202522;
+      --text-secondary: #3f4741;
+      --muted: #69736b;
+      --subtle: #929c94;
+      --border: #d6dbd5;
+      --border-strong: #b9c2ba;
+      --signal: #c7873c;
+      --signal-ink: #3b2917;
+      --signal-soft: #f2e5d3;
+      --client-ink: #9b6428;
+      --client-soft: #f2e5d3;
+      --pm-ink: #416c69;
+      --pm-soft: #e2eeeb;
+      --success: #39705b;
+      --success-soft: #e1eee8;
+      --radius: 10px;
+      --radius-large: 14px;
+      --shadow-sm: 0 1px 2px rgba(34, 42, 36, .06);
+      --shadow-hard: none;
+    }
+
+    html[data-theme="dark"] {
+      --background: #111318;
+      --surface: #191c22;
+      --surface-raised: #22262d;
+      --surface-warm: #29251f;
+      --text: #eeede9;
+      --text-secondary: #d0d0c9;
+      --muted: #a2a5a0;
+      --subtle: #757b75;
+      --border: #30353d;
+      --border-strong: #474d55;
+      --signal: #c99552;
+      --signal-ink: #261b10;
+      --signal-soft: #3b3022;
+      --client-ink: #d6a261;
+      --client-soft: #3b3022;
+      --pm-ink: #8dbbb3;
+      --pm-soft: #263b39;
+      --success: #8fbea8;
+      --success-soft: #20332d;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, .26);
+    }
+
+    body { overflow: hidden; background: var(--background); }
+    .app-shell { height: 100dvh; min-height: 0; overflow: hidden; }
+    .topbar { min-height: 56px; padding: 9px clamp(16px, 2.5vw, 32px); background: color-mix(in srgb, var(--background) 92%, transparent); }
+    .brand-mark { color: var(--signal-ink); background: var(--signal); border: 0; border-radius: 9px; box-shadow: none; }
+    .brand-copy strong { font-size: 14px; }
+    .brand-copy span { display: none; }
+    .page { width: 100%; height: calc(100dvh - 56px); min-height: 0; padding: 12px clamp(12px, 2.5vw, 32px) 16px; display: flex; flex-direction: column; }
+    .recording-bar { flex: 0 0 auto; margin-bottom: 12px; padding: 10px 12px; border-radius: var(--radius); }
+    .workspace { flex: 1; min-height: 0; grid-template-columns: minmax(0, 1.15fr) minmax(300px, .92fr) minmax(300px, .88fr); gap: 12px; }
+    .panel { min-height: 0; height: 100%; border-radius: var(--radius-large); }
+    .panel-header { padding: 14px 16px 12px; }
+    .panel h2 { font-size: 16px; }
+    .panel-subtitle { font-size: 12px; }
+    .panel-index { display: none; }
+    .panel-body { min-height: 0; }
+    .conversation-body { display: flex; flex-direction: column; padding: 12px 14px 0; overflow: hidden; }
+    .context-strip { flex: 0 0 auto; margin-bottom: 10px; padding: 8px 10px; font-size: 11px; }
+    #transcript { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 2px 4px 12px 0; }
+    .transcript-item { width: 86%; padding: 11px 12px; }
+    .transcript-item[data-role="client"] { justify-self: start; }
+    .transcript-item[data-role="pm"] { justify-self: end; }
+    .transcript-item[data-role="pending"] { width: 100%; }
+    .transcript-text { font-size: 14px; }
+    .speaker-map { flex: 0 0 auto; margin: 8px 0 12px; padding: 10px; }
+    .speaker-role { padding: 7px; }
+    .speaker-map-note { font-size: 11px; }
+    .analysis-body { padding: 12px 14px 16px; overflow-y: auto; overscroll-behavior: contain; }
+    .analysis-summary { margin-bottom: 12px; padding: 12px; }
+    .analysis-summary p { font-size: 15px; }
+    .analysis-section { padding: 12px 0; }
+    .analysis-section h3 { font-size: 13px; }
+    .analysis-copy { margin: 0; color: var(--text-secondary); font-size: 13px; line-height: 1.65; }
+    .suggestion-card { padding: 12px; }
+    .suggestion-card p { font-size: 13px; }
+    .command-panel { border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+    .command-panel .panel-header { background: var(--surface); }
+    .command-panel .panel-header h2, .command-panel .panel-header .panel-subtitle { color: var(--text); }
+    .command-panel .panel-index { color: var(--muted); background: var(--surface-raised); }
+    .command-panel .panel-actions .tag { color: var(--text-secondary); background: var(--surface-raised); border-color: var(--border); }
+    .command-body { overflow: hidden; padding: 12px 14px 14px; }
+    .command-intro { flex: 0 0 auto; margin-bottom: 10px; font-size: 13px; }
+    .quick-actions { flex: 0 0 auto; margin-bottom: 10px; }
+    .quick-action { border-radius: 8px; font-size: 12px; }
+    .command-thread { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; margin-bottom: 10px; padding: 2px 2px 10px 0; }
+    .command-message { font-size: 13px; }
+    .composer { flex: 0 0 auto; }
+    .command-input { min-height: 68px; font-size: 13px; }
+    .ai-reply { flex: 0 0 auto; margin-top: 10px; }
+    .ai-reply p { font-size: 13px; }
+    .demo-link { display: inline-flex; margin-top: 9px; color: var(--signal); font-size: 12px; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+    .button-primary { border: 0; box-shadow: none; }
+    .button-primary:hover { background: color-mix(in srgb, var(--signal) 86%, white); }
+    .message.client .message-bubble, .transcript-item[data-role="client"] { background: var(--client-soft); border-color: color-mix(in srgb, var(--client-ink) 22%, var(--border)); }
+    .message.pm .message-bubble, .transcript-item[data-role="pm"] { background: var(--pm-soft); border-color: color-mix(in srgb, var(--pm-ink) 22%, var(--border)); }
+    html[data-theme="dark"] .topbar { background: color-mix(in srgb, var(--background) 92%, transparent); }
+    html[data-theme="dark"] .command-panel, html[data-theme="dark"] .command-panel .panel-header { background: var(--surface); }
+    html[data-theme="dark"] .command-panel .panel-header h2, html[data-theme="dark"] .command-panel .panel-header .panel-subtitle { color: var(--text); }
+    html[data-theme="dark"] .speaker-map { background: var(--surface-raised); }
+    html[data-theme="dark"] .message.client .message-bubble, html[data-theme="dark"] .transcript-item[data-role="client"] { background: var(--client-soft); border-color: #6b4f2f; }
+    html[data-theme="dark"] .message.pm .message-bubble, html[data-theme="dark"] .transcript-item[data-role="pm"] { background: var(--pm-soft); border-color: #456d67; }
+
+    @media (max-width: 800px) {
+      body, .app-shell { overflow: auto; }
+      .app-shell { height: auto; min-height: 100dvh; }
+      .page { height: auto; min-height: calc(100dvh - 56px); }
+      .workspace { flex: 0 0 auto; grid-template-columns: 1fr; }
+      .panel { height: 620px; min-height: 620px; }
+      .conversation-panel { grid-row: auto; }
+      .command-body { overflow: auto; }
+      .command-thread { min-height: 180px; }
+    }
