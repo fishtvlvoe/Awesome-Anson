@@ -58,6 +58,45 @@ tests:
 -->
 
 ---
+### Requirement: Voice profile root is resolved from explicit, saved, or platform configuration
+
+The system SHALL resolve the voice profile root using this order: explicit `ANSON_VOICE_PROFILE_DIR`, saved user configuration, supported platform sync directory, then the existing local fallback. The resolution SHALL NOT change the existing profile JSON schema or speaker attribution behavior.
+
+#### Scenario: Explicit profile directory wins
+
+- **GIVEN** `ANSON_VOICE_PROFILE_DIR` points to a valid profile directory
+- **WHEN** the service starts
+- **THEN** the service SHALL use that directory regardless of detected iCloud or Google Drive paths
+
+#### Scenario: No sync provider is available
+
+- **GIVEN** no explicit directory, saved directory, iCloud, or Google Drive path is available
+- **WHEN** the service starts
+- **THEN** the service SHALL use the existing local profile fallback and expose that the profile is local-only
+
+<!-- @trace
+source: cross-platform-voice-profile-sync
+updated: 2026-08-26
+code:
+  - tools/realtime-voice/static/voice-profile.html
+  - scripts/setup-realtime-voice.sh
+  - scripts/anson-sync.js
+  - tools/realtime-voice/README.md
+  - tests/test-realtime-voice-profile-sync.js
+  - tests/test-anson-agent-roster.js
+  - tools/realtime-voice/static/realtime-workbench-c.css
+  - tests/test-realtime-voice-identity.js
+  - tests/test-anson-sync.js
+  - tests/test-design-agents.js
+  - tools/realtime-voice/voice_profile_sync.py
+  - README.md
+  - docs/SR-realtime-cli-advisor.md
+  - tools/realtime-voice/server.py
+  - docs/agent-resources/design-resources.md
+  - tools/realtime-voice/static/index.html
+-->
+
+---
 ### Requirement: Local speech-to-text transcription with confidence flagging
 The system SHALL transcribe captured audio to text using a locally-run FunASR SenseVoiceSmall model, with no network call to any external transcription API, and SHALL flag low-confidence or inaudible segments instead of silently guessing.
 
