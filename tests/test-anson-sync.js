@@ -9,6 +9,7 @@ const {
   syncCase,
   registerArtifact,
   writeMeetingRecord,
+  writeStatus,
   validateRepositoryBoundary,
   renderLaunchdPlist,
   installLaunchd,
@@ -275,6 +276,7 @@ module.exports = {
     assert(plist.includes('login'));
     assert(plist.includes('/tmp/anson-sync.js'));
     assert(plist.includes('/opt/homebrew/bin:/usr/local/bin'));
+    assert(plist.includes('<key>StartInterval</key><integer>300</integer>'));
   },
 
   'launchd XML escapes a user-provided label': () => {
@@ -338,6 +340,20 @@ module.exports = {
     const status = JSON.parse(fs.readFileSync(statusPath, 'utf8'));
     assertEqual(status.deviceId, 'laptop');
     assert(typeof status.lastCodeSyncAt === 'string' && status.lastCodeSyncAt.length > 10);
+  },
+
+  'unavailable case root writes fallback status outside the iCloud parent': () => {
+    const repoPath = tempDir('anson-sync-repo-');
+    const caseRoot = path.join(tempDir('anson-sync-parent-'), 'missing');
+    const fallbackStatusDir = tempDir('anson-sync-status-');
+    const result = writeStatus({ repoPath, caseRoot, deviceId: 'laptop' }, {
+      codeStatus: 'up-to-date',
+      caseStatus: 'unavailable',
+      message: '案件根目錄不存在或尚未掛載',
+    }, { fallbackStatusDir });
+    assertEqual(result.statusPath, path.join(fallbackStatusDir, '.anson-sync-laptop-status.json'));
+    assertFileExists(result.statusPath);
+    assert(!result.statusPath.startsWith(path.dirname(caseRoot)));
   },
 
   'two-device fixture syncs code and a laptop artifact back to desktop': () => {
