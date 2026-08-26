@@ -14,6 +14,8 @@
 
 設計四人組是：`網頁設計師`、`案例設計師`、`風格設計師`、`前端設計師`。其中 `網頁設計師` 是唯一入口；做儀錶板、後台或網站時，會依需求自動調度另外三位，並使用 UIUX Pro Max、VibePrompts、Tabler 與 SaaSFrame 的本機資源。資源定位規則見 [`docs/agent-resources/design-resources.md`](docs/agent-resources/design-resources.md)。
 
+接案業務角色可直接點名 `報價師` 與 `簡報師`。`報價師` 是既有 `commercial-proposal-quotation-specialist` 正式規格的中文入口，不另複製一套報價邏輯。
+
 
 ---
 
@@ -189,7 +191,7 @@ bash scripts/setup-realtime-voice.sh
 助理1：project-manager（專案管理與需求分析師）
 讀逐字稿/資料 → 拆需求 → 每一項標「已確認 / 待確認 / 我猜的」
   ↓ 交出一份「PM 資料包」（contracts/PM-TO-QUOTE-DATA-PACK.md 定義了長相）
-助理2：commercial-proposal-quotation-specialist（商務提案與報價顧問）
+助理2：報價師（商務提案與報價顧問；正式規格為 commercial-proposal-quotation-specialist）
 算價格、寫條款 → 產出報價文件（先做網頁版給你看，你點頭才轉成 PDF）
   ↓ 交出已確認的提案內容，接下來平行分兩條路
 助理3：簡報師（Presentation Manager）
@@ -225,6 +227,7 @@ Skill：case-page（網頁對焦版本）
 ```text
 Agent(subagent_type="project-manager", ...)                              → 叫助理1
 Agent(subagent_type="commercial-proposal-quotation-specialist", ...)     → 叫助理2
+Agent(subagent_type="報價師", ...)                                        → 中文入口
 Agent(subagent_type="簡報師", ...)                                        → 叫助理3
 ```
 
