@@ -8,9 +8,11 @@
 
 ## 這個 repo 裝了什麼，別人裝了會拿到什麼
 
-`.claude/agents/` 四個 Agent 身份（其中三個接案、開課師是旁支）＋ `.claude/skills/` 十二個功能 Skill（不是外部連結，檔案本身就在這個 repo 裡）＋契約文件。clone 下來就是一整套；另有 Spectra 開發流程 Skill，服務的是維護案神，不是客戶接案成果。
+`.claude/agents/` 三個接案核心 Agent、開課師，以及網頁設計師統一調度的設計四人組＋ `.claude/skills/` 功能 Skill（不是外部連結，檔案本身就在這個 repo 裡）＋契約文件。clone 下來就是一整套；另有 Spectra 開發流程 Skill，服務的是維護案神，不是客戶接案成果。
 
-另外還搭了一個第四個 Agent「開課師」，跟接案報價流程無關，是拿主題、素材整理成課程大綱、簡報與學員講義用的，算附贈，不影響上面三個的流程。
+「開課師」跟接案報價流程無關，是拿主題、素材整理成課程大綱、簡報與學員講義用的旁支 Agent。
+
+設計四人組是：`網頁設計師`、`案例設計師`、`風格設計師`、`前端設計師`。其中 `網頁設計師` 是唯一入口；做儀錶板、後台或網站時，會依需求自動調度另外三位，並使用 UIUX Pro Max、VibePrompts、Tabler 與 SaaSFrame 的本機資源。資源定位規則見 [`docs/agent-resources/design-resources.md`](docs/agent-resources/design-resources.md)。
 
 
 ---
