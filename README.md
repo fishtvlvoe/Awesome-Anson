@@ -77,7 +77,7 @@
 
 - private GitHub repo：保存案神程式碼、Agent、Skill、模板與匿名測試資料。
 - 外部加密案件庫：保存真實逐字稿、談判紀錄、報價單、簡報與 Demo。它必須在兩臺電腦上呈現為本機可讀的資料夾，不能放進 Git。
-- Anson Sync：登入時可以自動更新乾淨的程式碼 checkout，並檢查案件根目錄與產出物版本。
+- Anson Sync：登入時與每 5 分鐘自動檢查一次；只會更新乾淨且可 fast-forward 的程式碼 checkout，並檢查案件根目錄與產出物版本。
 
 本機設定檔放在 `~/.config/anson-sync/config.json`，每臺電腦各自設定自己的路徑：
 
@@ -105,6 +105,8 @@ node scripts/anson-sync.js install-login --config ~/.config/anson-sync/config.js
 ```
 
 同步工具只會在工作樹乾淨且可以 fast-forward 時更新程式碼。筆電有本機修改、分支分叉、GitHub 無法連線、案件庫尚未掛載或產出物衝突時，會保留原檔案並回報原因，不會自動 reset、stash、合併或刪除。
+
+若登入觸發時 iCloud 尚未掛載，狀態檔會先寫到 `~/.config/anson-sync/status/`，避免因 iCloud 上層資料夾暫時不可寫而讓同步程序中止；案件狀態會標成 `unavailable`，iCloud 可用後下一次檢查會重新核對。
 
 ## 新手怎麼用（不懂技術也看得懂，以 Claude Code 為例）
 

@@ -138,11 +138,12 @@ function statusFilePath(caseRoot) {
   return path.join(caseRoot, '.anson-sync', 'status.json');
 }
 
-function writeStatus(config, result) {
+function writeStatus(config, result, options = {}) {
   const caseCheck = validateCaseRoot(config);
+  const fallbackStatusDir = options.fallbackStatusDir || path.join(os.homedir(), '.config', 'anson-sync', 'status');
   const target = caseCheck.caseStatus === 'ready'
     ? statusFilePath(config.caseRoot)
-    : path.join(path.dirname(config.caseRoot), `.anson-sync-${config.deviceId}-status.json`);
+    : path.join(fallbackStatusDir, `.anson-sync-${config.deviceId}-status.json`);
   fs.mkdirSync(path.dirname(target), { recursive: true });
   const status = {
     schemaVersion: 1,
@@ -343,7 +344,25 @@ function renderLaunchdPlist({ commandPath, configPath, label = 'com.fishtv.anson
   const args = [process.execPath, commandPath, 'login', '--config', configPath]
     .map((value) => `    <string>${escapeXml(value)}</string>`)
     .join('\n');
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0">\n<dict>\n  <key>Label</key><string>${escapeXml(label)}</string>\n  <key>ProgramArguments</key>\n  <array>\n${args}\n  </array>\n  <key>EnvironmentVariables</key>\n  <dict><key>PATH</key><string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string></dict>\n  <key>RunAtLoad</key><true/>\n  <key>StandardOutPath</key><string>/tmp/anson-sync.log</string>\n  <key>StandardErrorPath</key><string>/tmp/anson-sync.error.log</string>\n</dict>\n</plist>\n`;
+  return [
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+    "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">",
+    "<plist version=\"1.0\">",
+    "<dict>",
+    `  <key>Label</key><string>${escapeXml(label)}</string>`,
+    "  <key>ProgramArguments</key>",
+    "  <array>",
+    args,
+    "  </array>",
+    "  <key>EnvironmentVariables</key>",
+    "  <dict><key>PATH</key><string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string></dict>",
+    "  <key>RunAtLoad</key><true/>",
+    "  <key>StartInterval</key><integer>300</integer>",
+    "  <key>StandardOutPath</key><string>/tmp/anson-sync.log</string>",
+    "  <key>StandardErrorPath</key><string>/tmp/anson-sync.error.log</string>",
+    "</dict>",
+    "</plist>",
+  ].join("\n") + "\n";
 }
 
 function installLaunchd({ homeDir = os.homedir(), commandPath = path.resolve(__filename), configPath = configFilePath(), label = 'com.fishtv.anson-sync' }) {
@@ -422,6 +441,7 @@ module.exports = {
   syncCase,
   registerArtifact,
   writeMeetingRecord,
+  writeStatus,
   validateRepositoryBoundary,
   renderLaunchdPlist,
   installLaunchd,
