@@ -7,76 +7,13 @@ const PYTHON = fs.existsSync(VENV_PYTHON) ? VENV_PYTHON : 'python3';
 const SERVER_MODULE_DIR = path.join(__dirname, '../tools/realtime-voice');
 
 module.exports = {
-  'advisor-thread-keeps-readable-desktop-height': () => {
-    const css = fs.readFileSync(path.join(__dirname, '../tools/realtime-voice/static/realtime-workbench-c.css'), 'utf8');
-    for (const rule of [
-      /body \{ overflow: auto;/,
-      /\.app-shell \{ height: auto; min-height: 100dvh; overflow: visible;/,
-      /\.page \{ height: auto; min-height: calc\(100dvh - 56px\);/,
-      /\.workspace \{ flex: 0 0 auto; min-height: 650px;/,
-      /\.panel \{ min-height: 0; height: auto; overflow: visible;/,
-      /\.panel-body \{ flex: 0 0 auto; min-height: 0; overflow: visible;/,
-    ]) {
-      if (!rule.test(css)) throw new Error(`scrollable workbench layout rule is missing: ${rule}`);
-    }
-    if (!/\.command-body \{ overflow: visible;/.test(css)) {
-      throw new Error('desktop advisor body must remain visible');
-    }
-    const runtimeRule = css.match(/\.command-thread \{ flex: [^;]+;[^}]*min-height: ([^;]+);[^}]*overflow-y: auto;/);
-    if (!runtimeRule) throw new Error('desktop command thread runtime rule is missing');
-    if (!/height: 140px/.test(runtimeRule[0])) {
-      throw new Error('desktop command thread must reserve visible height');
-    }
-    if (runtimeRule[1].trim() === '0' || !/\d+(?:\.\d+)?px/.test(runtimeRule[1])) {
-      throw new Error(`desktop command thread must keep a readable minimum height, got ${runtimeRule[1]}`);
-    }
-  },
-
-  'workbench-keeps-once-only-setup-out-of-daily-layout': () => {
+  'realtime-page-keeps-recording-transcript-and-status': () => {
     const html = fs.readFileSync(path.join(__dirname, '../tools/realtime-voice/static/index.html'), 'utf8');
-    for (const marker of [
-      'id="recordingBar"',
-      "anson-realtime-demo-complete",
-      "anson-realtime-speakers-confirmed",
-      "simulateDemoButton.hidden = true",
-      "speakerMap.classList.add('is-confirmed')",
-      'speakerMap.hidden = true',
-      'id="onboardingModal"',
-      "anson-realtime-onboarding-seen",
-      'class="icon-button"',
-      'class="function-menu"',
-      'menu-trigger',
-      '☰',
-      '⚙ 聲音身份',
-      'id="save-session"',
-      'id="end-session"',
-      'class="svg-icon mic-icon"',
-      'class="svg-icon theme-icon"',
-    ]) {
+    for (const marker of ['id="toggle"', 'id="transcript"', 'id="advisor-status"', '顧問已連線', '顧問未連線']) {
       if (!html.includes(marker)) throw new Error(`one-time setup marker is missing: ${marker}`);
     }
-    if (!/<div class="recording-inline" id="recordingBar"/.test(html)) {
-      throw new Error('recording controls must live in the topbar');
-    }
-    for (const verboseCopy of ['客戶在左邊，我在右邊', '可能沒有 agent session 在監看', '你看到判斷後，才需要在這裡跟我討論']) {
-      if (html.includes(verboseCopy)) throw new Error(`verbose daily-layout copy remains: ${verboseCopy}`);
-    }
-    if (!/<h2>AI 顧問<\/h2>/.test(html) || !html.includes('找缺口') || !html.includes('先整理')) {
-      throw new Error('advisor controls must keep readable text labels');
-    }
-  },
-
-  'workbench-prioritizes-advisor-over-supporting-panels': () => {
-    const css = fs.readFileSync(path.join(__dirname, '../tools/realtime-voice/static/realtime-workbench-c.css'), 'utf8');
-    for (const rule of [
-      /grid-template-columns: minmax\(260px, 1fr\) minmax\(520px, 2fr\)/,
-      /\.analysis-panel \{ grid-column: 1; grid-row: 1; \}/,
-      /\.conversation-panel \{ grid-column: 1; grid-row: 2; \}/,
-      /\.command-panel \{ grid-column: 2; grid-row: 1 \/ span 2;/,
-      /\.analysis-panel, \.conversation-panel, \.command-panel \{ grid-column: auto; grid-row: auto; \}/,
-    ]) {
-      if (!rule.test(css)) throw new Error(`advisor-first layout rule is missing: ${rule}`);
-    }
+    if (html.includes('commandThread') || html.includes('analysisResponseOptions')) throw new Error('retired advisor UI remains');
+    if (!html.includes('const segmentChunks = []') || !html.includes('new Blob(segmentChunks')) throw new Error('recorder segments must keep independent buffers');
   },
 
   'voice-profile-request-limit-allows-configured-sample-size': () => {

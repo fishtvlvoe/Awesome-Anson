@@ -1,6 +1,6 @@
 # 即時語音接案神
 
-按鍵開始收音，講話同時即時轉成繁體文字，文字持續寫進一個檔案，讓你在 Claude Code 對話裡直接交給 `realtime-need-capture` 讀取分析。完全在本機／區域網路跑，不上雲端、不用 API 費用。
+按鍵開始收音，講話同時即時轉成繁體文字；獨立 CLI 顧問會自動讀取逐字稿、分析並在終端機提供 1／2／3 個下一步選項。錄音 server 與顧問由同一個指令啟動與停止。
 
 ## 一次性安裝（只需要做一次，預估 10-15 分鐘，取決於網速）
 
@@ -23,16 +23,26 @@ venv/bin/pip install -r requirements.txt
 ## 每次使用
 
 ```bash
-cd tools/realtime-voice
-bash ../../scripts/start-realtime-voice.sh
+bash scripts/start-realtime-voice.sh
 ```
 
 啟動後終端機會印出：
 
-- 電腦本機網址（例如 `http://localhost:8420`）
-- 區域網路網址（例如 `http://192.168.1.23:8420`）——手機要連這個網址，手機跟電腦要在同一個 Wi-Fi 下
+- 電腦本機網址（有本機憑證時為 `https://localhost:8420`）
+- 區域網路網址（例如 `https://192.168.1.23:8420`）——手機與電腦要在同一個 Wi-Fi 下
+- `[案神] 顧問 ready`、後端名稱、session state 路徑與隱私提示
 
-用電腦或手機瀏覽器打開對應網址，按「開始」開始收音，講話同時畫面會即時顯示辨識出的繁體文字。文字同時持續寫進 `output/<session-id>.md`。
+用電腦或手機瀏覽器打開對應網址，按「開始收音」開始錄音。畫面只顯示收音狀態與即時繁中逐字稿；顧問結果在啟動終端機顯示。文字寫進 `tools/realtime-voice/output/<session-id>.md`。
+
+### 顧問後端設定與隱私
+
+預設使用 Claude Code headless CLI。可在啟動前切換 Codex：
+
+```bash
+REALTIME_ADVISOR_BACKEND=codex bash scripts/start-realtime-voice.sh
+```
+
+也可用 `REALTIME_ADVISOR_COMMAND` 指定可執行命令，例如測試用的本機 wrapper。啟動時會列出實際 backend；逐字稿文字會送到該 headless CLI 及其模型服務，音檔仍留在本機。若後端不存在或不可啟動，啟動指令會直接失敗，不會顯示假 ready。
 
 ## 建立聲音身份
 
@@ -71,41 +81,19 @@ bash scripts/start-realtime-voice.sh
 格式保持不變，結構化身份資料另存為 `output/<session-id>.segments.jsonl`，也可由
 `GET /segments/<session-id>` 讀取。
 
-## 對談中啟用即時分析
+## 顧問如何運作
 
-即時分析不是 `server.py` 的背景服務。開始收音後，請由目前的 agent session
-在前景執行監看器：
+- 最後一行逐字稿約 3 秒沒有更新時，自動觸發一次分析。
+- 持續說話時，以逐字稿時間戳累積 60 秒作為保底觸發。
+- 每次分析帶入完整 session state 與新增逐字稿；分析進行中新增內容會排隊，不會重複並行呼叫。
+- 終端機顯示現況、已確認、尚未確認、報價影響與最多三個選項。輸入 `1`／`2`／`3` 會顯示可直接對客戶說的句子並保存 adoption event；Enter 跳過，`q` 結束。
 
-```bash
-cd tools/realtime-voice
-venv/bin/python monitor_transcript.py output/<session-id>.md
-```
-
-把 `<session-id>` 換成 server 啟動時印出的實際 session id。監看器只讀取逐字稿
-每行的時間戳，不讀取瀏覽器音訊，也不改動既有 700ms VAD 分段。
-
-- 最後一行超過 3 秒沒有新增內容：觸發一次停頓分析。
-- 沒有停頓時，新增內容依時間戳累積達 30 秒：觸發一次時間上限分析。
-- 觸發後，Haiku 等級的外部 agent 只分析上次分析之後新增的內容。
-- 結果寫入 `output/<session-id>.analysis.json`，頁面每 4 秒輪詢並顯示。
-
-監看器以前景程序執行，不會自行 daemonize。停止收音後，讓同一個 agent session
-停止這個監看指令；server 關閉時不會留下任何 server-side 監看程序。若 server
-是由背景程序啟動，可傳入 PID 讓 server 行程退出時自動結束監看器：
-
-```bash
-venv/bin/python monitor_transcript.py output/<session-id>.md --server-pid <server-pid>
-```
-
-沒有 agent session 監看時，收音與逐字稿仍照常運作，頁面顯示「目前沒有即時分析（可能沒有 agent session 在監看）」。
+session state 保存於 `output/<session-id>.state.json`，事件另存為 `output/<session-id>.events.jsonl`。PM 角色在 session 啟動時固定指定；其他段落只依文字脈絡判斷 `pm`／`client`／`unknown`，不需要聲音 profile。
 
 ## 對談結束後
 
-在終端機按 `Ctrl+C` 關閉服務。這個服務**不會**背景常駐、**不會**開機自動啟動，關掉就是真的關掉，下次要用再重新執行 `venv/bin/python server.py`。
-
-## 交給案神分析
-
-對談結束或告一段落後，在 Claude Code 對話裡把 `output/<session-id>.md` 的路徑交給案神（觸發 `realtime-need-capture`），跟現在手動貼文字的操作一樣簡單，只是文字來源從自己打字變成講話自動產生。
+按 `q` 或瀏覽器的「停止收音」會結束本次 session；也可以在終端機按 `Ctrl+C`。server 與顧問一起停止，不註冊 daemon、launchd 或 cron。session state、逐字稿與事件檔保留在案件輸出位置。
+會後可查閱 `output/<session-id>.md`、`output/<session-id>.state.json` 與 `output/<session-id>.events.jsonl`。這些檔案位於 Git ignore 的輸出資料夾，不會進入版控。
 
 ## 常見問題
 

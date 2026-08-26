@@ -4,12 +4,15 @@
 關閉：終端機按 Ctrl+C（SIGINT）。這個服務不背景常駐，不註冊任何開機自動啟動機制。
 """
 
+import argparse
 import asyncio
 import datetime
 import json
+import os
 import re
 import socket
 import subprocess
+import ssl
 import sys
 import tempfile
 import uuid
@@ -173,6 +176,20 @@ def session_events_path(session_id: str) -> Path | None:
     return OUTPUT_DIR / f"{session_id}.events.jsonl"
 
 
+def advisor_status_path(session_id: str) -> Path | None:
+    if not SESSION_ID_RE.fullmatch(session_id):
+        return None
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    return OUTPUT_DIR / f"{session_id}.advisor.status.json"
+
+
+def session_stop_path(session_id: str) -> Path | None:
+    if not SESSION_ID_RE.fullmatch(session_id):
+        return None
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    return OUTPUT_DIR / f"{session_id}.stop.json"
+
+
 def append_session_event(session_id: str, event: dict[str, object]) -> None:
     """Write an auditable UI event; this endpoint never runs generation/deploy code."""
     output_path = session_events_path(session_id)
@@ -191,14 +208,6 @@ def append_session_event(session_id: str, event: dict[str, object]) -> None:
 
 
 async def handle_index(request: web.Request) -> web.Response:
-    if request.app["profile_storage"].status == "profile_sync_conflict":
-        raise web.HTTPFound("/static/voice-profile.html?onboarding=1&sync=conflict")
-    try:
-        profile = request.app["voice_profile_store"].load_profile()
-    except VoiceProfileError:
-        profile = None
-    if profile is None:
-        raise web.HTTPFound("/static/voice-profile.html?onboarding=1")
     html = (STATIC_DIR / "index.html").read_text(encoding="utf-8")
     html = html.replace("__REALTIME_SESSION_ID__", request.app["session_id"])
     return web.Response(
@@ -208,28 +217,67 @@ async def handle_index(request: web.Request) -> web.Response:
     )
 
 
-def analysis_output_path(session_id: str) -> Path | None:
-    """Resolve a session analysis file without allowing path traversal."""
-    if not SESSION_ID_RE.fullmatch(session_id):
-        return None
-    return OUTPUT_DIR / f"{session_id}.analysis.json"
-
-
-async def handle_analysis(request: web.Request) -> web.Response:
-    """Return the latest agent analysis, or an explicit non-error status."""
-    output_path = analysis_output_path(request.match_info["session_id"])
+async def handle_advisor_status(request: web.Request) -> web.Response:
+    session_id = request.match_info["session_id"]
+    output_path = advisor_status_path(session_id)
     if output_path is None:
         return web.json_response({"status": "invalid_session_id"}, status=400)
     if not output_path.exists():
-        return web.json_response({"status": "not_yet_analyzed"})
-
+        return web.json_response(
+            {"session_id": session_id, "status": "not_connected", "connected": False}
+        )
     try:
         payload = json.loads(output_path.read_text(encoding="utf-8"))
     except (OSError, UnicodeDecodeError, json.JSONDecodeError):
-        return web.json_response({"status": "analysis_error"})
+        return web.json_response(
+            {"session_id": session_id, "status": "not_connected", "connected": False}
+        )
     if not isinstance(payload, dict):
-        return web.json_response({"status": "analysis_error"})
-    return web.json_response(payload)
+        return web.json_response(
+            {"session_id": session_id, "status": "not_connected", "connected": False}
+        )
+    connected = False
+    last_seen = payload.get("last_seen")
+    if isinstance(last_seen, str) and payload.get("status") in {"ready", "running"}:
+        try:
+            age = (
+                datetime.datetime.now(datetime.timezone.utc)
+                - datetime.datetime.fromisoformat(last_seen).astimezone(datetime.timezone.utc)
+            ).total_seconds()
+            connected = age <= 5
+        except ValueError:
+            connected = False
+    return web.json_response(
+        {
+            "session_id": session_id,
+            "status": "connected" if connected else "not_connected",
+            "connected": connected,
+            "advisor_status": payload.get("status"),
+            "backend": payload.get("backend"),
+            "last_seen": last_seen,
+        }
+    )
+
+
+async def handle_session_stop(request: web.Request) -> web.Response:
+    session_id = request.match_info["session_id"]
+    output_path = session_stop_path(session_id)
+    if output_path is None:
+        return web.json_response({"status": "invalid_session_id"}, status=400)
+    output_path.write_text(
+        json.dumps(
+            {
+                "session_id": session_id,
+                "requested_at": datetime.datetime.now(datetime.timezone.utc).isoformat(
+                    timespec="seconds"
+                ),
+            },
+            ensure_ascii=False,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    return web.json_response({"session_id": session_id, "status": "stopping"}, status=202)
 
 
 async def handle_segments(request: web.Request) -> web.Response:
@@ -409,7 +457,8 @@ def build_app(model, converter, session_id: str) -> web.Application:
     app["speaker_matcher"] = None
     app.router.add_get("/", handle_index)
     app.router.add_get("/stream", handle_stream)
-    app.router.add_get("/analysis/{session_id}", handle_analysis)
+    app.router.add_get("/advisor-status/{session_id}", handle_advisor_status)
+    app.router.add_post("/session-stop/{session_id}", handle_session_stop)
     app.router.add_get("/segments/{session_id}", handle_segments)
     app.router.add_post("/events/{session_id}", handle_events)
     app.router.add_get("/voice-profile", handle_voice_profile)
@@ -418,23 +467,47 @@ def build_app(model, converter, session_id: str) -> web.Application:
     return app
 
 
-def main() -> None:
+def main(argv: list[str] | None = None) -> None:
+    global OUTPUT_DIR
+    parser = argparse.ArgumentParser(description="本機即時語音逐字稿服務")
+    parser.add_argument("--session-id", help="由啟動腳本傳入的 session id")
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=Path(os.environ.get("REALTIME_ADVISOR_OUTPUT_DIR", OUTPUT_DIR)),
+        help="逐字稿與 session 產出位置",
+    )
+    parser.add_argument("--port", type=int, default=PORT)
+    args = parser.parse_args(argv)
+    OUTPUT_DIR = args.output_dir.resolve()
     sys.stdout.reconfigure(line_buffering=True)
     model = load_model()
     converter = load_converter()
 
-    session_id = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+    session_id = args.session_id or datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+    if not SESSION_ID_RE.fullmatch(session_id):
+        print("[啟動失敗] session id 格式無效", file=sys.stderr)
+        raise SystemExit(2)
     lan_ip = get_lan_ip()
 
+    cert_path = Path(__file__).parent / "certs" / "cert.pem"
+    key_path = Path(__file__).parent / "certs" / "key.pem"
+    ssl_context = None
+    if cert_path.is_file() and key_path.is_file():
+        ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+        ssl_context.load_cert_chain(certfile=cert_path, keyfile=key_path)
+    scheme = "https" if ssl_context else "http"
+
     print("即時語音接案神啟動完成")
-    print(f"  電腦本機：http://localhost:{PORT}")
-    print(f"  區網位址（僅供參考，手機瀏覽器不支援）：http://{lan_ip}:{PORT}")
-    print("  手機瀏覽器對非 localhost 的 http 來源會擋麥克風權限，這個服務目前只支援電腦本機收音")
+    print(f"  電腦本機：{scheme}://localhost:{args.port}")
+    print(f"  區網位址：{scheme}://{lan_ip}:{args.port}（手機與電腦連同一個 Wi-Fi）")
+    if not ssl_context:
+        print("  注意：找不到本機 TLS 憑證；手機瀏覽器可能拒絕非 localhost 的麥克風權限")
     print(f"  逐字稿輸出：{session_output_path(session_id)}")
     print("  按 Ctrl+C 關閉服務（不會背景常駐）")
 
     app = build_app(model, converter, session_id)
-    web.run_app(app, host="0.0.0.0", port=PORT, print=None)
+    web.run_app(app, host="0.0.0.0", port=args.port, print=None, ssl_context=ssl_context)
 
 
 if __name__ == "__main__":
