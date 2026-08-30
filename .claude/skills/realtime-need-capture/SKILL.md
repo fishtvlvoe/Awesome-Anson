@@ -15,7 +15,7 @@ user-invocable: true
 
 ## 即時語音轉文字
 
-- **已實作、可直接用的輸入來源**：`tools/realtime-voice/` 是本機收音＋辨識服務（FunASR SenseVoiceSmall，完全本機跑，簡轉繁後輸出）。業務員對談時啟動它，講話同時逐字稿會持續寫進 `tools/realtime-voice/output/<session-id>.md`。這個 skill 被觸發時，若使用者提供或指向這個路徑下的檔案，直接把它當作即時逐字稿讀取即可，不用再手動貼文字。
+- **已實作、可直接用的輸入來源**：`tools/realtime-voice/` 是本機收音＋辨識服務（FunASR SenseVoiceSmall，完全本機跑，簡轉繁後輸出）。啟動後錄音頁定案走 `http://localhost:8420`，不要 https。Chrome 憑證警告不過，現場也走 http。https 可選，不是預設。業務員對談時啟動它，講話同時逐字稿會持續寫進 `tools/realtime-voice/output/<session-id>.md`。這個 skill 被觸發時，若使用者提供或指向這個路徑下的檔案，直接把它當作即時逐字稿讀取即可，不用再手動貼文字。
 - 信心度低於門檻的片段，`tools/realtime-voice` 會標「[聽不清楚]」，意思是「聽不清楚，需要人工補」；不能靜默填入猜測文字，這個 skill 讀到時也要原樣保留這個標記，不能自己腦補內容
 - 舊規劃（Cloudflare Workers AI Whisper／ElevenLabs Scribe v2 Realtime 雲端串流）尚未實作，目前以 `tools/realtime-voice` 的本機方案為準；若未來需要雲端方案再另外評估
 

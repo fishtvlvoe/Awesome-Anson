@@ -26,10 +26,12 @@ venv/bin/pip install -r requirements.txt
 bash scripts/start-realtime-voice.sh
 ```
 
+定案：本機錄音頁走 `http://localhost:8420`，不要 https。Chrome 憑證警告不過，現場也走 http。啟動預設必須是 http；https 改成可選，不要因為 `tools/realtime-voice/certs/` 存在就自動切 https。
+
 啟動後終端機會印出：
 
-- 電腦本機網址（有本機憑證時為 `https://localhost:8420`）
-- 區域網路網址（例如 `https://192.168.1.23:8420`）——手機與電腦要在同一個 Wi-Fi 下
+- 電腦本機網址：`http://localhost:8420`
+- 區域網路網址（例如 `http://192.168.1.23:8420`）——手機與電腦要在同一個 Wi-Fi 下
 - `[案神] 顧問 ready`、後端名稱、session state 路徑與隱私提示
 
 用電腦或手機瀏覽器打開對應網址，按「開始收音」開始錄音。畫面只顯示收音狀態與即時繁中逐字稿；顧問結果在啟動終端機顯示。文字寫進 `tools/realtime-voice/output/<session-id>.md`。
@@ -100,3 +102,4 @@ session state 保存於 `output/<session-id>.state.json`，事件另存為 `outp
 - **瀏覽器沒有跳出麥克風權限請求**：檢查瀏覽器網址列旁邊的權限圖示，手動允許麥克風存取後重新整理頁面。
 - **手機連不上**：確認手機跟電腦在同一個 Wi-Fi，不是用行動網路。
 - **辨識出現「[聽不清楚]」**：代表那段音訊太短、太安靜，或雜訊太多，系統故意不猜測內容，需要重講一次。
+- **為什麼不是 https**：Fish 定案。Chrome 憑證警告不過。週二現場也走 `http://localhost:8420`。https 是可選，不是預設。

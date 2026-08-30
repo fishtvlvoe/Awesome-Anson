@@ -54,7 +54,7 @@
 * 🗣️ **[譯神 Awesome-Eason](https://github.com/fishtvlvoe/Awesome-Eason)**：小白技術降維、台灣繁中去 AI 味與翻譯急救
 * ⌨️ **[Key神 Awesome-Keyson](https://github.com/fishtvlvoe/Awesome-Keyson)**：自動 Key 單、智慧語意對齊與跨平台表單自動填寫
 * 📊 **[待神 Awesome-Dyson](https://github.com/fishtvlvoe/Awesome-Dyson)**：跨專案開發儀表板：固定網址看現況、進度、待確認事項與歷史紀錄，換 CLI/AI 接手不用重新對焦
-* 🎬 **[剪神 Awesome-Janson](https://github.com/fishtvlvoe/Awesome-Janson)**：全能 AI 影片剪輯 Agent（長片精修、爆款短影音與動效）
+* 🎬 **[剪神 Awesome-Janson](https://github.com/fishtvlvoe/Awesome-Janson)**：講師長錄影語意精修與同源短影音；會動的轉交動畫師
 <!-- GODS-FAMILY:END -->
 
 ---
@@ -158,7 +158,7 @@ bash scripts/setup-realtime-voice.sh
 bash scripts/start-realtime-voice.sh
 ```
 
-面板網址是 `http://localhost:8420`。如果只想啟動服務、不自動開瀏覽器，使用 `bash scripts/start-realtime-voice.sh --no-open`。如果安裝腳本只想安裝、不立即啟動，使用 `bash scripts/setup-realtime-voice.sh --no-launch`。
+面板網址定案是 `http://localhost:8420`，不要 https。Chrome 憑證警告不過，現場也走 http。啟動預設必須是 http；`tools/realtime-voice/certs/` 若存在，舊腳本會改開 https，https 改成可選。如果只想啟動服務、不自動開瀏覽器，使用 `bash scripts/start-realtime-voice.sh --no-open`。如果安裝腳本只想安裝、不立即啟動，使用 `bash scripts/setup-realtime-voice.sh --no-launch`。
 
 #### 聲音身份與跨電腦同步
 
